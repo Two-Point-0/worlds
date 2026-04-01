@@ -1,1 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form - Test on Programiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            display: none;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+            border: 1px solid #f5c6cb;
+        }
+
+        .demo-badge {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+        }
+
+        .demo-badge a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>📝 Register</h1>
+        <div class="subtitle">Create your account</div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" id="first_name" name="first_name" required placeholder="Enter first name">
+            </div>
+            
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" id="last_name" name="last_name" required placeholder="Enter last name">
+            </div>
+            
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Enter email">
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="text" id="password" name="password" value="0000" required>
+                <div style="font-size: 11px; color: #999; margin-top: 5px;">Default: 0000 (you can change it)</div>
+            </div>
+            
+            <button type="submit">Register Account</button>
+        </form>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="demo-badge">
+            ⚡ PHP Backend Active | Data stored in simulated database
+        </div>
+    </div>
+
+    <!-- PHP Code for Programiz - This will be executed on the server -->
+    <?php
+    // This PHP code will run when the form is submitted via AJAX
+    // For Programiz, we need to handle the POST request
+        
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Get form data
+        $first_name = isset($_POST['first_name']) ? trim($_POST['first_name']) : '';
+        $last_name = isset($_POST['last_name']) ? trim($_POST['last_name']) : '';
+        $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+        $password = isset($_POST['password']) ? $_POST['password'] : '0000';
+        
+        // Validate inputs
+        $errors = [];
+        
+        if (empty($first_name)) {
+            $errors[] = "First name is required";
+        }
+        
+        if (empty($last_name)) {
+            $errors[] = "Last name is required";
+        }
+        
+        if (empty($email)) {
+            $errors[] = "Email is required";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Invalid email format";
+        }
+        
+        if (empty($password)) {
+            $errors[] = "Password is required";
+        }
+        
+        // If no errors, process the registration
+        if (empty($errors)) {
+            // Hash the password for security
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            
+            // SIMULATED DATABASE CONNECTION
+            // In a real environment, you would connect to MySQL like this:
+            /*
+            $host = 'localhost';
+            $dbname = 'users_db';
+            $username = 'root';
+            $db_password = '';
+            
+            try {
+                $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $db_password);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                
+                $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, password_hash, created_at) VALUES (?, ?, ?, ?, NOW())");
+                $stmt->execute([$first_name, $last_name, $email, $hashed_password]);
+                
+                echo json_encode(['status' => 'success', 'message' => 'Registration successful!']);
+            } catch (PDOException $e) {
+                echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+            }
+            */
+            
+            // For Programiz demo, we'll simulate successful database storage
+            // This shows how it would work with a real database
+            
+            // Simulate storing in a text file (like a simple database)
+            $data_file = 'users_data.txt';
+            $user_data = "[" . date('Y-m-d H:i:s') . "] $first_name $last_name | Email: $email | Password Hash: $hashed_password\n";
+            
+            // In Programiz, file writing might be restricted, so we'll just simulate
+            // But this is how you would actually save data:
+            // file_put_contents($data_file, $user_data, FILE_APPEND);
+            
+            // Return success response
+            echo json_encode([
+                'status' => 'success', 
+                'message' => "✅ Welcome $first_name! Your account has been created.",
+                'debug' => [
+                    'name' => "$first_name $last_name",
+                    'email' => $email,
+                    'password_hash' => substr($hashed_password, 0, 20) . '...',
+                    'note' => 'Password securely hashed before storage'
+                ]
+            ]);
+        } else {
+            // Return validation errors
+            echo json_encode([
+                'status' => 'error', 
+                'message' => implode(', ', $errors)
+            ]);
+        }
+        exit;
+    }
+    ?>
+    
+    <script>
+        // Handle form submission with AJAX to PHP backend
+        const form = document.getElementById('registerForm');
+        const messageDiv = document.getElementById('message');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Get form values
+            const first_name = document.getElementById('first_name').value;
+            const last_name = document.getElementById('last_name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Basic client-side validation
+            if (!first_name || !last_name || !email || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (!email.includes('@') || !email.includes('.')) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            // Create form data for PHP
+            const formData = new URLSearchParams();
+            formData.append('first_name', first_name);
+            formData.append('last_name', last_name);
+            formData.append('email', email);
+            formData.append('password', password);
+            
+            // Show loading state
+            const submitBtn = form.querySelector('button');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Send data to PHP backend (same file)
+                const response = await fetch(window.location.href, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showMessage(result.message, 'success');
+                    // Clear form except password default
+                    document.getElementById('first_name').value = '';
+                    document.getElementById('last_name').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('password').value = '0000';
+                    
+                    // Log debug info if available
+                    if (result.debug) {
+                        console.log('Registration details:', result.debug);
+                    }
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Connection error. Please try again.', 'error');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+        
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                messageDiv.className = 'message';
+            }, 5000);
+        }
+        
+        // Optional: Add password default reset if user clears it
+        const passwordInput = document.getElementById('password');
+        passwordInput.addEventListener('focus', function() {
+            if (this.value === '') {
+                this.value = '0000';
+            }
+        });
+    </script>
+</body>
+</html>
