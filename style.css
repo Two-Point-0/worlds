@@ -1,1 +1,38 @@
+body { margin:0; font-family:Arial; background:#050508; color:white; }
 
+.navbar {
+position:fixed; top:0; width:100%;
+display:flex; justify-content:space-around;
+background:black; padding:10px;
+}
+
+.page { display:none; padding-top:60px; text-align:center; }
+.active { display:block; }
+
+canvas { width:100%; height:400px; }
+
+#infoBox {
+position:absolute;
+top:80px;
+left:20px;
+background:#111;
+padding:10px;
+}
+
+.fighter {
+display:inline-block;
+margin:10px;
+padding:10px;
+background:#111;
+cursor:pointer;
+}
+
+.selected { border:2px solid red; }
+
+#battleLog { margin-top:20px; }
+
+#marketList div {
+background:#111;
+margin:10px;
+padding:10px;
+}
