@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>WORLDS — Ultimate Multiverse Hub</title>
+  <title>WORLDS — Multiverse Hub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
@@ -33,7 +33,7 @@
       min-height: 100vh;
     }
 
-    /* noise overlay */
+    /* noise texture */
     body::before {
       content: '';
       position: fixed;
@@ -44,16 +44,9 @@
       opacity: 0.4;
     }
 
-    ::-webkit-scrollbar {
-      width: 5px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--red);
-      border-radius: 99px;
-    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 99px; }
 
     /* navbar */
     .navbar {
@@ -126,7 +119,7 @@
       display: block;
     }
 
-    /* home */
+    /* HOME with orbiting moons */
     #homePage {
       display: flex;
       flex-direction: column;
@@ -146,6 +139,12 @@
                   radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,170,0,0.06), transparent 50%),
                   var(--bg);
     }
+    /* modern rotating planet with moon ring */
+    .logo-container {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
     .worlds-title {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(5rem, 14vw, 10rem);
@@ -154,17 +153,67 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.05em;
+      gap: 0.1em;
+      position: relative;
+      z-index: 2;
     }
     .rotating-o {
       display: inline-block;
-      animation: spinPlanet 8s linear infinite;
+      animation: spinPlanet 12s linear infinite;
+      filter: drop-shadow(0 0 8px var(--red-glow));
     }
     @keyframes spinPlanet {
       to { transform: rotate(360deg); }
     }
+    /* orbiting moons */
+    .moon-orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 180%;
+      height: 180%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .moon {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      background: radial-gradient(circle, #ddd, #888);
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(255,255,200,0.6);
+      top: 50%;
+      left: 50%;
+      margin: -14px 0 0 -14px;
+      animation: orbitMoon 8s linear infinite;
+    }
+    .moon:nth-child(2) {
+      width: 18px;
+      height: 18px;
+      margin: -9px 0 0 -9px;
+      animation: orbitMoon 12s linear infinite reverse;
+      background: radial-gradient(circle, #f0e68c, #b8860b);
+    }
+    .moon:nth-child(3) {
+      width: 22px;
+      height: 22px;
+      margin: -11px 0 0 -11px;
+      animation: orbitMoon 10s linear infinite;
+      background: radial-gradient(circle, #c0c0c0, #696969);
+    }
+    @keyframes orbitMoon {
+      0% { transform: rotate(0deg) translateX(85px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(85px) rotate(-360deg); }
+    }
+    @media (max-width: 700px) {
+      @keyframes orbitMoon {
+        0% { transform: rotate(0deg) translateX(60px) rotate(0deg); }
+        100% { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+      }
+    }
     .home-sub {
-      margin-top: 1rem;
+      margin-top: 2rem;
       color: var(--muted);
       max-width: 500px;
     }
@@ -194,7 +243,7 @@
       transform: translateY(-2px);
     }
 
-    /* universe detail page (simple but complete) */
+    /* universe detail page */
     .universe-detail {
       max-width: 1200px;
       margin: 0 auto;
@@ -391,7 +440,7 @@
       cursor: pointer;
     }
 
-    /* bazaar page */
+    /* bazaar */
     .bazaar-container {
       max-width: 1100px;
       margin: 0 auto;
@@ -548,16 +597,23 @@
   </div>
 </nav>
 
-<!-- HOME PAGE -->
+<!-- HOME PAGE with modern rotating planet + moons -->
 <div id="homePage" class="page active-page">
-  <div class="worlds-title">
-    <span>W</span><span class="rotating-o">🪐</span><span>RLDS</span>
+  <div class="logo-container">
+    <div class="worlds-title">
+      <span>W</span><span class="rotating-o">🪐</span><span>RLDS</span>
+    </div>
+    <div class="moon-orbit">
+      <div class="moon"></div>
+      <div class="moon"></div>
+      <div class="moon"></div>
+    </div>
   </div>
   <p class="home-sub">Every universe. Every hero. One place.</p>
   <div class="universes-grid" id="universeGrid"></div>
 </div>
 
-<!-- UNIVERSE PAGES (will be populated) -->
+<!-- UNIVERSE PAGES will be injected here -->
 <div id="universePages"></div>
 
 <!-- BATTLE PAGE -->
@@ -673,7 +729,7 @@ const universes = [
     ] }
 ];
 
-// Flatten all characters for battle
+// flatten for battle
 let allBattleChars = [];
 universes.forEach(u => {
   u.characters.forEach(c => {
@@ -687,7 +743,7 @@ universes.forEach(u => {
   });
 });
 
-// ----------------------------- HOME: build universe pills -----------------------------
+// ----------------------------- HOME: universe pills -----------------------------
 const universeGrid = document.getElementById('universeGrid');
 universes.forEach(u => {
   const pill = document.createElement('div');
@@ -700,9 +756,9 @@ universes.forEach(u => {
 // ----------------------------- UNIVERSE PAGES -----------------------------
 const universePagesDiv = document.getElementById('universePages');
 function showUniversePage(univ) {
-  // Remove existing universe page if any
-  const existing = document.getElementById(`univ-${univ.id}`);
-  if (existing) existing.remove();
+  // remove old universe page if exists
+  const old = document.getElementById(`univ-${univ.id}`);
+  if (old) old.remove();
   
   const pageDiv = document.createElement('div');
   pageDiv.id = `univ-${univ.id}`;
@@ -727,23 +783,21 @@ function showUniversePage(univ) {
   `;
   universePagesDiv.appendChild(pageDiv);
   
-  // Populate hero selector
   const selector = pageDiv.querySelector(`#heroSelector-${univ.id}`);
   univ.characters.forEach((hero, idx) => {
     const btn = document.createElement('button');
     btn.className = 'cat-tab';
     btn.textContent = hero.name;
     btn.onclick = () => {
-      document.querySelectorAll(`#heroSelector-${univ.id} .cat-tab`).forEach(b => b.classList.remove('active'));
+      selector.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       loadUniverseHero(univ.id, idx);
     };
     selector.appendChild(btn);
   });
-  // Load first hero
   loadUniverseHero(univ.id, 0);
   
-  // Show this page and hide others
+  // hide all pages and show this one
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
   pageDiv.classList.add('active-page');
   window.scrollTo(0,0);
@@ -777,11 +831,11 @@ function updateBattleUI() {
   document.getElementById('fighter1Img').src = f1.image;
   document.getElementById('fighter1Name').innerText = f1.name;
   document.getElementById('fighter1Uni').innerText = f1.universe;
-  document.getElementById('fighter1Idx').innerText = `${fighter1Index+1}/${allBattleChars.length}`;
+  document.getElementById('f1Idx').innerText = `${fighter1Index+1}/${allBattleChars.length}`;
   document.getElementById('fighter2Img').src = f2.image;
   document.getElementById('fighter2Name').innerText = f2.name;
   document.getElementById('fighter2Uni').innerText = f2.universe;
-  document.getElementById('fighter2Idx').innerText = `${fighter2Index+1}/${allBattleChars.length}`;
+  document.getElementById('f2Idx').innerText = `${fighter2Index+1}/${allBattleChars.length}`;
   
   const card1 = document.getElementById('fighter1Card');
   const card2 = document.getElementById('fighter2Card');
@@ -822,11 +876,11 @@ function simulateFight() {
   lines.push(`📍 Location: ${f1.universe !== f2.universe ? `Crossover — ${f1.universe} / ${f2.universe} realms` : f1.universe + ' universe'}`);
   lines.push(`⚔️ ${f1.name} vs ${f2.name}`);
   if (canon) {
-    lines.push(`📖 Canon: ${canon}`);
+    lines.push(`📖 Canon record: ${canon}`);
   } else {
-    lines.push(`${f1.name} opens with ${f1.powers.split(',')[0].toLowerCase()}, forcing ${f2.name} to retreat.`);
+    lines.push(`${f1.name} opens with ${f1.powers.split(',')[0].toLowerCase()}, forcing ${f2.name} onto the back foot.`);
     lines.push(`${f2.name} exploits ${f1.weaknesses.split(',')[0].toLowerCase()} to gain the upper hand.`);
-    lines.push(`A brutal exchange shakes the arena! Both fighters are exhausted.`);
+    lines.push(`A devastating exchange shakes the arena! Both fighters are pushed to their limits.`);
   }
   lines.push(`🏆 WINNER: ${winner}`);
   lastBattleLogs = lines;
@@ -839,7 +893,7 @@ function simulateFight() {
       logDiv.scrollTop = logDiv.scrollHeight;
     }, idx * 400);
   });
-  // Show comic download button
+  // show comic download button
   const comicArea = document.getElementById('comicBtnArea');
   comicArea.innerHTML = '';
   const comicBtn = document.createElement('button');
@@ -910,7 +964,6 @@ const pages = {
 document.querySelectorAll('[data-page]').forEach(el => {
   el.addEventListener('click', () => {
     const pageId = el.dataset.page;
-    // hide all pages
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
     if (pages[pageId]) pages[pageId].classList.add('active-page');
     else if (pageId === 'home') pages.home.classList.add('active-page');
