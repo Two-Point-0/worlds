@@ -1,1091 +1,662 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>WORLDS — Ultimate Multiverse Hub</title>
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
-      }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>WORLDS — Ultimate Multiverse Hub</title>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
     }
-  </script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --red: #ff2a00;
-      --red-glow: rgba(255,42,0,0.35);
-      --amber: #ffaa00;
-      --bg: #050508;
-      --surface: rgba(255,255,255,0.04);
-      --border: rgba(255,255,255,0.08);
-      --text: #f0ede8;
-      --muted: rgba(240,237,232,0.45);
-      --radius: 16px;
-    }
-    body {
-      font-family: 'Space Grotesk', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity: 0.4;
-    }
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 99px; }
+  }
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:opsz,wght@9..40,300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #ff2800;
+    --amber: #ffb300;
+    --green: #00e676;
+    --bg: #07070c;
+    --glass: rgba(255,255,255,0.04);
+    --glass2: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.14);
+    --text: #ede9e2;
+    --muted: rgba(237,233,226,0.42);
+    --muted2: rgba(237,233,226,0.65);
+    --r: 14px;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+  ::-webkit-scrollbar{width:4px;height:4px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--red);border-radius:99px;}
+  body::after{content:'';position:fixed;inset:0;z-index:9000;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");}
 
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      padding: 0 2rem;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(5,5,8,0.85);
-      backdrop-filter: blur(24px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.6rem;
-      letter-spacing: 6px;
-      color: var(--text);
-      cursor: pointer;
-    }
-    .nav-logo span { color: var(--red); }
-    .nav-links {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .nav-item {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      padding: 7px 16px;
-      border-radius: 99px;
-      border: 1px solid transparent;
-      color: var(--muted);
-      transition: all 0.2s;
-      text-transform: uppercase;
-    }
-    .nav-item:hover, .nav-item.active {
-      color: var(--text);
-      border-color: var(--border);
-      background: var(--surface);
-    }
-    .nav-item.join-btn {
-      border-color: var(--red);
-      color: var(--red);
-    }
-    .nav-item.join-btn:hover {
-      background: var(--red);
-      color: #fff;
-      box-shadow: 0 0 20px var(--red-glow);
-    }
+  /* NAV */
+  .nav{position:fixed;top:0;left:0;right:0;z-index:800;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(7,7,12,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+  .nav-brand{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;user-select:none;display:flex;align-items:center;gap:3px;}
+  .nav-brand .o{color:var(--red);display:inline-block;animation:spinO 10s linear infinite;}
+  @keyframes spinO{to{transform:rotate(360deg);}}
+  .nav-right{display:flex;gap:4px;align-items:center;}
+  .nb{cursor:pointer;font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;padding:6px 14px;border-radius:99px;border:1px solid transparent;color:var(--muted);transition:all 0.18s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+  .nb:hover,.nb.on{color:var(--text);border-color:var(--border2);background:var(--glass2);}
+  .nb.cta{border-color:rgba(255,40,0,0.5);color:var(--red);}
+  .nb.cta:hover{background:var(--red);color:#fff;box-shadow:0 0 18px rgba(255,40,0,0.45);}
 
-    .page {
-      display: none;
-      min-height: 100vh;
-      position: relative;
-      z-index: 1;
-      padding-top: 60px;
-    }
-    .page.active-page {
-      display: block;
-    }
+  /* PAGES */
+  .page{display:none;min-height:100vh;position:relative;z-index:1;padding-top:56px;}
+  .page.on{display:block;}
+  #homePage{display:flex;flex-direction:column;align-items:center;}
+  #homePage.on{display:flex;}
 
-    /* home with 3D globe */
-    #homePage {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 80px 2rem 2rem;
-    }
-    #homePage.active-page { display: flex; }
-    .globe-container {
-      position: relative;
-      width: 100%;
-      height: 500px;
-      border-radius: 24px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: #000;
-      margin-bottom: 1rem;
-      transition: background 0.5s ease;
-    }
-    #globeCanvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-    .planet-bg {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(0,0,0,0.7);
-      padding: 8px 16px;
-      border-radius: 99px;
-      font-size: 0.8rem;
-      pointer-events: none;
-      z-index: 10;
-      backdrop-filter: blur(8px);
-    }
-    .search-box {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      z-index: 20;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(8px);
-      padding: 8px 16px;
-      border-radius: 40px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .search-box input {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 40px;
-      font-size: 0.8rem;
-    }
-    .search-box button {
-      background: var(--red);
-      border: none;
-      padding: 6px 12px;
-      border-radius: 40px;
-      color: white;
-      cursor: pointer;
-    }
-    .ad-container {
-      width: 100%;
-      margin: 1rem 0;
-      padding: 12px;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(8px);
-      border-radius: 20px;
-      text-align: center;
-      font-size: 0.9rem;
-      border: 1px solid var(--amber);
-    }
-    .universe-scroll-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .universes-grid {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      scroll-behavior: smooth;
-      padding: 8px 4px;
-      scrollbar-width: none;
-      flex: 1;
-    }
-    .universes-grid::-webkit-scrollbar { display: none; }
-    .scroll-univ-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .universe-pill {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 20px;
-      border-radius: 99px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      font-size: 0.85rem;
-      font-weight: 600;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-    .universe-pill:hover {
-      border-color: var(--red);
-      background: rgba(255,42,0,0.08);
-      transform: translateY(-2px);
-    }
+  /* GLOBE */
+  .globe-wrap{position:relative;width:100%;height:min(55vw,520px);min-height:320px;border-bottom:1px solid var(--border);overflow:hidden;background:#000;}
+  #globeCanvas{width:100%;height:100%;display:block;}
+  .globe-vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(7,7,12,0.25) 0%,transparent 25%,transparent 72%,rgba(7,7,12,0.92) 100%);}
+  .globe-search{position:absolute;top:16px;left:16px;z-index:20;display:flex;gap:8px;align-items:center;background:rgba(7,7,12,0.72);backdrop-filter:blur(12px);border:1px solid var(--border2);border-radius:99px;padding:6px 6px 6px 16px;}
+  .globe-search input{background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.82rem;width:190px;outline:none;}
+  .globe-search input::placeholder{color:var(--muted);}
+  .g-btn{background:var(--red);border:none;padding:6px 14px;border-radius:99px;color:#fff;font-size:0.74rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:0.15s;white-space:nowrap;}
+  .g-btn:hover{box-shadow:0 0 14px rgba(255,40,0,0.55);}
+  .planet-tag{position:absolute;bottom:16px;right:16px;z-index:20;background:rgba(7,7,12,0.8);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:99px;padding:5px 14px;font-size:0.74rem;font-weight:600;color:var(--muted2);}
 
-    /* universe detail page */
-    .universe-detail {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem;
-      display: grid;
-      grid-template-columns: 300px 1fr 300px;
-      gap: 1.5rem;
-    }
-    @media (max-width: 1000px) { .universe-detail { grid-template-columns: 1fr; } }
-    .char-column {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1rem;
-      max-height: 70vh;
-      overflow-y: auto;
-    }
-    .char-column h3 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
-    }
-    .char-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: 0.2s;
-      margin-bottom: 8px;
-    }
-    .char-item:hover { background: rgba(255,42,0,0.1); }
-    .char-item img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .center-bio {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      text-align: center;
-    }
-    .center-bio img {
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      margin: 0 auto 1rem;
-      border: 2px solid var(--red);
-    }
-    .universe-story {
-      background: rgba(0,0,0,0.4);
-      border-radius: var(--radius);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      font-size: 0.9rem;
-    }
+  /* FLIGHT INFO BANNER */
+  .flight-banner{width:100%;display:none;background:linear-gradient(135deg,rgba(255,179,0,0.06) 0%,rgba(255,40,0,0.04) 100%);border-bottom:1px solid rgba(255,179,0,0.18);}
+  .flight-banner.show{display:block;}
+  .fb-inner{max-width:1200px;margin:0 auto;padding:1rem 1.5rem;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;}
+  .fb-left{display:flex;flex-direction:column;gap:6px;}
+  .fb-route{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .fb-city{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:0.05em;}
+  .fb-arrow{color:var(--amber);font-size:1rem;}
+  .fb-airline-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .fb-badge{background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:99px;padding:3px 10px;font-size:0.72rem;font-weight:600;color:var(--muted2);}
+  .fb-badge.amber{border-color:rgba(255,179,0,0.35);color:var(--amber);}
+  .fb-badge.red{border-color:rgba(255,40,0,0.35);color:var(--red);}
+  .fb-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+  .fb-price{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;color:var(--amber);line-height:1;}
+  .fb-price-sub{font-size:0.68rem;color:var(--muted);text-align:right;}
+  .fb-book-btn{background:var(--amber);border:none;padding:8px 20px;border-radius:99px;font-weight:700;font-size:0.8rem;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;transition:0.18s;white-space:nowrap;}
+  .fb-book-btn:hover{box-shadow:0 0 16px rgba(255,179,0,0.5);transform:scale(1.03);}
+  @media(max-width:600px){.fb-inner{grid-template-columns:1fr;}.fb-right{align-items:flex-start;}}
 
-    /* battle page */
-    .battle-container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-    .battle-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .battle-arena {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 30px;
-      flex-wrap: wrap;
-    }
-    .fighter-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.5rem;
-      width: 280px;
-    }
-    .fighter-card.locked { border-color: var(--red); }
-    .fighter-avatar {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto;
-    }
-    .fighter-avatar img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .fighter-name { text-align: center; font-size: 1.2rem; font-weight: 700; margin: 0.8rem 0; }
-    .fighter-universe { text-align: center; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.5rem; }
-    .fighter-nav { display: flex; justify-content: space-between; margin: 1rem 0; }
-    .nav-arrow {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .lock-btn {
-      width: 100%;
-      padding: 8px;
-      border-radius: 99px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      cursor: pointer;
-    }
-    .lock-btn.locked {
-      background: rgba(255,42,0,0.12);
-      border-color: var(--red);
-      color: var(--red);
-    }
-    .vs-badge { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--muted); }
-    .fight-btn {
-      background: var(--red);
-      border: none;
-      padding: 12px 28px;
-      border-radius: 99px;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.2rem;
-      color: white;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-    .battle-log {
-      margin-top: 2rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.5rem;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    .log-line {
-      padding: 10px;
-      border-left: 2px solid var(--border);
-      margin-bottom: 8px;
-      font-size: 0.85rem;
-    }
-    .log-line.winner { border-left-color: var(--red); background: rgba(255,42,0,0.05); }
-    .comic-btn {
-      background: #4caf50;
-      margin-top: 1rem;
-      padding: 10px 20px;
-      border-radius: 99px;
-      border: none;
-      color: white;
-      cursor: pointer;
-    }
-    .betting-container {
-      margin-top: 1.5rem;
-      background: var(--surface);
-      border: 1px solid var(--amber);
-      border-radius: 20px;
-      padding: 1rem;
-      text-align: center;
-    }
-    .betting-container select, .betting-container button {
-      margin: 0 5px;
-      padding: 6px 12px;
-      border-radius: 99px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      cursor: pointer;
-    }
+  /* UNIVERSE PILLS */
+  .univ-row{width:100%;max-width:1300px;padding:1rem 1.5rem;display:flex;align-items:center;gap:10px;}
+  .univ-scroll{display:flex;gap:8px;overflow-x:auto;flex:1;scroll-behavior:smooth;scrollbar-width:none;padding:4px 2px;}
+  .univ-scroll::-webkit-scrollbar{display:none;}
+  .univ-arrow{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--glass);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem;transition:0.15s;}
+  .univ-arrow:hover{border-color:var(--red);color:var(--red);}
+  .upill{cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:99px;background:var(--glass);border:1px solid var(--border);font-size:0.8rem;font-weight:600;transition:all 0.18s;}
+  .upill:hover{border-color:rgba(255,40,0,0.5);background:rgba(255,40,0,0.07);transform:translateY(-1px);}
 
-    /* market */
-    .market-container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-    .category-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 2rem;
-    }
-    .cat-tab {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 8px 20px;
-      border-radius: 99px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .cat-tab.active {
-      border-color: var(--red);
-      background: rgba(255,42,0,0.1);
-    }
-    .upload-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      display: none;
-    }
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 4px;
-      color: var(--muted);
-    }
-    .form-group input, .form-group textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 10px;
-      border-radius: 10px;
-    }
-    .publish-btn {
-      background: var(--red);
-      border: none;
-      padding: 10px 20px;
-      border-radius: 99px;
-      color: white;
-      cursor: pointer;
-    }
-    .listings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 1.5rem;
-    }
-    .listing-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1rem;
-    }
-    .listing-icon { font-size: 1.8rem; color: var(--red); margin-bottom: 0.5rem; }
-    .listing-title { font-weight: bold; }
-    .listing-desc { font-size: 0.75rem; color: var(--muted); margin: 0.5rem 0; }
-    .listing-footer { display: flex; justify-content: space-between; align-items: center; }
-    .listing-price { color: var(--amber); font-weight: bold; }
-    .buy-btn {
-      background: transparent;
-      border: 1px solid var(--red);
-      color: var(--red);
-      padding: 4px 12px;
-      border-radius: 99px;
-      cursor: pointer;
-    }
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(12px);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: #111;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2rem;
-      width: 90%;
-      max-width: 400px;
-    }
-    footer {
-      text-align: center;
-      padding: 1.5rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.7rem;
-      color: var(--muted);
-    }
-  </style>
+  /* UNIVERSE DETAIL */
+  .upage-grid{max-width:1400px;margin:0 auto;padding:1.5rem;display:grid;grid-template-columns:240px 1fr 240px;gap:1.2rem;}
+  @media(max-width:1000px){.upage-grid{grid-template-columns:1fr;}}
+  .char-col{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+  .char-col-head{padding:.9rem 1.2rem;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+  .char-col-body{padding:.5rem;max-height:calc(100vh - 180px);overflow-y:auto;}
+  .char-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:0.15s;margin-bottom:4px;}
+  .char-item:hover{background:rgba(255,40,0,0.08);}
+  .char-item img{width:42px;height:42px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;}
+  .char-item-name{font-size:0.82rem;font-weight:600;}
+  .char-item-sub{font-size:0.68rem;color:var(--muted);}
+  .bio-center{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;display:flex;flex-direction:column;gap:1rem;}
+  .bio-story{background:rgba(255,255,255,0.025);border-radius:10px;padding:1rem;font-size:0.82rem;line-height:1.65;color:var(--muted2);border-left:2px solid rgba(255,40,0,0.35);}
+  .bio-char{display:flex;flex-direction:column;align-items:center;gap:.8rem;}
+  .bio-char img{width:110px;height:110px;border-radius:50%;border:2px solid var(--red);box-shadow:0 0 20px rgba(255,40,0,0.25);}
+  .bio-char-name{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;}
+  .bio-stat{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;width:100%;}
+  .bio-stat-label{font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+  .bio-stat-val{font-size:0.83rem;line-height:1.5;}
+
+  /* BATTLE PAGE */
+  .battle-page-inner{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;}
+  .section-head{text-align:center;margin-bottom:2rem;}
+  .section-head h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:900;letter-spacing:0.09em;text-transform:uppercase;}
+  .section-head p{color:var(--muted);font-size:0.85rem;margin-top:6px;}
+  .fighters-row{display:grid;grid-template-columns:1fr 100px 1fr;gap:1rem;align-items:start;}
+  @media(max-width:660px){.fighters-row{grid-template-columns:1fr;}}
+  .fcard{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:1.4rem;display:flex;flex-direction:column;gap:.9rem;transition:border-color .2s;}
+  .fcard.locked{border-color:var(--red);box-shadow:0 0 18px rgba(255,40,0,0.15);}
+  .fcard-top{display:flex;flex-direction:column;align-items:center;gap:.7rem;}
+  .fav{width:96px;height:96px;border-radius:50%;overflow:hidden;border:2px solid var(--border2);transition:.2s;}
+  .fav img{width:100%;height:100%;object-fit:cover;}
+  .fcard.locked .fav{border-color:var(--red);}
+  .fname-big{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;text-align:center;}
+  .funi-tag{font-size:0.65rem;color:var(--muted);font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;}
+  .fcard-city{font-size:0.7rem;color:var(--amber);font-weight:600;text-align:center;margin-top:-4px;}
+  .fnav-row{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+  .farr{width:30px;height:30px;border-radius:50%;background:var(--glass);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.72rem;transition:.15s;}
+  .farr:hover{border-color:var(--red);color:var(--red);}
+  .fidx{font-size:0.68rem;color:var(--muted);}
+  .lock-btn{width:100%;padding:8px;border-radius:99px;border:1px solid var(--border2);background:var(--glass);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .lock-btn:hover{border-color:rgba(255,40,0,.5);}
+  .lock-btn.locked{background:rgba(255,40,0,.1);border-color:var(--red);color:var(--red);}
+  .vs-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding-top:36px;}
+  .vs-word{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--muted);}
+  .fight-btn{background:var(--red);border:none;padding:12px 22px;border-radius:99px;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:900;letter-spacing:.12em;color:#fff;cursor:pointer;transition:.18s;box-shadow:0 4px 20px rgba(255,40,0,.35);}
+  .fight-btn:hover{transform:scale(1.06);box-shadow:0 6px 28px rgba(255,40,0,.55);}
+  .fight-log-wrap{margin-top:1.2rem;}
+  .fight-log{background:rgba(0,0,0,.6);border:1px solid var(--border2);border-radius:18px;padding:1.2rem;max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;min-height:80px;}
+  .flog-line{padding:9px 13px;border-radius:10px;font-size:.83rem;line-height:1.55;border-left:2px solid var(--border2);animation:popIn .35s forwards;}
+  @keyframes popIn{from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:none;}}
+  .flog-line.loc{border-left-color:rgba(255,179,0,.5);color:var(--amber);font-weight:600;}
+  .flog-line.atk{border-left-color:rgba(255,40,0,.5);background:rgba(255,40,0,.04);}
+  .flog-line.drink{border-left-color:rgba(100,220,100,.4);color:#a5d6a7;}
+  .flog-line.bet-ad{border-left-color:rgba(100,180,255,.4);color:#90caf9;font-style:italic;}
+  .flog-line.win{border-left-color:var(--red);background:rgba(255,40,0,.08);font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;letter-spacing:.05em;color:var(--text);}
+  .winner-card{margin-top:1rem;background:linear-gradient(135deg,rgba(255,40,0,.12),rgba(255,179,0,.07));border:1px solid rgba(255,40,0,.35);border-radius:18px;padding:1.4rem;display:none;text-align:center;animation:popIn .4s forwards;}
+  .winner-card.show{display:block;}
+  .winner-label{font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .winner-name{font-family:'Barlow Condensed',sans-serif;font-size:2.6rem;font-weight:900;letter-spacing:.06em;color:var(--amber);}
+  .winner-img{width:80px;height:80px;border-radius:50%;border:3px solid var(--amber);margin:10px auto;}
+  .winner-stats{display:flex;justify-content:center;gap:1rem;margin-top:.8rem;flex-wrap:wrap;}
+  .wstat{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;text-align:center;}
+  .wstat-val{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;}
+  .wstat-lbl{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;}
+  .drink-ad{margin-top:1.2rem;border-radius:18px;overflow:hidden;border:1px solid rgba(100,220,100,.2);display:none;}
+  .drink-ad.show{display:block;animation:popIn .4s forwards;}
+  .drink-ad-inner{padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:linear-gradient(90deg,rgba(0,40,0,.7),rgba(0,20,0,.5));}
+  .drink-ad-logo{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:.1em;white-space:nowrap;}
+  .drink-ad-copy{flex:1;font-size:.82rem;color:var(--muted2);line-height:1.5;}
+  .drink-ad-cta{background:#00e676;border:none;padding:8px 18px;border-radius:99px;font-weight:700;font-size:.78rem;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:.15s;}
+  .drink-ad-cta:hover{box-shadow:0 0 14px rgba(0,230,118,.45);}
+  .betting-panel{margin-top:1.2rem;background:var(--glass);border:1px solid rgba(255,179,0,.18);border-radius:18px;padding:1.2rem 1.5rem;}
+  .bet-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+  .bet-head-title{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+  .bet-head-badge{background:rgba(255,179,0,.12);border:1px solid rgba(255,179,0,.3);border-radius:99px;padding:2px 10px;font-size:.65rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.1em;}
+  .bet-companies{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;}
+  .bet-co{cursor:pointer;padding:6px 14px;border-radius:99px;border:1px solid var(--border2);background:var(--glass);font-size:.75rem;font-weight:600;color:var(--muted2);transition:.15s;display:flex;align-items:center;gap:6px;}
+  .bet-co:hover,.bet-co.sel{border-color:var(--amber);color:var(--amber);background:rgba(255,179,0,.08);}
+  .bet-odds{display:flex;gap:8px;margin-top:.8rem;flex-wrap:wrap;}
+  .odds-chip{background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:10px;padding:.4rem .8rem;font-size:.72rem;font-weight:700;text-align:center;}
+  .odds-name{color:var(--muted);font-weight:400;font-size:.65rem;}
+  .bet-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:.8rem;}
+  .bet-select{background:var(--glass2);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:99px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;outline:none;flex:1;min-width:160px;}
+  .bet-amount-wrap{display:flex;align-items:center;gap:6px;background:var(--glass);border:1px solid var(--border2);border-radius:99px;padding:6px 14px;}
+  .bet-amount-wrap span{font-size:.75rem;color:var(--muted);}
+  .bet-amount-wrap input{background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;width:60px;outline:none;font-weight:600;}
+  .bet-place-btn{background:var(--amber);border:none;padding:9px 20px;border-radius:99px;font-weight:700;font-size:.8rem;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;transition:.15s;white-space:nowrap;}
+  .bet-place-btn:hover{box-shadow:0 0 14px rgba(255,179,0,.45);}
+  .bet-result{margin-top:.8rem;padding:.7rem 1rem;border-radius:10px;font-size:.85rem;font-weight:600;display:none;}
+  .bet-result.won{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.25);color:#a5d6a7;display:block;}
+  .bet-result.lost{background:rgba(255,40,0,.06);border:1px solid rgba(255,40,0,.2);color:#ef9a9a;display:block;}
+
+  /* MARKET PAGE */
+  .market-inner{max-width:1200px;margin:0 auto;padding:2rem 1.5rem;}
+  .market-hero{display:grid;grid-template-columns:1fr auto;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+  @media(max-width:600px){.market-hero{grid-template-columns:1fr;}}
+  .market-hero h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+  .market-hero p{color:var(--muted);font-size:.85rem;margin-top:4px;}
+  .sell-btn{background:var(--red);border:none;padding:10px 22px;border-radius:99px;color:#fff;font-weight:700;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;display:flex;align-items:center;gap:8px;transition:.18s;}
+  .sell-btn:hover{box-shadow:0 4px 18px rgba(255,40,0,.4);transform:translateY(-1px);}
+  .cat-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;}
+  .cbtab{cursor:pointer;display:flex;align-items:center;gap:7px;padding:8px 18px;border-radius:99px;border:1px solid var(--border);background:var(--glass);font-size:.79rem;font-weight:600;color:var(--muted);transition:.15s;font-family:'DM Sans',sans-serif;}
+  .cbtab:hover,.cbtab.on{border-color:rgba(255,40,0,.5);background:rgba(255,40,0,.07);color:var(--text);}
+  .cbtab.on{color:var(--red);}
+  .upload-modal{display:none;position:fixed;inset:0;z-index:900;background:rgba(7,7,12,.85);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:1rem;}
+  .upload-modal.open{display:flex;}
+  .upload-box{background:rgba(14,14,22,.97);border:1px solid var(--border2);border-radius:22px;padding:2rem;width:100%;max-width:520px;animation:popIn .25s forwards;}
+  .upload-box-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+  .upload-box-head h3{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+  .close-x{width:30px;height:30px;border-radius:50%;background:var(--glass2);border:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--muted);}
+  .close-x:hover{color:var(--text);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+  @media(max-width:480px){.form-grid{grid-template-columns:1fr;}}
+  .fg{display:flex;flex-direction:column;gap:5px;}
+  .fg label{font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+  .fg input,.fg textarea,.fg select{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text);padding:9px 12px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;transition:.15s;width:100%;}
+  .fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:rgba(255,40,0,.5);}
+  .fg textarea{resize:vertical;}
+  .pub-btn{width:100%;padding:11px;border-radius:99px;background:var(--red);border:none;color:#fff;font-weight:700;font-size:.88rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.18s;margin-top:6px;}
+  .pub-btn:hover{box-shadow:0 4px 18px rgba(255,40,0,.4);}
+  .listings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
+  .lcard{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:.2s;display:flex;flex-direction:column;}
+  .lcard:hover{border-color:rgba(255,40,0,.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+  .lcard-thumb{height:140px;background:linear-gradient(135deg,var(--bg2,#0e0e16),rgba(255,40,0,.06));display:flex;align-items:center;justify-content:center;font-size:2.8rem;border-bottom:1px solid var(--border);position:relative;}
+  .lcard-type{position:absolute;top:8px;left:8px;background:rgba(7,7,12,.8);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:99px;padding:3px 10px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;}
+  .lcard-body{padding:1rem;flex:1;display:flex;flex-direction:column;gap:.5rem;}
+  .lcard-seller{display:flex;align-items:center;gap:7px;}
+  .lcard-seller img{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);}
+  .lcard-seller-name{font-size:.7rem;color:var(--muted2);font-weight:600;}
+  .lcard-title{font-weight:700;font-size:.92rem;line-height:1.3;}
+  .lcard-desc{font-size:.75rem;color:var(--muted);line-height:1.5;flex:1;}
+  .lcard-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;padding-top:.7rem;border-top:1px solid var(--border);}
+  .lcard-price{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;color:var(--amber);}
+  .lcard-price.free{color:var(--green);}
+  .buy-btn{background:transparent;border:1px solid rgba(255,40,0,.5);color:var(--red);padding:5px 14px;border-radius:99px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+  .buy-btn:hover{background:var(--red);color:#fff;}
+  .lcard-stats{display:flex;gap:8px;flex-wrap:wrap;}
+  .lstat{font-size:.65rem;color:var(--muted);display:flex;align-items:center;gap:4px;}
+  .auth-modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(7,7,12,.85);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:1rem;}
+  .auth-modal.open{display:flex;}
+  .auth-box{background:rgba(14,14,22,.97);border:1px solid var(--border2);border-radius:20px;padding:2rem;width:100%;max-width:380px;animation:popIn .25s forwards;}
+  .auth-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+  .auth-head h3{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+  .auth-submit{width:100%;padding:11px;border-radius:99px;background:var(--red);border:none;color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:.18s;}
+  .auth-submit:hover{box-shadow:0 4px 18px rgba(255,40,0,.4);}
+  footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);position:relative;z-index:1;}
+  footer span{color:var(--red);}
+</style>
 </head>
 <body>
-<nav class="navbar">
-  <div class="nav-logo" data-page="home">W<span>O</span>RLDS</div>
-  <div class="nav-links">
-    <div class="nav-item" data-page="home"><i class="fas fa-house"></i> Home</div>
-    <div class="nav-item" data-page="market"><i class="fas fa-store"></i> Creator's Market</div>
-    <div class="nav-item" data-page="battle"><i class="fas fa-sword"></i> Battle</div>
-    <div class="nav-item join-btn" id="openAuthBtn"><i class="fas fa-user-astronaut"></i> Join</div>
+<nav class="nav">
+  <div class="nav-brand" data-page="home">W<span class="o">◉</span>RLDS</div>
+  <div class="nav-right">
+    <div class="nb" data-page="home"><i class="fas fa-house"></i><span> Home</span></div>
+    <div class="nb" data-page="market"><i class="fas fa-store"></i><span> Market</span></div>
+    <div class="nb" data-page="battle"><i class="fas fa-swords"></i><span> Battle</span></div>
+    <div class="nb cta" id="openAuth"><i class="fas fa-user-astronaut"></i><span> Join</span></div>
   </div>
 </nav>
 
-<!-- HOME with interactive globe + flight simulator -->
-<div id="homePage" class="page active-page">
-  <div class="globe-container">
+<!-- HOME PAGE with globe -->
+<div id="homePage" class="page on">
+  <div class="globe-wrap">
     <canvas id="globeCanvas"></canvas>
-    <div class="search-box">
-      <input type="text" id="locationSearch" placeholder="Search city (e.g., Metropolis, Wakanda)">
-      <button id="searchBtn">Fly to</button>
+    <div class="globe-vignette"></div>
+    <div class="globe-search">
+      <input type="text" id="locSearch" placeholder="Search: Metropolis, Wakanda, Asgard…">
+      <button class="g-btn" id="flyBtn"><i class="fas fa-paper-plane"></i> Fly to</button>
     </div>
-    <div class="planet-bg" id="planetNameDisplay">🌍 Earth</div>
+    <div class="planet-tag" id="planetTag">🌍 Earth</div>
   </div>
-  <div id="flightAd" class="ad-container" style="display: none;">✈️ <span id="flightText"></span></div>
-  <div class="universe-scroll-wrapper">
-    <button class="scroll-univ-btn" id="scrollUnivLeft"><i class="fas fa-chevron-left"></i></button>
-    <div class="universes-grid" id="universeGrid"></div>
-    <button class="scroll-univ-btn" id="scrollUnivRight"><i class="fas fa-chevron-right"></i></button>
+  <div class="flight-banner" id="flightBanner">
+    <div class="fb-inner">
+      <div class="fb-left">
+        <div class="fb-route"><span class="fb-city" id="fbFrom">—</span><span class="fb-arrow"><i class="fas fa-plane"></i></span><span class="fb-city" id="fbTo">—</span></div>
+        <div class="fb-airline-row">
+          <span class="fb-badge amber" id="fbAirline">—</span>
+          <span class="fb-badge" id="fbFlight">—</span>
+          <span class="fb-badge" id="fbDuration">—</span>
+          <span class="fb-badge red" id="fbClass">Economy</span>
+        </div>
+      </div>
+      <div class="fb-right">
+        <div class="fb-price" id="fbPrice">—</div>
+        <div class="fb-price-sub">per person · round trip</div>
+        <button class="fb-book-btn" id="fbBookBtn">Book Now</button>
+      </div>
+    </div>
+  </div>
+  <div class="univ-row">
+    <div class="univ-arrow" id="scrollL"><i class="fas fa-chevron-left"></i></div>
+    <div class="univ-scroll" id="univScroll"></div>
+    <div class="univ-arrow" id="scrollR"><i class="fas fa-chevron-right"></i></div>
   </div>
 </div>
 
-<div id="universePagesContainer"></div>
+<div id="upages"></div>
 
 <!-- BATTLE PAGE -->
 <div id="battlePage" class="page">
-  <div class="battle-container">
-    <div class="battle-header">
-      <h2 style="font-family:'Bebas Neue'; font-size:3rem;">BATTLE ARENA</h2>
-      <p>Select two fighters, lock them, then press FIGHT</p>
-    </div>
-    <div class="battle-arena">
-      <div class="fighter-card" id="fighter1Card">
-        <div class="fighter-avatar"><img id="fighter1Img" src=""></div>
-        <div class="fighter-name" id="fighter1Name">—</div>
-        <div class="fighter-universe" id="fighter1Uni">—</div>
-        <div class="fighter-nav">
-          <div class="nav-arrow" id="f1Prev"><i class="fas fa-chevron-left"></i></div>
-          <span id="f1Idx">1/1</span>
-          <div class="nav-arrow" id="f1Next"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <button class="lock-btn" id="lock1Btn"><i class="fas fa-lock-open"></i> Lock</button>
+  <div class="battle-page-inner">
+    <div class="section-head"><h2>Battle Arena</h2><p>Select two fighters — lock them in and watch the simulation unfold.</p></div>
+    <div class="fighters-row">
+      <div class="fcard" id="fc1">
+        <div class="fcard-top"><div class="fav"><img id="fi1" src=""></div><div class="fname-big" id="fnam1">—</div><div class="funi-tag" id="funi1">—</div><div class="fcard-city" id="fcity1"><i class="fas fa-location-dot"></i> —</div></div>
+        <div class="fnav-row"><div class="farr" id="fp1"><i class="fas fa-chevron-left"></i></div><span class="fidx" id="fidx1">1/1</span><div class="farr" id="fnxt1"><i class="fas fa-chevron-right"></i></div></div>
+        <button class="lock-btn" id="lb1"><i class="fas fa-lock-open"></i> Lock Fighter</button>
       </div>
-      <div class="vs-column">
-        <div class="vs-badge">VS</div>
-        <button class="fight-btn" id="fightBtn">FIGHT</button>
-      </div>
-      <div class="fighter-card" id="fighter2Card">
-        <div class="fighter-avatar"><img id="fighter2Img" src=""></div>
-        <div class="fighter-name" id="fighter2Name">—</div>
-        <div class="fighter-universe" id="fighter2Uni">—</div>
-        <div class="fighter-nav">
-          <div class="nav-arrow" id="f2Prev"><i class="fas fa-chevron-left"></i></div>
-          <span id="f2Idx">1/1</span>
-          <div class="nav-arrow" id="f2Next"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <button class="lock-btn" id="lock2Btn"><i class="fas fa-lock-open"></i> Lock</button>
+      <div class="vs-mid"><div class="vs-word">VS</div><button class="fight-btn" id="fightBtn">FIGHT</button></div>
+      <div class="fcard" id="fc2">
+        <div class="fcard-top"><div class="fav"><img id="fi2" src=""></div><div class="fname-big" id="fnam2">—</div><div class="funi-tag" id="funi2">—</div><div class="fcard-city" id="fcity2"><i class="fas fa-location-dot"></i> —</div></div>
+        <div class="fnav-row"><div class="farr" id="fp2"><i class="fas fa-chevron-left"></i></div><span class="fidx" id="fidx2">1/1</span><div class="farr" id="fnxt2"><i class="fas fa-chevron-right"></i></div></div>
+        <button class="lock-btn" id="lb2"><i class="fas fa-lock-open"></i> Lock Fighter</button>
       </div>
     </div>
-    <div class="battle-log" id="battleLog">
-      <div class="log-line">Select fighters, lock them, then press FIGHT.</div>
-    </div>
-    <div id="comicArea" style="text-align:center; margin-top:1rem;"></div>
-    <div class="betting-container">
-      <strong>⚡ BETTING ZONE ⚡</strong><br>
-      <select id="betSelect">
-        <option id="betOption1">Fighter 1 wins</option>
-        <option id="betOption2">Fighter 2 wins</option>
-      </select>
-      <button id="placeBetBtn">Place Bet (Demo)</button>
-      <span id="betResult"></span>
+    <div class="fight-log-wrap"><div class="fight-log" id="fightLog"><div class="flog-line loc">⚔️ Select two fighters, lock them in, then press FIGHT.</div></div></div>
+    <div class="winner-card" id="winnerCard"><div class="winner-label">🏆 WINNER</div><img class="winner-img" id="winnerImg" src=""><div class="winner-name" id="winnerName">—</div><div class="winner-stats" id="winnerStats"></div></div>
+    <div class="drink-ad" id="drinkAd"><div class="drink-ad-inner"><div class="drink-ad-logo" id="drinkLogo">—</div><div class="drink-ad-copy" id="drinkCopy">—</div><button class="drink-ad-cta" id="drinkCta">Get Now →</button></div></div>
+    <div class="betting-panel">
+      <div class="bet-head"><div class="bet-head-title">⚡ Betting Zone</div><div class="bet-head-badge">Demo Only</div></div>
+      <div class="bet-companies" id="betCompanies"></div>
+      <div class="bet-odds" id="betOdds"></div>
+      <div class="bet-row"><select class="bet-select" id="betSel"><option id="bo1">Fighter 1 wins</option><option id="bo2">Fighter 2 wins</option></select>
+        <div class="bet-amount-wrap"><span>$</span><input type="number" id="betAmount" value="10" min="1" max="9999"></div>
+        <button class="bet-place-btn" id="betBtn">Place Bet</button>
+      </div>
+      <div class="bet-result" id="betResult"></div>
     </div>
   </div>
 </div>
 
-<!-- CREATOR'S MARKET -->
+<!-- MARKET PAGE -->
 <div id="marketPage" class="page">
-  <div class="market-container">
-    <div style="text-align:center; margin-bottom:2rem;">
-      <h2 style="font-family:'Bebas Neue'; font-size:3rem;">Creator's Market</h2>
-      <p>Sell your original superhero creations – comics, video edits, 3D models, art, cosplay</p>
+  <div class="market-inner">
+    <div class="market-hero"><div><h2>Creator's Market</h2><p>Buy and sell comics, video edits, 3D models, artwork & cosplay from the multiverse community.</p></div><button class="sell-btn" id="openUpload"><i class="fas fa-plus"></i> Sell Your Work</button></div>
+    <div class="cat-bar" id="catBar">
+      <div class="cbtab on" data-cat="all"><i class="fas fa-border-all"></i> All</div>
+      <div class="cbtab" data-cat="comic"><i class="fas fa-book-open"></i> Comics</div>
+      <div class="cbtab" data-cat="video"><i class="fas fa-video"></i> Video Edits</div>
+      <div class="cbtab" data-cat="3d"><i class="fas fa-cube"></i> 3D Models</div>
+      <div class="cbtab" data-cat="art"><i class="fas fa-paintbrush"></i> Artwork</div>
+      <div class="cbtab" data-cat="cosplay"><i class="fas fa-mask"></i> Cosplay</div>
     </div>
-    <div class="category-tabs" id="categoryTabs">
-      <div class="cat-tab" data-type="comic"><i class="fas fa-book-open"></i> Comic</div>
-      <div class="cat-tab" data-type="video"><i class="fas fa-video"></i> Video Edit</div>
-      <div class="cat-tab" data-type="3d"><i class="fas fa-cube"></i> 3D Model</div>
-      <div class="cat-tab" data-type="art"><i class="fas fa-paintbrush"></i> Artwork</div>
-      <div class="cat-tab" data-type="cosplay"><i class="fas fa-mask"></i> Cosplay</div>
-    </div>
-    <div class="upload-panel" id="uploadPanel">
-      <h3>Upload your work</h3>
-      <div class="form-group"><label>Title</label><input id="uploadTitle" placeholder="Name your creation"></div>
-      <div class="form-group"><label>Price (USD)</label><input id="uploadPrice" type="number" placeholder="0.00"></div>
-      <div class="form-group"><label>Description</label><textarea id="uploadDesc" rows="2" placeholder="Describe your work..."></textarea></div>
-      <div class="form-group"><label>Preview File (image/video/PDF)</label><input type="file" id="uploadFile" accept="image/*,video/*,application/pdf"></div>
-      <button class="publish-btn" id="publishBtn">Publish to Market</button>
-    </div>
-    <div class="listings-grid" id="marketListings">
-      <div class="listing-card"><div class="listing-icon"><i class="fas fa-book-open"></i></div><div class="listing-title">Dark Tomorrow</div><div class="listing-desc">Indie comic about a fallen hero.</div><div class="listing-footer"><span class="listing-price">$4.99</span><button class="buy-btn">Buy</button></div></div>
-      <div class="listing-card"><div class="listing-icon"><i class="fas fa-video"></i></div><div class="listing-title">Rivals Tribute</div><div class="listing-desc">Fan-made cinematic edit.</div><div class="listing-footer"><span class="listing-price">$1.99</span><button class="buy-btn">Buy</button></div></div>
-    </div>
+    <div class="listings-grid" id="listingsGrid"></div>
   </div>
 </div>
+
+<!-- UPLOAD MODAL -->
+<div class="upload-modal" id="uploadModal"><div class="upload-box"><div class="upload-box-head"><h3>List Your Work</h3><div class="close-x" id="closeUpload"><i class="fas fa-times"></i></div></div>
+<div class="form-grid"><div class="fg" style="grid-column:1/-1"><label>Title</label><input id="uTitle" placeholder="Name your creation"></div>
+<div class="fg"><label>Category</label><select id="uCat"><option value="comic">Comic</option><option value="video">Video Edit</option><option value="3d">3D Model</option><option value="art">Artwork</option><option value="cosplay">Cosplay</option></select></div>
+<div class="fg"><label>Price (USD)</label><input id="uPrice" type="number" placeholder="0 = Free" min="0"></div>
+<div class="fg" style="grid-column:1/-1"><label>Description</label><textarea id="uDesc" rows="2" placeholder="Describe your work…"></textarea></div>
+<div class="fg" style="grid-column:1/-1"><label>Universe / Series</label><input id="uUniv" placeholder="e.g. Marvel, Naruto, Original…"></div>
+<div class="fg" style="grid-column:1/-1"><label>Preview File</label><input type="file" id="uFile" accept="image/*,video/*,application/pdf"></div></div>
+<button class="pub-btn" id="pubBtn">Publish to Market</button></div></div>
 
 <!-- AUTH MODAL -->
-<div class="modal-overlay" id="authModal">
-  <div class="modal-box">
-    <div style="display:flex; justify-content:space-between; margin-bottom:1rem;"><h3>Join WORLDS</h3><span id="closeModal" style="cursor:pointer;">&times;</span></div>
-    <div class="form-group"><input placeholder="Username"></div>
-    <div class="form-group"><input placeholder="Email"></div>
-    <div class="form-group"><input placeholder="Password" type="password"></div>
-    <button class="publish-btn" id="mockSignup" style="width:100%;">Create Account</button>
-  </div>
-</div>
-<footer>⚡ <span style="color:var(--red);">WORLDS</span> — Explore the multiverse</footer>
+<div class="auth-modal" id="authModal"><div class="auth-box"><div class="auth-head"><h3>Join WORLDS</h3><div class="close-x" id="closeAuth"><i class="fas fa-times"></i></div></div>
+<div class="fg" style="margin-bottom:10px;"><input placeholder="Username" type="text"></div>
+<div class="fg" style="margin-bottom:10px;"><input placeholder="Email" type="email"></div>
+<div class="fg" style="margin-bottom:10px;"><input placeholder="Password" type="password"></div>
+<button class="auth-submit" id="mockSignup">Create Account</button></div></div>
+
+<footer>⚡ <span>WORLDS</span> — Where every universe collides</footer>
 
 <script type="module">
-  import * as THREE from 'three';
-  import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import * as THREE from 'three';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
-  // --- Globe Setup ---
-  const canvas = document.getElementById('globeCanvas');
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-  camera.position.set(0, 0, 2.5);
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: false });
-  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-  renderer.setClearColor(0x050508);
-  const labelRenderer = new CSS2DRenderer();
-  labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-  labelRenderer.domElement.style.position = 'absolute';
-  labelRenderer.domElement.style.top = '0px';
-  labelRenderer.domElement.style.left = '0px';
-  labelRenderer.domElement.style.pointerEvents = 'none';
-  canvas.parentNode.appendChild(labelRenderer.domElement);
+const canvas = document.getElementById('globeCanvas');
+const wrap = canvas.parentNode;
+const W = ()=>wrap.clientWidth, H = ()=>wrap.clientHeight;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, W()/H(), 0.1, 1000);
+camera.position.set(0,0,2.7);
+const renderer = new THREE.WebGLRenderer({canvas, alpha:false, antialias:true});
+renderer.setSize(W(),H());
+renderer.setClearColor(0x07070c);
+const labelR = new CSS2DRenderer();
+labelR.setSize(W(),H());
+labelR.domElement.style.cssText='position:absolute;top:0;left:0;pointer-events:none;';
+wrap.appendChild(labelR.domElement);
+const tl = new THREE.TextureLoader();
+const earth = new THREE.Mesh(new THREE.SphereGeometry(1,64,64),new THREE.MeshPhongMaterial({map:tl.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg')}));
+scene.add(earth);
+const clouds = new THREE.Mesh(new THREE.SphereGeometry(1.012,64,64),new THREE.MeshPhongMaterial({map:tl.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png'),transparent:true,opacity:0.07}));
+scene.add(clouds);
+scene.add(new THREE.AmbientLight(0x555555));
+const sun = new THREE.DirectionalLight(0xffffff,1.0); sun.position.set(5,8,5); scene.add(sun);
+function ll2v(lat,lon,r=1.02){ const phi=(90-lat)*Math.PI/180, th=lon*Math.PI/180; return new THREE.Vector3(r*Math.sin(phi)*Math.cos(th),r*Math.cos(phi),r*Math.sin(phi)*Math.sin(th)); }
 
-  // Earth texture
-  const textureLoader = new THREE.TextureLoader();
-  const earthMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-  const cloudMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
-  const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
-  const earthMaterial = new THREE.MeshPhongMaterial({ map: earthMap });
-  const earth = new THREE.Mesh(earthGeometry, earthMaterial);
-  scene.add(earth);
-  const cloudGeometry = new THREE.SphereGeometry(1.01, 64, 64);
-  const cloudMaterial = new THREE.MeshPhongMaterial({ map: cloudMap, transparent: true, opacity: 0.1 });
-  const clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
-  scene.add(clouds);
-  const ambientLight = new THREE.AmbientLight(0x333333);
-  scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(5, 10, 7);
-  scene.add(directionalLight);
+const cities = [
+  {name:"Avengers Tower",lat:40.71,lon:-74.01,city:"New York",planet:"Earth",airline:"Delta",flight:"DL172",duration:"2h 15m",price:"$349",cls:"Business"},
+  {name:"Metropolis",lat:38.9,lon:-77.04,city:"Metropolis",planet:"Earth",airline:"United",flight:"UA007",duration:"2h 30m",price:"$299",cls:"Economy"},
+  {name:"Gotham",lat:40.67,lon:-73.94,city:"Gotham",planet:"Earth",airline:"American",flight:"AA404",duration:"2h 45m",price:"$279",cls:"Economy"},
+  {name:"Wakanda",lat:1.29,lon:36.82,city:"Wakanda",planet:"Earth",airline:"Ethiopian",flight:"ET808",duration:"8h 20m",price:"$899",cls:"First Class"},
+  {name:"Asgard",lat:60.0,lon:10.0,city:"Asgard",planet:"Asgard",airline:"SAS",flight:"SK903",duration:"1h 45m",price:"$399",cls:"Economy"},
+  {name:"Themyscira",lat:35.0,lon:25.0,city:"Themyscira",planet:"Earth",airline:"Aegean",flight:"A3-888",duration:"3h 10m",price:"$429",cls:"Business"},
+  {name:"Malibu",lat:34.03,lon:-118.78,city:"Malibu",planet:"Earth",airline:"Southwest",flight:"WN168",duration:"1h 20m",price:"$149",cls:"Economy"},
+  {name:"Rivendell",lat:45.0,lon:-5.0,city:"Rivendell",planet:"Middle-earth",airline:"Icelandair",flight:"FI450",duration:"4h 05m",price:"$559",cls:"Business"},
+  {name:"Tatooine",lat:20.0,lon:20.0,city:"Mos Eisley",planet:"Tatooine",airline:"Virgin",flight:"VGA-1",duration:"2d 4h",price:"$25,000",cls:"Galactic"},
+  {name:"Krypton",lat:-30.0,lon:150.0,city:"Kryptonopolis",planet:"Krypton",airline:"SpaceX",flight:"SX-KR1",duration:"3d 12h",price:"$12,000",cls:"Orbital"}
+];
+window._cities = cities;
+let curLine=null, curSphere=null;
 
-  // Locations data with lat/lon, planet, airline, duration
-  const locations = [
-    { name: "Avengers Tower", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "Delta Airlines", flightNo: "DL172", duration: "2h 15m", price: "$349" },
-    { name: "Metropolis", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "United Airlines", flightNo: "UA7", duration: "2h 30m", price: "$299" },
-    { name: "Gotham", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "American Airlines", flightNo: "AA404", duration: "2h 45m", price: "$279" },
-    { name: "Wakanda", lat: 1.2864, lon: 36.8172, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "Ethiopian Airlines", flightNo: "ET808", duration: "8h 20m", price: "$899" },
-    { name: "Asgard", lat: 60.0, lon: 10.0, planet: "Asgard", bg: "radial-gradient(circle, #ffd700, #b8860b)", airline: "Scandinavian Airlines", flightNo: "SK903", duration: "1h 45m", price: "$399" },
-    { name: "Krypton", lat: -30.0, lon: 150.0, planet: "Krypton", bg: "radial-gradient(circle, #4a4a5a, #1a1a2a)", airline: "SpaceX", flightNo: "SX-1", duration: "3d 12h", price: "$12,000" },
-    { name: "Themyscira", lat: 35.0, lon: 25.0, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "Aegean Airlines", flightNo: "A3 888", duration: "3h 10m", price: "$429" },
-    { name: "Malibu", lat: 34.0259, lon: -118.7798, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "Southwest Airlines", flightNo: "WN 168", duration: "1h 20m", price: "$149" },
-    { name: "Rivendell", lat: 45.0, lon: -5.0, planet: "Middle-earth", bg: "url('https://images.pexels.com/photos/733174/pexels-photo-733174.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') center/cover", airline: "Icelandair", flightNo: "FI 450", duration: "4h 05m", price: "$559" },
-    { name: "Minas Tirith", lat: 42.0, lon: -3.0, planet: "Middle-earth", bg: "url('https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') center/cover", airline: "Air France", flightNo: "AF 789", duration: "3h 40m", price: "$489" },
-    { name: "Tatooine", lat: 20.0, lon: 20.0, planet: "Star Wars", bg: "radial-gradient(circle, #f4a460, #8b4513)", airline: "Virgin Galactic", flightNo: "VGA 1", duration: "2d 4h", price: "$25,000" },
-    { name: "Death Star", lat: 0.0, lon: 0.0, planet: "Star Wars", bg: "radial-gradient(circle, #2f4f4f, #1a1a1a)", airline: "SpaceX", flightNo: "DS-88", duration: "1d 8h", price: "$18,000" }
-  ];
-
-  // Helper: convert lat/lon to 3D vector
-  function latLonToVector(lat, lon, radius) {
-    const phi = (90 - lat) * Math.PI / 180;
-    const theta = lon * Math.PI / 180;
-    const x = radius * Math.sin(phi) * Math.cos(theta);
-    const y = radius * Math.cos(phi);
-    const z = radius * Math.sin(phi) * Math.sin(theta);
-    return new THREE.Vector3(x, y, z);
+window.flyBetweenCities = function(from, to){
+  if(curLine){scene.remove(curLine); curLine=null;}
+  if(curSphere){scene.remove(curSphere); curSphere=null;}
+  const pts=[];
+  for(let i=0;i<=120;i++){
+    const t=i/120;
+    pts.push(ll2v(from.lat*(1-t)+to.lat*t, from.lon*(1-t)+to.lon*t, 1.04));
   }
+  const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({color:0xffb300}));
+  scene.add(line); curLine=line;
+  const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.022,16,16), new THREE.MeshStandardMaterial({color:0xffb300,emissive:0x553300}));
+  scene.add(sphere); curSphere=sphere;
+  const t0=performance.now(), dur=4000;
+  (function tick(now){
+    const t=Math.min(1,(now-t0)/dur);
+    const idx=Math.floor(t*120);
+    sphere.position.copy(pts[Math.min(idx,120)]);
+    if(t<1) requestAnimationFrame(tick);
+    else{scene.remove(sphere); curSphere=null;}
+  })(performance.now());
+  const midLat=(from.lat+to.lat)/2, midLon=(from.lon+to.lon)/2;
+  const tp=ll2v(midLat, midLon, 2.5);
+  const sp=camera.position.clone(); const st=performance.now();
+  (function mc(now){
+    const t=Math.min(1,(now-st)/2000);
+    camera.position.lerpVectors(sp,tp,t); camera.lookAt(0,0,0);
+    if(t<1) requestAnimationFrame(mc);
+  })(performance.now());
+  document.getElementById('fbFrom').innerText = from.city || from.name;
+  document.getElementById('fbTo').innerText = to.city || to.name;
+  document.getElementById('fbAirline').innerHTML = `✈ ${to.airline}`;
+  document.getElementById('fbFlight').innerText = `Flight ${to.flight}`;
+  document.getElementById('fbDuration').innerText = `⏱ ${to.duration}`;
+  document.getElementById('fbClass').innerText = to.cls;
+  document.getElementById('fbPrice').innerText = to.price;
+  document.getElementById('fbBookBtn').onclick=()=>alert(`Demo booking:\n${to.airline} ${to.flight}\n${from.city||from.name} → ${to.city||to.name}\n${to.duration} · ${to.price}`);
+  document.getElementById('flightBanner').classList.add('show');
+};
 
-  // Store current camera position and target for flight simulation
-  let currentFlight = null;
-  let activeFlightSphere = null;
+function flyToCity(city){
+  document.getElementById('planetTag').innerHTML = `🌍 ${city.planet}`;
+  const hub = cities[0];
+  flyBetweenCities(hub, city);
+}
 
-  // Draw a great-circle arc between two lat/lon points
-  function addFlightPath(fromLat, fromLon, toLat, toLon, color = 0xffaa44, durationMs = 3000) {
-    // Remove previous path and sphere
-    if (currentFlight) {
-      scene.remove(currentFlight.line);
-      if (activeFlightSphere) scene.remove(activeFlightSphere);
-    }
-    const points = [];
-    const segments = 100;
-    for (let i = 0; i <= segments; i++) {
-      const t = i / segments;
-      // Interpolate latitude and longitude linearly (good enough for visualization)
-      const lat = fromLat * (1 - t) + toLat * t;
-      const lon = fromLon * (1 - t) + toLon * t;
-      const vec = latLonToVector(lat, lon, 1.03);
-      points.push(vec);
-    }
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const material = new THREE.LineBasicMaterial({ color });
-    const line = new THREE.Line(geometry, material);
-    scene.add(line);
-    
-    // Animate a sphere along the path
-    const sphereGeo = new THREE.SphereGeometry(0.02, 16, 16);
-    const sphereMat = new THREE.MeshStandardMaterial({ color: 0xffaa44, emissive: 0x442200 });
-    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-    scene.add(sphere);
-    activeFlightSphere = sphere;
-    const startTime = performance.now();
-    function animateSphere(now) {
-      const elapsed = now - startTime;
-      let t = Math.min(1, elapsed / durationMs);
-      const idx = Math.floor(t * segments);
-      const pos = points[idx] || points[points.length-1];
-      sphere.position.copy(pos);
-      if (t < 1) {
-        requestAnimationFrame(animateSphere);
-      } else {
-        scene.remove(sphere);
-        activeFlightSphere = null;
-      }
-    }
-    requestAnimationFrame(animateSphere);
-    currentFlight = { line, sphere };
-    // Remove line after 5 seconds
-    setTimeout(() => {
-      if (currentFlight && currentFlight.line === line) {
-        scene.remove(line);
-        if (activeFlightSphere) scene.remove(activeFlightSphere);
-        currentFlight = null;
-        activeFlightSphere = null;
-      }
-    }, durationMs + 2000);
-  }
+cities.forEach(city=>{
+  const pos=ll2v(city.lat,city.lon);
+  const el=document.createElement('div');
+  el.textContent=city.name;
+  el.style.cssText='color:#ffb300;font-size:11px;font-weight:700;background:rgba(7,7,12,.75);padding:2px 8px;border-radius:20px;border:1px solid rgba(255,40,0,.45);cursor:pointer;white-space:nowrap;';
+  el.addEventListener('click',()=>flyToCity(city));
+  const lbl=new CSS2DObject(el); lbl.position.copy(pos); scene.add(lbl);
+});
 
-  // Fly to a location: move camera, draw path, show ad
-  function flyToLocation(loc) {
-    // Update background and display
-    document.getElementById('planetNameDisplay').innerHTML = `🌍 ${loc.planet}`;
-    canvas.parentNode.style.background = loc.bg;
-    // Show airline ad
-    const adDiv = document.getElementById('flightAd');
-    adDiv.style.display = 'block';
-    adDiv.innerHTML = `✈️ <strong>${loc.airline}</strong> Flight ${loc.flightNo} from current location → ${loc.name} | Duration: ${loc.duration} | Price: ${loc.price} <button id="bookDemoBtn" style="background:var(--red); border:none; padding:4px 12px; border-radius:99px; margin-left:10px; cursor:pointer;">Book Now (Demo)</button>`;
-    const bookBtn = document.getElementById('bookDemoBtn');
-    if (bookBtn) bookBtn.onclick = () => alert(`Demo booking: ${loc.airline} flight ${loc.flightNo} to ${loc.name} for ${loc.price}`);
-    // Get current camera lat/lon (approximate from camera position)
-    // We'll use a fixed origin (Avengers Tower) for demo, but could compute from camera.
-    // For simplicity, use origin = (40.7128, -74.0060) "Current Hub"
-    const fromLat = 40.7128, fromLon = -74.0060;
-    const toLat = loc.lat, toLon = loc.lon;
-    // Draw flight path
-    addFlightPath(fromLat, fromLon, toLat, toLon, 0xffaa44, 3000);
-    // Animate camera movement
-    const targetPos = latLonToVector(toLat, toLon, 2.2);
-    const startPos = camera.position.clone();
-    const startTime = performance.now();
-    function animateCamera(now) {
-      const elapsed = now - startTime;
-      const t = Math.min(1, elapsed / 2000);
-      camera.position.lerpVectors(startPos, targetPos, t);
-      camera.lookAt(0, 0, 0);
-      if (t < 1) requestAnimationFrame(animateCamera);
-    }
-    requestAnimationFrame(animateCamera);
-  }
+document.getElementById('flyBtn').addEventListener('click',()=>{
+  const q=document.getElementById('locSearch').value.toLowerCase();
+  const city=cities.find(c=>c.name.toLowerCase().includes(q)||c.city.toLowerCase().includes(q));
+  if(city) flyToCity(city);
+  else alert('Try: Metropolis, Wakanda, Asgard, Rivendell, Tatooine…');
+});
 
-  // Add markers to globe
-  locations.forEach(loc => {
-    const pos = latLonToVector(loc.lat, loc.lon, 1.02);
-    const div = document.createElement('div');
-    div.textContent = loc.name;
-    div.style.cssText = 'color:#ffaa44; font-size:12px; font-weight:bold; text-shadow:0 0 5px black; background:rgba(0,0,0,0.6); padding:2px 6px; border-radius:20px; border:1px solid var(--red); cursor:pointer; white-space:nowrap;';
-    div.addEventListener('click', () => flyToLocation(loc));
-    const label = new CSS2DObject(div);
-    label.position.copy(pos);
-    scene.add(label);
-  });
-
-  // Search button
-  document.getElementById('searchBtn').onclick = () => {
-    const query = document.getElementById('locationSearch').value.toLowerCase();
-    const loc = locations.find(l => l.name.toLowerCase().includes(query));
-    if (loc) flyToLocation(loc);
-    else alert("Location not found. Try: Metropolis, Wakanda, Asgard, Rivendell, Tatooine");
-  };
-
-  function animateGlobe() {
-    requestAnimationFrame(animateGlobe);
-    earth.rotation.y += 0.0015;
-    clouds.rotation.y += 0.0017;
-    renderer.render(scene, camera);
-    labelRenderer.render(scene, camera);
-  }
-  animateGlobe();
-  window.addEventListener('resize', () => {
-    const width = canvas.clientWidth, height = canvas.clientHeight;
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
-    labelRenderer.setSize(width, height);
-  });
+let autoRotate=true;
+canvas.addEventListener('click',()=>autoRotate=!autoRotate);
+(function loop(){
+  requestAnimationFrame(loop);
+  if(autoRotate){earth.rotation.y+=0.0010; clouds.rotation.y+=0.0012;}
+  renderer.render(scene,camera);
+  labelR.render(scene,camera);
+})();
+window.addEventListener('resize',()=>{
+  camera.aspect=W()/H(); camera.updateProjectionMatrix();
+  renderer.setSize(W(),H()); labelR.setSize(W(),H());
+});
 </script>
 
 <script>
-  // ----------------------------- 50+ UNIVERSES DATA (same as before) -----------------------------
-  const universeNames = [
-    "Marvel", "DC", "Invincible", "The Boys", "Dragon Ball", "Naruto", "One Punch Man", "Attack on Titan",
-    "My Hero Academia", "Jujutsu Kaisen", "Demon Slayer", "One Piece", "Bleach", "Hunter x Hunter", "Fairy Tail",
-    "Sword Art Online", "Fullmetal Alchemist", "Death Note", "Tokyo Ghoul", "Chainsaw Man", "Mob Psycho 100",
-    "Black Clover", "Fire Force", "Boruto", "Sailor Moon", "Pokémon", "Digimon", "Yu-Gi-Oh!", "Avatar: TLA",
-    "Star Wars", "Lord of the Rings", "Harry Potter", "The Witcher", "Cyberpunk", "Warhammer 40k", "Halo",
-    "Mass Effect", "Elder Scrolls", "Dark Souls", "Castlevania", "Devil May Cry", "Street Fighter", "Mortal Kombat",
-    "Tekken", "Overwatch", "Valorant", "League of Legends", "Arcane", "Zelda", "Metroid"
+// UNIVERSES, CHARACTERS, BATTLE, MARKET (standard JS)
+const univNames=["Marvel","DC","Invincible","The Boys","Dragon Ball","Naruto","One Punch Man","Attack on Titan","My Hero Academia","Jujutsu Kaisen","Demon Slayer","One Piece","Bleach","Hunter x Hunter","Fairy Tail","Sword Art Online","Fullmetal Alchemist","Death Note","Tokyo Ghoul","Chainsaw Man","Mob Psycho 100","Black Clover","Fire Force","Boruto","Sailor Moon","Pokémon","Avatar: TLA","Star Wars","Lord of the Rings","Harry Potter","The Witcher","Cyberpunk","Halo","Mass Effect","Dark Souls","Mortal Kombat","Street Fighter","Tekken","Overwatch","League of Legends","Arcane","Zelda","Metroid","Warhammer 40k","Castlevania","Devil May Cry","Elder Scrolls","Digimon"];
+const iconMap={"Marvel":"fab fa-marvel","DC":"fas fa-bolt","Invincible":"fas fa-fist-raised","The Boys":"fas fa-skull","Dragon Ball":"fas fa-dragon","Naruto":"fas fa-paw","One Punch Man":"fas fa-hand-fist","Attack on Titan":"fas fa-mountain","My Hero Academia":"fas fa-mask","Jujutsu Kaisen":"fas fa-ghost","Demon Slayer":"fas fa-water","One Piece":"fas fa-ship","Bleach":"fas fa-droplet","Hunter x Hunter":"fas fa-paw","Fairy Tail":"fas fa-dragon","Sword Art Online":"fas fa-gamepad","Fullmetal Alchemist":"fas fa-cog","Death Note":"fas fa-book","Tokyo Ghoul":"fas fa-eye","Chainsaw Man":"fas fa-bolt","Mob Psycho 100":"fas fa-brain","Black Clover":"fas fa-leaf","Fire Force":"fas fa-fire","Boruto":"fas fa-paw","Sailor Moon":"fas fa-moon","Pokémon":"fas fa-paw","Avatar: TLA":"fas fa-wind","Star Wars":"fas fa-rocket","Lord of the Rings":"fas fa-ring","Harry Potter":"fas fa-hat-wizard","The Witcher":"fas fa-shield-halved","Cyberpunk":"fas fa-microchip","Halo":"fas fa-shield-halved","Mass Effect":"fas fa-rocket","Dark Souls":"fas fa-skull","Mortal Kombat":"fas fa-dragon","Street Fighter":"fas fa-hand-fist","Tekken":"fas fa-hand-fist","Overwatch":"fas fa-crosshairs","League of Legends":"fas fa-crown","Arcane":"fas fa-magic","Zelda":"fas fa-khanda","Metroid":"fas fa-bug","Warhammer 40k":"fas fa-shield-halved","Castlevania":"fas fa-church","Devil May Cry":"fas fa-skull","Elder Scrolls":"fas fa-dragon","Digimon":"fas fa-paw"};
+function getStory(u){ const s={"Marvel":"A vast reality where Avengers, X-Men, and cosmic entities coexist. Heroes battle threats from Thanos to Doctor Doom across every corner of the universe.","DC":"Superman, Batman, Wonder Woman and the Justice League defend Earth against Darkseid, the Joker, and interdimensional threats.","Dragon Ball":"Goku and Earth's warriors push beyond all limits, facing galactic tyrants and universe-level threats through sheer determination.","Naruto":"Ninja clans, secret jutsu, and the cycle of hatred — Naruto Uzumaki's path from outcast to Hokage reshapes the shinobi world.","The Boys":"In a world where superheroes are corporate celebrities, a scrappy vigilante group exposes the dark truth behind the capes."}; return s[u]||`${u} is a rich universe filled with iconic heroes, devastating villains, and lore that spans generations.`; }
+function getCharacters(u){
+  const mk=(name,seed,powers,wk,bio)=>({name,image:`https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(seed)}`,powers,weaknesses:wk,bio});
+  const heroes=[], villains=[];
+  if(u==="Marvel"){
+    heroes.push(mk("Spider-Man","SpiderMan","Wall-crawling, spider-sense, web-shooting","Self-doubt and guilt","Peter Parker — teenage photographer turned web-slinging hero."));
+    heroes.push(mk("Iron Man","IronMan","Powered armor, repulsor tech, genius intellect","Power source dependency","Tony Stark — genius billionaire in a can."));
+    heroes.push(mk("Wolverine","Wolverine","Adamantium claws, healing factor","Emotional manipulation","James Howlett — most feared X-Man."));
+    villains.push(mk("Thanos","Thanos","Infinity Gauntlet, cosmic strength","Obsession with death","The Mad Titan who seeks universal balance."));
+    villains.push(mk("Red Skull","RedSkull","HYDRA strategist, Cosmic Cube","Fanaticism","Cap's most dangerous foe."));
+    villains.push(mk("Loki","Loki","Sorcery, shapeshifting","Jealousy","God of Mischief."));
+  } else if(u==="DC"){
+    heroes.push(mk("Superman","Superman","Heat vision, flight, invulnerability","Kryptonite","Last son of Krypton."));
+    heroes.push(mk("Batman","Batman","Martial arts, gadgets, intellect","Fully mortal","The Dark Knight of Gotham."));
+    heroes.push(mk("Wonder Woman","WonderWoman","Godly strength, Lasso of Truth","Bound by her own lasso","Princess Diana of Themyscira."));
+    villains.push(mk("Joker","Joker","Chaos, toxins, unpredictability","Batman's code","Agent of chaos."));
+    villains.push(mk("Lex Luthor","LexLuthor","Genius intellect, power suit","Arrogance","Superman's obsessed rival."));
+    villains.push(mk("Darkseid","Darkseid","Omega Beams, omnipotence","Anti-Life paradox","Ruler of Apokolips."));
+  } else if(u==="Dragon Ball"){
+    heroes.push(mk("Goku","Goku","Kamehameha, Ultra Instinct, Hakai","Stamina limits","Saiyan warrior who defies all ceilings."));
+    heroes.push(mk("Vegeta","Vegeta","Final Flash, Super Saiyan Blue","Pride","Prince of all Saiyans."));
+    heroes.push(mk("Gohan","Gohan","Mystic form, Kamehameha","Lack of training","Goku's son, immense potential."));
+    villains.push(mk("Frieza","Frieza","Death beam, Golden Form","Overconfidence","Galactic tyrant who destroyed Planet Vegeta."));
+    villains.push(mk("Cell","Cell","Infinite regeneration, ki blasts","Arrogance","Perfect android built to destroy."));
+    villains.push(mk("Majin Buu","MajinBuu","Absorption, regeneration","Candy weakness","Ancient creature of destruction."));
+  } else if(u==="Naruto"){
+    heroes.push(mk("Naruto","Naruto","Rasengan, Shadow Clones, Sage Mode","Chakra depletion","Seventh Hokage, never-give-up shinobi."));
+    heroes.push(mk("Sasuke","Sasuke","Sharingan, Chidori, Rinnegan","Emotional trauma","Last Uchiha, rival to Naruto."));
+    heroes.push(mk("Sakura","Sakura","Medical ninjutsu, super strength","Overreliance on teammates","Master medic and fierce fighter."));
+    villains.push(mk("Madara","Madara","Rinnegan, Perfect Susanoo","Overconfidence","Greatest Uchiha of all time."));
+    villains.push(mk("Pain","Pain","Six Paths of Pain, Shinra Tensei","Emotional attachment","Nagato's devastating avatar."));
+    villains.push(mk("Orochimaru","Orochimaru","Body-swap jutsu, Curse Marks","Ego","Sannin turned villain, obsessed with immortality."));
+  } else {
+    for(let i=1;i<=3;i++) heroes.push(mk(`${u} Hero ${i}`,`${u}hero${i}`,"Super strength, agility","Overconfidence",`A champion of ${u}.`));
+    for(let i=1;i<=3;i++) villains.push(mk(`${u} Villain ${i}`,`${u}vil${i}`,"Dark energy, cunning","Arrogance",`A feared enemy in ${u}.`));
+  }
+  return {heroes,villains};
+}
+const uniqueUnivs = [...new Set(univNames)];
+const universes = uniqueUnivs.map((name,i)=>{const{heroes,villains}=getCharacters(name);return{id:`u${i}`,name,icon:iconMap[name]||"fas fa-globe",story:getStory(name),heroes,villains};});
+const scrollDiv=document.getElementById('univScroll');
+universes.forEach(u=>{const p=document.createElement('div');p.className='upill';p.innerHTML=`<i class="${u.icon}"></i> ${u.name}`;p.onclick=()=>showUnivPage(u);scrollDiv.appendChild(p);});
+document.getElementById('scrollL').onclick=()=>scrollDiv.scrollBy({left:-220,behavior:'smooth'});
+document.getElementById('scrollR').onclick=()=>scrollDiv.scrollBy({left:220,behavior:'smooth'});
+const upagesDiv=document.getElementById('upages');
+function showUnivPage(u){
+  const old=document.getElementById('up-'+u.id); if(old)old.remove();
+  const pg=document.createElement('div');pg.id='up-'+u.id;pg.className='page on';
+  pg.innerHTML=`<div class="upage-grid"><div class="char-col"><div class="char-col-head"><i class="fas fa-skull-crossbones"></i> Villains</div><div class="char-col-body" id="vlist-${u.id}"></div></div><div class="bio-center" id="bio-${u.id}"><div class="bio-story">${u.story}</div><div class="bio-char"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=placeholder"><div class="bio-char-name">Select a Character</div><p style="font-size:.78rem;color:var(--muted);">Click any hero or villain.</p></div></div><div class="char-col"><div class="char-col-head"><i class="fas fa-shield-alt"></i> Heroes</div><div class="char-col-body" id="hlist-${u.id}"></div></div></div>`;
+  upagesDiv.appendChild(pg);
+  function showChar(c){
+    document.getElementById(`bio-${u.id}`).innerHTML=`<div class="bio-story">${u.story}</div><div class="bio-char"><img src="${c.image}"><div class="bio-char-name">${c.name}</div><div class="bio-stat"><div class="bio-stat-label">Powers</div><div class="bio-stat-val">${c.powers}</div></div><div class="bio-stat"><div class="bio-stat-label">Weaknesses</div><div class="bio-stat-val">${c.weaknesses}</div></div><div class="bio-stat"><div class="bio-stat-label">Bio</div><div class="bio-stat-val">${c.bio}</div></div></div>`;
+  }
+  const hl=pg.querySelector(`#hlist-${u.id}`), vl=pg.querySelector(`#vlist-${u.id}`);
+  u.heroes.forEach(c=>{const it=document.createElement('div');it.className='char-item';it.innerHTML=`<img src="${c.image}"><div><div class="char-item-name">${c.name}</div><div class="char-item-sub">Hero</div></div>`;it.onclick=()=>showChar(c);hl.appendChild(it);});
+  u.villains.forEach(c=>{const it=document.createElement('div');it.className='char-item';it.innerHTML=`<img src="${c.image}"><div><div class="char-item-name">${c.name}</div><div class="char-item-sub">Villain</div></div>`;it.onclick=()=>showChar(c);vl.appendChild(it);});
+  showPage('up-'+u.id);
+}
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  const t=document.getElementById(id); if(t) t.classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.querySelectorAll('.nb[data-page]').forEach(n=>n.classList.toggle('on',n.dataset.page===id));
+}
+document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>showPage(el.dataset.page)));
+
+// BATTLE SYSTEM
+let allC=[];
+universes.forEach(u=>[...u.heroes,...u.villains].forEach(c=>allC.push({...c,universe:u.name})));
+let i1=0,i2=Math.min(1,allC.length-1),l1=false,l2=false;
+const charCityMap={"Spider-Man":"New York","Iron Man":"Malibu","Wolverine":"Weapon X","Thanos":"Titan","Superman":"Metropolis","Batman":"Gotham","Wonder Woman":"Themyscira","Joker":"Gotham","Lex Luthor":"Metropolis","Goku":"Mount Paozu","Frieza":"Namek","Naruto":"Konoha","Vegeta":"Planet Vegeta","Madara":"Hidden Rain"};
+function getCityForChar(name){ const c=charCityMap[name]; return cities.find(city=>city.city===c)||cities[0]; }
+function upB(){
+  const a=allC[i1],b=allC[i2];
+  document.getElementById('fi1').src=a.image; document.getElementById('fnam1').innerText=a.name; document.getElementById('funi1').innerText=a.universe;
+  const ca=getCityForChar(a.name); const cb=getCityForChar(b.name);
+  document.getElementById('fcity1').innerHTML=`<i class="fas fa-location-dot"></i> ${ca.city}`;
+  document.getElementById('fcity2').innerHTML=`<i class="fas fa-location-dot"></i> ${cb.city}`;
+  document.getElementById('fidx1').innerText=`${i1+1}/${allC.length}`;
+  document.getElementById('fi2').src=b.image; document.getElementById('fnam2').innerText=b.name; document.getElementById('funi2').innerText=b.universe;
+  document.getElementById('fidx2').innerText=`${i2+1}/${allC.length}`;
+  document.getElementById('fc1').classList.toggle('locked',l1); document.getElementById('fc2').classList.toggle('locked',l2);
+  const lb1=document.getElementById('lb1'),lb2=document.getElementById('lb2');
+  lb1.className='lock-btn'+(l1?' locked':''); lb1.innerHTML=l1?'<i class="fas fa-lock"></i> Locked':'<i class="fas fa-lock-open"></i> Lock Fighter';
+  lb2.className='lock-btn'+(l2?' locked':''); lb2.innerHTML=l2?'<i class="fas fa-lock"></i> Locked':'<i class="fas fa-lock-open"></i> Lock Fighter';
+  document.getElementById('bo1').innerText=a.name+' wins'; document.getElementById('bo2').innerText=b.name+' wins';
+  document.getElementById('winnerCard').classList.remove('show'); document.getElementById('drinkAd').classList.remove('show');
+  document.getElementById('betResult').className='bet-result'; document.getElementById('betResult').innerHTML='';
+}
+document.getElementById('fp1').onclick=()=>{if(!l1){i1=(i1-1+allC.length)%allC.length;upB();}};
+document.getElementById('fnxt1').onclick=()=>{if(!l1){i1=(i1+1)%allC.length;upB();}};
+document.getElementById('fp2').onclick=()=>{if(!l2){i2=(i2-1+allC.length)%allC.length;upB();}};
+document.getElementById('fnxt2').onclick=()=>{if(!l2){i2=(i2+1)%allC.length;upB();}};
+document.getElementById('lb1').onclick=()=>{l1=!l1;upB();};
+document.getElementById('lb2').onclick=()=>{l2=!l2;upB();};
+
+const energyDrinks=[{name:"RED BULL",tagline:"Gives you wings.",color:"#e53935"},{name:"MONSTER",tagline:"Unleash the beast.",color:"#00c853"},{name:"GHOST",tagline:"Zero sugar, max power.",color:"#7c4dff"},{name:"BANG",tagline:"Feel the surge.",color:"#0288d1"},{name:"CELSIUS",tagline:"Live fit.",color:"#f57c00"}];
+const betCompanies=[{name:"BetOnWorlds",odds_f1:1.8,odds_f2:2.0},{name:"MultiVerse Bet",odds_f1:2.1,odds_f2:1.75},{name:"HeroOdds",odds_f1:1.65,odds_f2:2.3},{name:"InfinityBet",odds_f1:2.4,odds_f2:1.6}];
+let selBetCo=0;
+const bcDiv=document.getElementById('betCompanies');
+betCompanies.forEach((co,i)=>{const el=document.createElement('div');el.className='bet-co'+(i===0?' sel':'');el.innerHTML=`<i class="fas fa-dice"></i> ${co.name}`;el.onclick=()=>{selBetCo=i; document.querySelectorAll('.bet-co').forEach((x,j)=>x.classList.toggle('sel',j===i)); updateOdds();}; bcDiv.appendChild(el);});
+function updateOdds(){const a=allC[i1],b=allC[i2],co=betCompanies[selBetCo]; document.getElementById('betOdds').innerHTML=`<div class="odds-chip"><div class="wstat-val" style="color:var(--amber)">${co.odds_f1.toFixed(2)}x</div><div class="odds-name">${a.name}</div></div><div class="odds-chip"><div class="wstat-val" style="color:var(--muted2)">2.00x</div><div class="odds-name">Draw</div></div><div class="odds-chip"><div class="wstat-val" style="color:var(--amber)">${co.odds_f2.toFixed(2)}x</div><div class="odds-name">${b.name}</div></div>`;}
+const charActions={"Spider-Man":["swings between skyscrapers, web-shooting relentlessly","launches a venom strike from above"],"Iron Man":["locks on with JARVIS and fires a uni-beam blast","deploys nanotech armor"],"Superman":["launches into the sky then dives with heat vision blazing","channels solar energy into a ground-shattering punch"],"Batman":["vanishes in a smoke pellet and reappears behind","deploys an EMP batarang"],"Goku":["powers up to Super Saiyan Blue, ki erupting around him","fires a fully charged Kamehameha"],"Thanos":["clenches the Infinity Gauntlet and reorders reality","uses the Space Stone to teleport behind the opponent"],"Wolverine":["pops all six adamantium claws with a metallic SNIKT","heals from three direct blows and charges back in"],"Joker":["hurls a handful of razor-sharp playing cards","deploys a laughing-gas grenade"]};
+function getActions(name){return charActions[name]||[`${name} attacks with full force`,`${name} counters decisively`];}
+document.getElementById('fightBtn').onclick=()=>{
+  const a=allC[i1],b=allC[i2];
+  const log=document.getElementById('fightLog'); log.innerHTML='';
+  document.getElementById('winnerCard').classList.remove('show'); document.getElementById('drinkAd').classList.remove('show');
+  const ca=getCityForChar(a.name), cb=getCityForChar(b.name);
+  const drink=energyDrinks[Math.floor(Math.random()*energyDrinks.length)];
+  const aActs=getActions(a.name), bActs=getActions(b.name);
+  let hpA=100,hpB=100; const dmgA=[Math.floor(25+Math.random()*20),Math.floor(15+Math.random()*15),Math.floor(20+Math.random()*25)];
+  const dmgB=[Math.floor(20+Math.random()*20),Math.floor(18+Math.random()*18),Math.floor(22+Math.random()*22)];
+  hpB-=dmgA[0]; hpA-=dmgB[0]; hpB-=dmgA[1]; hpA-=dmgB[1]; hpB-=dmgA[2]; hpA-=dmgB[2];
+  const winner=hpA>hpB?a:b; const loser=hpA>hpB?b:a;
+  const lines=[
+    {cls:'loc',txt:`📍 LOCATION: ${ca.city} (${a.universe}) × ${cb.city} (${b.universe})`},
+    {cls:'atk',txt:`⚔️  ${a.name} vs ${b.name} — the ground cracks as they face off.`},
+    {cls:'',txt:`🔴 ${a.name} ${aActs[0]}`},{cls:'atk',txt:`💥 Direct hit on ${b.name}! (−${dmgA[0]} HP)`},
+    {cls:'',txt:`🔵 ${b.name} ${bActs[0]}`},{cls:'atk',txt:`💥 ${a.name} takes the blow! (−${dmgB[0]} HP)`},
+    {cls:'drink',txt:`🥤 AD: ${a.name} cracks open a ${drink.name} — "${drink.tagline}" [+8 Energy Surge]`},
+    {cls:'',txt:`⚡ Energized — ${a.name} ${aActs[1]}`},{cls:'atk',txt:`💥 ${b.name} staggers! (−${dmgA[1]} HP)`},
+    {cls:'drink',txt:`🥤 AD: ${b.name} grabs a ${drink.name} — "${drink.tagline}" [+6 Energy Surge]`},
+    {cls:'',txt:`⚡ ${b.name} ${bActs[1]}`},{cls:'atk',txt:`💥 Brutal counter on ${a.name}! (−${dmgB[1]} HP)`},
+    {cls:'',txt:`🔴 Final round — ${a.name} ${aActs[0]}`},{cls:'atk',txt:`💥 Devastating blow! (−${dmgA[2]} HP)`},
+    {cls:'',txt:`🔵 ${b.name} tries to come back — ${bActs[1]}`},{cls:'atk',txt:`💥 Lands on ${a.name}! (−${dmgB[2]} HP)`},
+    {cls:'win',txt:`🏆 WINNER: ${winner.name} — Final HP: ${Math.max(0,winner===a?hpA:hpB)} vs ${Math.max(0,winner===a?hpB:hpA)}`},
   ];
-  const iconMap = {
-    "Marvel":"fab fa-marvel", "DC":"fas fa-bolt", "Invincible":"fas fa-fist-raised", "The Boys":"fas fa-skull",
-    "Dragon Ball":"fas fa-dragon", "Naruto":"fas fa-paw", "One Punch Man":"fas fa-fist-raised", "Attack on Titan":"fas fa-mountain",
-    "My Hero Academia":"fas fa-mask", "Jujutsu Kaisen":"fas fa-ghost", "Demon Slayer":"fas fa-water", "One Piece":"fas fa-ship",
-    "Bleach":"fas fa-water", "Hunter x Hunter":"fas fa-paw", "Fairy Tail":"fas fa-dragon", "Sword Art Online":"fas fa-gamepad",
-    "Fullmetal Alchemist":"fas fa-cogs", "Death Note":"fas fa-book", "Tokyo Ghoul":"fas fa-eye", "Chainsaw Man":"fas fa-saw",
-    "Mob Psycho 100":"fas fa-brain", "Black Clover":"fas fa-leaf", "Fire Force":"fas fa-fire", "Boruto":"fas fa-paw",
-    "Sailor Moon":"fas fa-moon", "Pokémon":"fas fa-paw", "Digimon":"fas fa-paw", "Yu-Gi-Oh!":"fas fa-dragon",
-    "Avatar: TLA":"fas fa-water", "Star Wars":"fab fa-galactic-republic", "Lord of the Rings":"fas fa-ring",
-    "Harry Potter":"fas fa-hat-wizard", "The Witcher":"fas fa-wolf", "Cyberpunk":"fas fa-microchip", "Warhammer 40k":"fas fa-helmet-battle",
-    "Halo":"fas fa-helmet-battle", "Mass Effect":"fas fa-rocket", "Elder Scrolls":"fas fa-dragon", "Dark Souls":"fas fa-skull",
-    "Castlevania":"fas fa-church", "Devil May Cry":"fas fa-devil", "Street Fighter":"fas fa-fist-raised", "Mortal Kombat":"fas fa-dragon",
-    "Tekken":"fas fa-fist-raised", "Overwatch":"fas fa-crosshairs", "Valorant":"fas fa-crosshairs", "League of Legends":"fas fa-crown",
-    "Arcane":"fas fa-magic", "Zelda":"fas fa-trash-alt", "Metroid":"fas fa-bug"
-  };
-  function getStory(univ) {
-    const stories = {
-      "Marvel": "The Marvel Universe is a vast reality where superhumans, gods, aliens, and mutants coexist. From the Avengers to the X-Men, heroes battle villains like Thanos and Doctor Doom.",
-      "DC": "DC's multiverse is home to iconic heroes like Superman, Batman, and Wonder Woman. They defend truth and justice against forces like Darkseid and the Joker.",
-      "Tekken": "The King of Iron Fist Tournament brings together martial artists from around the world, each with their own dark past and fighting style.",
-      "Street Fighter": "World warriors compete in martial arts tournaments, facing rivals like M. Bison and Akuma.",
-      "Mortal Kombat": "A brutal tournament decides the fate of Earthrealm, featuring warriors like Liu Kang, Scorpion, and Sub-Zero."
-    };
-    return stories[univ] || `${univ} is a rich universe filled with unique heroes, villains, and epic conflicts. Explore its characters and stories.`;
-  }
-  function getHeroesVillains(univ) {
-    const heroes = [], villains = [];
-    for (let i = 1; i <= 3; i++) {
-      heroes.push({ name: `${univ} Hero ${i}`, image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${univ}Hero${i}`, powers: "Super strength, agility", weaknesses: "Overconfidence", bio: `A champion of ${univ}.` });
-      villains.push({ name: `${univ} Villain ${i}`, image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${univ}Villain${i}`, powers: "Dark magic", weaknesses: "Arrogance", bio: `A notorious foe in ${univ}.` });
-    }
-    if (univ === "Marvel") {
-      heroes[0] = { name: "Spider-Man", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=SpiderMan", powers: "Wall-crawling, spider-sense", weaknesses: "Guilt", bio: "Peter Parker balances life as a teenager and hero." };
-      heroes[1] = { name: "Iron Man", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=IronMan", powers: "Powered armor, repulsors", weaknesses: "Power drainage", bio: "Genius billionaire Tony Stark." };
-      villains[0] = { name: "Thanos", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Thanos", powers: "Infinity Gauntlet, super strength", weaknesses: "Overconfidence", bio: "The Mad Titan seeks to balance the universe." };
-    } else if (univ === "DC") {
-      heroes[0] = { name: "Superman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Superman", powers: "Heat vision, flight, invulnerability", weaknesses: "Kryptonite", bio: "Last son of Krypton, protector of Earth." };
-      heroes[1] = { name: "Batman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Batman", powers: "Martial arts, gadgets, intellect", weaknesses: "Mortal", bio: "The Dark Knight of Gotham." };
-      villains[0] = { name: "Joker", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Joker", powers: "Chaos, toxins", weaknesses: "Batman's refusal to kill", bio: "Agent of chaos and Batman's greatest enemy." };
-    } else if (univ === "Dragon Ball") {
-      heroes[0] = { name: "Goku", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Goku", powers: "Kamehameha, Ultra Instinct", weaknesses: "Stamina drain", bio: "Saiyan warrior who constantly pushes his limits." };
-      villains[0] = { name: "Frieza", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Frieza", powers: "Death beam, telekinesis", weaknesses: "Overconfidence", bio: "Galactic tyrant who destroyed Planet Vegeta." };
-    }
-    return { heroes, villains };
-  }
-  const universes = universeNames.map((name, idx) => {
-    const { heroes, villains } = getHeroesVillains(name);
-    return { id: `univ_${idx}`, name, icon: iconMap[name] || "fas fa-globe", color: "#ffaa44", story: getStory(name), heroes, villains };
-  });
+  lines.forEach((line,i)=>{setTimeout(()=>{const d=document.createElement('div');d.className=`flog-line ${line.cls}`;d.textContent=line.txt;log.appendChild(d);log.scrollTop=log.scrollHeight;},i*480);});
+  setTimeout(()=>{document.getElementById('winnerImg').src=winner.image; document.getElementById('winnerName').innerText=winner.name; document.getElementById('winnerStats').innerHTML=`<div class="wstat"><div class="wstat-val" style="color:var(--green)">${Math.max(0,winner===a?hpA:hpB)}</div><div class="wstat-lbl">HP Left</div></div><div class="wstat"><div class="wstat-val" style="color:var(--amber)">${dmgA.reduce((s,x)=>s+x,0)+dmgB.reduce((s,x)=>s+x,0)}</div><div class="wstat-lbl">Total Dmg</div></div><div class="wstat"><div class="wstat-val">${winner.universe}</div><div class="wstat-lbl">Universe</div></div>`; document.getElementById('winnerCard').classList.add('show');},lines.length*480+200);
+  setTimeout(()=>{const da=document.getElementById('drinkAd'); document.getElementById('drinkLogo').innerHTML=drink.name; document.getElementById('drinkLogo').style.color=drink.color; document.getElementById('drinkCopy').innerHTML=`${drink.tagline} — ${winner.name} drinks ${drink.name} before every battle.`; document.getElementById('drinkCta').style.background=drink.color; document.getElementById('drinkCta').onclick=()=>alert(`Demo: Visit ${drink.name} store`); da.classList.add('show');},lines.length*480+400);
+  setTimeout(()=>{if(typeof window.flyBetweenCities==='function'){const fromCity=getCityForChar(a.name); const toCity=getCityForChar(b.name); window.flyBetweenCities(fromCity,toCity);}},800);
+  updateOdds();
+};
+document.getElementById('betBtn').onclick=()=>{
+  const sel=document.getElementById('betSel').value;
+  const amount=parseFloat(document.getElementById('betAmount').value)||10;
+  const a=allC[i1],b=allC[i2],co=betCompanies[selBetCo];
+  const win=Math.random()>.5?a.name:b.name;
+  const betOnA=sel.includes(a.name);
+  const won=(betOnA&&win===a.name)||(!betOnA&&win===b.name);
+  const odds=betOnA?co.odds_f1:co.odds_f2;
+  const payout=(amount*odds).toFixed(2);
+  const res=document.getElementById('betResult');
+  if(won){res.className='bet-result won'; res.innerHTML=`🎉 You won! ${win} won. Payout: $${payout} (${odds}x odds via ${co.name}) — Demo only`;}
+  else{res.className='bet-result lost'; res.innerHTML=`😢 You lost $${amount.toFixed(2)}. ${win} won. Try again! — Demo only`;}
+};
+upB();
 
-  // Build universe pills
-  const universeGrid = document.getElementById('universeGrid');
-  universes.forEach(u => {
-    const pill = document.createElement('div');
-    pill.className = 'universe-pill';
-    pill.innerHTML = `<i class="${u.icon}" style="color:${u.color}"></i> ${u.name}`;
-    pill.onclick = () => showUniversePage(u);
-    universeGrid.appendChild(pill);
-  });
-  document.getElementById('scrollUnivLeft').onclick = () => universeGrid.scrollBy({ left: -200, behavior: 'smooth' });
-  document.getElementById('scrollUnivRight').onclick = () => universeGrid.scrollBy({ left: 200, behavior: 'smooth' });
-
-  const pagesContainer = document.getElementById('universePagesContainer');
-  function showUniversePage(univ) {
-    const existing = document.getElementById(`univ-${univ.id}`);
-    if (existing) existing.remove();
-    const pageDiv = document.createElement('div');
-    pageDiv.id = `univ-${univ.id}`;
-    pageDiv.className = 'page';
-    pageDiv.innerHTML = `
-      <div class="universe-detail">
-        <div class="char-column"><h3><i class="fas fa-skull"></i> Villains</h3><div id="villainsList-${univ.id}"></div></div>
-        <div class="center-bio" id="centerBio-${univ.id}">
-          <div class="universe-story">${univ.story}</div>
-          <div id="charBioContent"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Placeholder"><h3>Select a character</h3><p>Click on any hero or villain to see details.</p></div>
-        </div>
-        <div class="char-column"><h3><i class="fas fa-shield-alt"></i> Heroes</h3><div id="heroesList-${univ.id}"></div></div>
-      </div>
-    `;
-    pagesContainer.appendChild(pageDiv);
-    const heroesDiv = pageDiv.querySelector(`#heroesList-${univ.id}`);
-    const villainsDiv = pageDiv.querySelector(`#villainsList-${univ.id}`);
-    univ.heroes.forEach(h => {
-      const item = document.createElement('div'); item.className = 'char-item';
-      item.innerHTML = `<img src="${h.image}"><div class="char-name">${h.name}</div>`;
-      item.onclick = () => {
-        document.getElementById(`centerBio-${univ.id}`).innerHTML = `<div class="universe-story">${univ.story}</div><div id="charBioContent"><img src="${h.image}" style="width:160px;border-radius:50%;"><h3>${h.name}</h3><p><strong>Powers:</strong> ${h.powers}</p><p><strong>Weaknesses:</strong> ${h.weaknesses}</p><p><strong>Bio:</strong> ${h.bio}</p></div>`;
-      };
-      heroesDiv.appendChild(item);
-    });
-    univ.villains.forEach(v => {
-      const item = document.createElement('div'); item.className = 'char-item';
-      item.innerHTML = `<img src="${v.image}"><div class="char-name">${v.name}</div>`;
-      item.onclick = () => {
-        document.getElementById(`centerBio-${univ.id}`).innerHTML = `<div class="universe-story">${univ.story}</div><div id="charBioContent"><img src="${v.image}" style="width:160px;border-radius:50%;"><h3>${v.name}</h3><p><strong>Powers:</strong> ${v.powers}</p><p><strong>Weaknesses:</strong> ${v.weaknesses}</p><p><strong>Bio:</strong> ${v.bio}</p></div>`;
-      };
-      villainsDiv.appendChild(item);
-    });
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-    pageDiv.classList.add('active-page');
-    window.scrollTo(0,0);
-  }
-
-  // BATTLE LOGIC (same as before)
-  let allBattleChars = [];
-  universes.forEach(u => {
-    [...u.heroes, ...u.villains].forEach(c => {
-      allBattleChars.push({ name: c.name, universe: u.name, image: c.image, powers: c.powers, weaknesses: c.weaknesses });
-    });
-  });
-  let f1i = 0, f2i = Math.min(1, allBattleChars.length-1), f1locked = false, f2locked = false;
-  function updateBattleUI() {
-    const f1 = allBattleChars[f1i], f2 = allBattleChars[f2i];
-    document.getElementById('fighter1Img').src = f1.image;
-    document.getElementById('fighter1Name').innerText = f1.name;
-    document.getElementById('fighter1Uni').innerText = f1.universe;
-    document.getElementById('f1Idx').innerText = `${f1i+1}/${allBattleChars.length}`;
-    document.getElementById('fighter2Img').src = f2.image;
-    document.getElementById('fighter2Name').innerText = f2.name;
-    document.getElementById('fighter2Uni').innerText = f2.universe;
-    document.getElementById('f2Idx').innerText = `${f2i+1}/${allBattleChars.length}`;
-    document.getElementById('fighter1Card').classList.toggle('locked', f1locked);
-    document.getElementById('fighter2Card').classList.toggle('locked', f2locked);
-    document.getElementById('lock1Btn').className = 'lock-btn' + (f1locked ? ' locked' : '');
-    document.getElementById('lock1Btn').innerHTML = f1locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
-    document.getElementById('lock2Btn').className = 'lock-btn' + (f2locked ? ' locked' : '');
-    document.getElementById('lock2Btn').innerHTML = f2locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
-    document.getElementById('betOption1').innerText = `${f1.name} wins`;
-    document.getElementById('betOption2').innerText = `${f2.name} wins`;
-  }
-  document.getElementById('f1Prev').onclick = () => { if(!f1locked) { f1i = (f1i-1+allBattleChars.length)%allBattleChars.length; updateBattleUI(); } };
-  document.getElementById('f1Next').onclick = () => { if(!f1locked) { f1i = (f1i+1)%allBattleChars.length; updateBattleUI(); } };
-  document.getElementById('f2Prev').onclick = () => { if(!f2locked) { f2i = (f2i-1+allBattleChars.length)%allBattleChars.length; updateBattleUI(); } };
-  document.getElementById('f2Next').onclick = () => { if(!f2locked) { f2i = (f2i+1)%allBattleChars.length; updateBattleUI(); } };
-  document.getElementById('lock1Btn').onclick = () => { f1locked = !f1locked; updateBattleUI(); };
-  document.getElementById('lock2Btn').onclick = () => { f2locked = !f2locked; updateBattleUI(); };
-  const actionPhrases = {
-    "Spider-Man": "swings in and shoots webs!", "Iron Man": "suit flies to him piece by piece!", "Superman": "flies into the sky, heat vision blazing!", "Batman": "throws a smoke pellet and vanishes!", "Goku": "powers up to Super Saiyan!", "Thanos": "clenches the Infinity Gauntlet!"
-  };
-  const energyDrinks = ["Red Bull", "Monster", "Rockstar", "Bang", "NOS"];
-  document.getElementById('fightBtn').onclick = () => {
-    const f1 = allBattleChars[f1i], f2 = allBattleChars[f2i];
-    const logDiv = document.getElementById('battleLog');
-    logDiv.innerHTML = '';
-    const logs = [];
-    const winner = Math.random() > 0.5 ? f1.name : f2.name;
-    const drink = energyDrinks[Math.floor(Math.random() * energyDrinks.length)];
-    logs.push(`📍 Location: ${f1.universe} / ${f2.universe} crossover`);
-    logs.push(`⚔️ ${f1.name} vs ${f2.name}`);
-    logs.push(`✨ ${f1.name}: ${actionPhrases[f1.name] || "takes a fighting stance"}`);
-    logs.push(`✨ ${f2.name}: ${actionPhrases[f2.name] || "prepares to strike"}`);
-    logs.push(`💥 ${f1.name} attacks with ${f1.powers.split(',')[0]}!`);
-    logs.push(`💥 ${f2.name} counters using ${f2.weaknesses.split(',')[0]}!`);
-    logs.push(`🥤 ${f1.name} drinks ${drink} – gains +5 energy!`);
-    logs.push(`🥤 ${f2.name} drinks ${drink} – powers up!`);
-    logs.push(`🔥 WINNER: ${winner} 🔥`);
-    logs.forEach((log, idx) => setTimeout(() => { const d = document.createElement('div'); d.className = 'log-line' + (log.includes('WINNER') ? ' winner' : ''); d.textContent = log; logDiv.appendChild(d); logDiv.scrollTop = logDiv.scrollHeight; }, idx * 500));
-    const comicArea = document.getElementById('comicArea');
-    comicArea.innerHTML = '';
-    const btn = document.createElement('button'); btn.className = 'comic-btn'; btn.innerHTML = 'Download as Comic'; btn.onclick = () => {
-      const comicHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Comic</title><style>body{background:#0a0a1a;color:#eee;padding:2rem;}</style></head><body><h1>BATTLE</h1><div>${logs.map(l => `<div style="background:#1e1e2e;margin:1rem;padding:1rem;">${l}</div>`).join('')}</div></body></html>`;
-      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([comicHtml], {type:'text/html'})); a.download = `comic_${f1.name}_vs_${f2.name}.html`; a.click();
-    };
-    comicArea.appendChild(btn);
-  };
-  updateBattleUI();
-
-  // Betting
-  document.getElementById('placeBetBtn').onclick = () => {
-    const betOn = document.getElementById('betSelect').value;
-    const f1 = allBattleChars[f1i], f2 = allBattleChars[f2i];
-    const winner = Math.random() > 0.5 ? f1.name : f2.name;
-    const result = document.getElementById('betResult');
-    if ((betOn === "Fighter 1 wins" && winner === f1.name) || (betOn === "Fighter 2 wins" && winner === f2.name)) {
-      result.innerHTML = "🎉 You won the bet! (Demo) 🎉";
-    } else {
-      result.innerHTML = "😢 You lost. Better luck next time! (Demo)";
-    }
-    setTimeout(() => result.innerHTML = "", 3000);
-  };
-
-  // MARKET (Creator's Market)
-  let currentType = '';
-  const uploadPanel = document.getElementById('uploadPanel');
-  document.querySelectorAll('.cat-tab').forEach(tab => {
-    tab.onclick = () => {
-      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      currentType = tab.dataset.type;
-      uploadPanel.style.display = 'block';
-    };
-  });
-  document.getElementById('publishBtn').onclick = () => {
-    const title = document.getElementById('uploadTitle').value.trim();
-    const price = document.getElementById('uploadPrice').value;
-    const desc = document.getElementById('uploadDesc').value.trim();
-    if (!title) return;
-    const icons = { comic:'fa-book-open', video:'fa-video', '3d':'fa-cube', art:'fa-paintbrush', cosplay:'fa-mask' };
-    const listing = document.createElement('div'); listing.className = 'listing-card';
-    listing.innerHTML = `<div class="listing-icon"><i class="fas ${icons[currentType] || 'fa-star'}"></i></div><div class="listing-title">${escapeHtml(title)}</div><div class="listing-desc">${escapeHtml(desc.substring(0,100))}</div><div class="listing-footer"><span class="listing-price">${price ? '$'+parseFloat(price).toFixed(2) : 'Free'}</span><button class="buy-btn">Buy</button></div>`;
-    document.getElementById('marketListings').prepend(listing);
-    document.getElementById('uploadTitle').value = ''; document.getElementById('uploadPrice').value = ''; document.getElementById('uploadDesc').value = ''; document.getElementById('uploadFile').value = '';
-    uploadPanel.style.display = 'none';
-    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-  };
-  function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
-
-  // PAGE SWITCHING
-  function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-    const target = document.getElementById(id);
-    if (target) target.classList.add('active-page');
-    window.scrollTo(0,0);
-  }
-  document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', () => showPage(el.dataset.page)));
-
-  // AUTH MODAL
-  const modal = document.getElementById('authModal');
-  document.getElementById('openAuthBtn').onclick = () => modal.classList.add('open');
-  document.getElementById('closeModal').onclick = () => modal.classList.remove('open');
-  modal.onclick = e => { if(e.target === modal) modal.classList.remove('open'); };
-  document.getElementById('mockSignup').onclick = () => { modal.classList.remove('open'); alert('Demo account created!'); };
+// MARKETPLACE
+const seedListings=[
+  {type:'comic',title:'Dark Tomorrow Vol.1',desc:'Indie comic about a fallen hero\'s redemption arc across 48 pages.',price:4.99,univ:'Original',seller:'CreatorX',likes:128,views:3400},
+  {type:'video',title:'Rivals Tribute Cut',desc:'Fan-made cinematic edit — 4K, licensed beats, breathtaking transitions.',price:1.99,univ:'Marvel',seller:'FilmForge',likes:342,views:12000},
+  {type:'art',title:'Omega Character Sketch',desc:'Original character concept art — A2 print-ready, 300dpi.',price:8.00,univ:'Original',seller:'InkDreamer',likes:89,views:2100},
+  {type:'cosplay',title:'Arkham Batman Suit',desc:'Screen-accurate cosplay build — full foam EVA armor with LED eyes.',price:299.00,univ:'DC',seller:'ArmorSmith',likes:521,views:18700},
+  {type:'3d',title:'Iron Man MK50 Model',desc:'Fully rigged 3D model, FBX+OBJ, game-ready topology.',price:24.99,univ:'Marvel',seller:'PolyBuild',likes:204,views:7800},
+  {type:'comic',title:'Saiyan Chronicles',desc:'Fan-made Dragon Ball doujin — 64 pages of untold battles.',price:3.50,univ:'Dragon Ball',seller:'MangaFan99',likes:670,views:22000},
+];
+const typeIcons={comic:'fa-book-open',video:'fa-video',art:'fa-paintbrush','3d':'fa-cube',cosplay:'fa-mask'};
+let currentCat='all';
+function renderListings(){
+  const grid=document.getElementById('listingsGrid'); grid.innerHTML='';
+  const filtered=currentCat==='all'?seedListings:seedListings.filter(l=>l.type===currentCat);
+  filtered.forEach(l=>{const card=document.createElement('div');card.className='lcard';card.innerHTML=`<div class="lcard-thumb"><i class="fas ${typeIcons[l.type]||'fa-star'}" style="color:rgba(255,255,255,.2)"></i><span class="lcard-type">${l.type}</span></div><div class="lcard-body"><div class="lcard-seller"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(l.seller)}"><span class="lcard-seller-name">${l.seller}</span></div><div class="lcard-title">${l.title}</div><div class="lcard-desc">${l.desc}</div><div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> ${l.likes}</span><span class="lstat"><i class="fas fa-eye"></i> ${l.views.toLocaleString()}</span><span class="lstat"><i class="fas fa-tag"></i> ${l.univ}</span></div><div class="lcard-footer"><span class="lcard-price ${l.price===0?'free':''}">${l.price===0?'FREE':'$'+l.price.toFixed(2)}</span><button class="buy-btn" onclick="alert('Demo: Purchase ${l.title} — checkout coming soon!')">${l.price===0?'Download':'Buy'}</button></div></div>`;grid.appendChild(card);});
+}
+renderListings();
+document.querySelectorAll('.cbtab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.cbtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');currentCat=t.dataset.cat;renderListings();});
+const uploadModal=document.getElementById('uploadModal');
+document.getElementById('openUpload').onclick=()=>uploadModal.classList.add('open');
+document.getElementById('closeUpload').onclick=()=>uploadModal.classList.remove('open');
+uploadModal.onclick=e=>{if(e.target===uploadModal)uploadModal.classList.remove('open');};
+document.getElementById('pubBtn').onclick=()=>{const title=document.getElementById('uTitle').value.trim();const cat=document.getElementById('uCat').value;const price=parseFloat(document.getElementById('uPrice').value)||0;const desc=document.getElementById('uDesc').value.trim();const univ=document.getElementById('uUniv').value.trim()||'Original';if(!title){document.getElementById('uTitle').focus();return;}seedListings.unshift({type:cat,title,desc:desc||'No description.',price,univ,seller:'You',likes:0,views:0});currentCat='all';document.querySelectorAll('.cbtab').forEach((x,i)=>x.classList.toggle('on',i===0));renderListings();uploadModal.classList.remove('open');['uTitle','uPrice','uDesc','uUniv','uFile'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});};
+const authModal=document.getElementById('authModal');
+document.getElementById('openAuth').onclick=()=>authModal.classList.add('open');
+document.getElementById('closeAuth').onclick=()=>authModal.classList.remove('open');
+authModal.onclick=e=>{if(e.target===authModal)authModal.classList.remove('open');};
+document.getElementById('mockSignup').onclick=()=>{authModal.classList.remove('open');alert('Welcome to WORLDS! (Demo account created)');};
 </script>
 </body>
 </html>
