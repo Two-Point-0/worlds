@@ -140,7 +140,7 @@
       border: 1px solid var(--border);
       background: #000;
       margin-bottom: 2rem;
-      transition: background 0.5s ease;
+      transition: background-image 0.5s ease;
     }
     #globeCanvas {
       width: 100%;
@@ -158,6 +158,35 @@
       pointer-events: none;
       z-index: 10;
       backdrop-filter: blur(8px);
+    }
+    .search-box {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 20;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      padding: 8px 16px;
+      border-radius: 40px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .search-box input {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+    }
+    .search-box button {
+      background: var(--red);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 40px;
+      color: white;
+      cursor: pointer;
     }
     .universe-scroll-wrapper {
       position: relative;
@@ -506,6 +535,10 @@
 <div id="homePage" class="page active-page">
   <div class="globe-container">
     <canvas id="globeCanvas"></canvas>
+    <div class="search-box">
+      <input type="text" id="locationSearch" placeholder="Search city (e.g., Metropolis, Wakanda)">
+      <button id="searchBtn">Fly to</button>
+    </div>
     <div class="planet-bg" id="planetNameDisplay">🌍 Earth</div>
   </div>
   <div class="universe-scroll-wrapper">
@@ -623,14 +656,13 @@
   // Earth texture
   const textureLoader = new THREE.TextureLoader();
   const earthMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-  const earthSpecularMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
   const cloudMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
   const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
-  const earthMaterial = new THREE.MeshPhongMaterial({ map: earthMap, specularMap: earthSpecularMap, specular: new THREE.Color('grey'), shininess: 5 });
+  const earthMaterial = new THREE.MeshPhongMaterial({ map: earthMap });
   const earth = new THREE.Mesh(earthGeometry, earthMaterial);
   scene.add(earth);
   const cloudGeometry = new THREE.SphereGeometry(1.01, 64, 64);
-  const cloudMaterial = new THREE.MeshPhongMaterial({ map: cloudMap, transparent: true, opacity: 0.15 });
+  const cloudMaterial = new THREE.MeshPhongMaterial({ map: cloudMap, transparent: true, opacity: 0.1 });
   const clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
   scene.add(clouds);
   const ambientLight = new THREE.AmbientLight(0x333333);
@@ -639,17 +671,22 @@
   directionalLight.position.set(5, 10, 7);
   scene.add(directionalLight);
 
-  // Locations: name, lat, lon, planetBG
+  // Locations with exact lat/lon and planet backgrounds
   const locations = [
-    { name: "Avengers Tower", lat: 40.7128, lon: -74.0060, planet: "Earth", desc: "Captain America in Queens, Iron Man in Manhattan" },
-    { name: "Metropolis", lat: 40.7128, lon: -74.0060, planet: "Earth", desc: "Superman's city" },
-    { name: "Gotham", lat: 40.7128, lon: -74.0060, planet: "Earth", desc: "Batman's city" },
-    { name: "Wakanda", lat: 1.2864, lon: 36.8172, planet: "Earth", desc: "Black Panther's nation" },
-    { name: "Asgard", lat: 60.0, lon: 10.0, planet: "Asgard", desc: "Thor's realm" },
-    { name: "Krypton", lat: -30.0, lon: 150.0, planet: "Krypton", desc: "Superman's homeworld" },
-    { name: "Themyscira", lat: 35.0, lon: 25.0, planet: "Earth", desc: "Wonder Woman's island" },
-    { name: "Malibu", lat: 34.0259, lon: -118.7798, planet: "Earth", desc: "Iron Man's mansion" }
+    { name: "Avengers Tower", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
+    { name: "Metropolis", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
+    { name: "Gotham", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
+    { name: "Wakanda", lat: 1.2864, lon: 36.8172, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
+    { name: "Asgard", lat: 60.0, lon: 10.0, planet: "Asgard", bg: "radial-gradient(circle, #ffd700, #b8860b)" },
+    { name: "Krypton", lat: -30.0, lon: 150.0, planet: "Krypton", bg: "radial-gradient(circle, #4a4a5a, #1a1a2a)" },
+    { name: "Themyscira", lat: 35.0, lon: 25.0, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
+    { name: "Malibu", lat: 34.0259, lon: -118.7798, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
+    { name: "Rivendell", lat: 45.0, lon: -5.0, planet: "Middle-earth", bg: "url('https://images.pexels.com/photos/733174/pexels-photo-733174.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') center/cover" },
+    { name: "Minas Tirith", lat: 42.0, lon: -3.0, planet: "Middle-earth", bg: "url('https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') center/cover" },
+    { name: "Tatooine", lat: 20.0, lon: 20.0, planet: "Star Wars", bg: "radial-gradient(circle, #f4a460, #8b4513)" },
+    { name: "Death Star", lat: 0.0, lon: 0.0, planet: "Star Wars", bg: "radial-gradient(circle, #2f4f4f, #1a1a1a)" }
   ];
+
   function latLonToVector(lat, lon, radius) {
     const phi = (90 - lat) * Math.PI / 180;
     const theta = lon * Math.PI / 180;
@@ -658,6 +695,8 @@
     const z = radius * Math.sin(phi) * Math.sin(theta);
     return new THREE.Vector3(x, y, z);
   }
+
+  const markers = [];
   locations.forEach(loc => {
     const pos = latLonToVector(loc.lat, loc.lon, 1.02);
     const div = document.createElement('div');
@@ -674,18 +713,56 @@
     div.style.whiteSpace = 'nowrap';
     div.addEventListener('click', () => {
       document.getElementById('planetNameDisplay').innerHTML = `🌍 ${loc.planet}`;
-      const bgMap = { Earth: 'linear-gradient(135deg, #1a472a, #0a2f1f)', Asgard: 'radial-gradient(circle, gold, orange)', Krypton: 'radial-gradient(circle, #4a4a5a, #1a1a2a)' };
-      canvas.parentNode.style.background = bgMap[loc.planet] || '#050508';
+      canvas.parentNode.style.background = loc.bg;
+      // Fly to location (simple camera look)
+      const targetPos = latLonToVector(loc.lat, loc.lon, 2.2);
+      // Smooth camera movement
+      const startPos = camera.position.clone();
+      const duration = 1000;
+      const startTime = performance.now();
+      function animateCamera(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(1, elapsed / duration);
+        camera.position.lerpVectors(startPos, targetPos, t);
+        camera.lookAt(0, 0, 0);
+        if (t < 1) requestAnimationFrame(animateCamera);
+      }
+      requestAnimationFrame(animateCamera);
     });
     const label = new CSS2DObject(div);
     label.position.copy(pos);
     scene.add(label);
+    markers.push(label);
   });
+
+  // Search functionality
+  document.getElementById('searchBtn').onclick = () => {
+    const query = document.getElementById('locationSearch').value.toLowerCase();
+    const loc = locations.find(l => l.name.toLowerCase().includes(query));
+    if (loc) {
+      const targetPos = latLonToVector(loc.lat, loc.lon, 2.2);
+      const startPos = camera.position.clone();
+      const duration = 1000;
+      const startTime = performance.now();
+      function animateCamera(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(1, elapsed / duration);
+        camera.position.lerpVectors(startPos, targetPos, t);
+        camera.lookAt(0, 0, 0);
+        if (t < 1) requestAnimationFrame(animateCamera);
+      }
+      requestAnimationFrame(animateCamera);
+      document.getElementById('planetNameDisplay').innerHTML = `🌍 ${loc.planet}`;
+      canvas.parentNode.style.background = loc.bg;
+    } else {
+      alert("Location not found. Try: Metropolis, Wakanda, Asgard, Rivendell, Tatooine");
+    }
+  };
 
   function animate() {
     requestAnimationFrame(animate);
-    earth.rotation.y += 0.002;
-    clouds.rotation.y += 0.0023;
+    earth.rotation.y += 0.0015;
+    clouds.rotation.y += 0.0017;
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
   }
