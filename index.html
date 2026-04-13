@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>WORLDS — Ultimate Multiverse Hub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     :root {
       --red: #ff2a00;
       --red-glow: rgba(255,42,0,0.35);
@@ -19,8 +25,6 @@
       --radius: 16px;
     }
 
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
     body {
       font-family: 'Space Grotesk', sans-serif;
       background: var(--bg);
@@ -29,50 +33,71 @@
       min-height: 100vh;
     }
 
-    ::-webkit-scrollbar { width:5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--red); border-radius:99px; }
-
+    /* noise overlay */
     body::before {
-      content:'';
-      position:fixed; inset:0; z-index:0; pointer-events:none;
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity:0.4;
+      opacity: 0.4;
     }
 
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--red);
+      border-radius: 99px;
+    }
+
+    /* navbar */
     .navbar {
-      position:fixed; top:0; left:0; right:0; z-index:900;
-      padding:0 2rem;
-      height:60px;
-      display:flex; align-items:center; justify-content:space-between;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 900;
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       background: rgba(5,5,8,0.72);
-      backdrop-filter: blur(24px) saturate(180%);
+      backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border);
     }
-
     .nav-logo {
       font-family: 'Bebas Neue', sans-serif;
-      font-size:1.6rem;
-      letter-spacing:6px;
+      font-size: 1.6rem;
+      letter-spacing: 6px;
       color: var(--text);
-      cursor:pointer;
-      user-select:none;
+      cursor: pointer;
     }
     .nav-logo span { color: var(--red); }
-
     .nav-links {
-      display:flex; gap:6px; align-items:center;
+      display: flex;
+      gap: 6px;
+      align-items: center;
     }
     .nav-item {
-      cursor:pointer;
-      display:flex; align-items:center; gap:7px;
-      font-size:0.8rem; font-weight:600; letter-spacing:0.05em;
-      padding:7px 16px;
-      border-radius:99px;
-      border:1px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 7px 16px;
+      border-radius: 99px;
+      border: 1px solid transparent;
       color: var(--muted);
       transition: all 0.2s;
-      text-transform:uppercase;
+      text-transform: uppercase;
     }
     .nav-item:hover, .nav-item.active {
       color: var(--text);
@@ -89,497 +114,428 @@
       box-shadow: 0 0 20px var(--red-glow);
     }
 
-    .page { display:none; min-height:100vh; position:relative; z-index:1; }
-    .page.active-page { display:block; }
+    /* pages */
+    .page {
+      display: none;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+      padding-top: 60px;
+    }
+    .page.active-page {
+      display: block;
+    }
 
-    /* HOME */
+    /* home */
     #homePage {
-      display:none;
-      flex-direction:column; align-items:center; justify-content:center;
-      min-height:100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
       padding: 80px 2rem 4rem;
     }
-    #homePage.active-page { display:flex; }
-
+    #homePage.active-page {
+      display: flex;
+    }
     .home-bg {
-      position:fixed; inset:0; z-index:-1;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,42,0,0.12), transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,170,0,0.06), transparent 50%),
-        var(--bg);
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,42,0,0.12), transparent 60%),
+                  radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,170,0,0.06), transparent 50%),
+                  var(--bg);
     }
-
-    .home-kicker {
-      font-size:0.7rem; font-weight:700; letter-spacing:0.3em;
-      text-transform:uppercase; color:var(--red);
-      margin-bottom:1.5rem;
-      opacity:0; animation: fadeUp 0.6s 0.1s forwards;
-    }
-
     .worlds-title {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(5rem, 14vw, 10rem);
-      line-height:0.9;
-      letter-spacing:0.12em;
-      text-align:center;
-      display:flex; align-items:center; justify-content:center;
-      gap:0.05em;
-      opacity:0; animation: fadeUp 0.6s 0.25s forwards;
+      line-height: 0.9;
+      letter-spacing: 0.12em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.05em;
     }
     .rotating-o {
-      display:inline-block;
+      display: inline-block;
       animation: spinPlanet 8s linear infinite;
-      transform-origin:center;
     }
-    @keyframes spinPlanet { to { transform: rotate(360deg); } }
-
+    @keyframes spinPlanet {
+      to { transform: rotate(360deg); }
+    }
     .home-sub {
-      margin-top:1.2rem;
-      font-size:1rem; color:var(--muted); text-align:center;
-      max-width:400px;
-      opacity:0; animation: fadeUp 0.6s 0.4s forwards;
+      margin-top: 1rem;
+      color: var(--muted);
+      max-width: 500px;
     }
-
     .universes-grid {
-      display:flex; flex-wrap:wrap; justify-content:center; gap:12px;
-      margin-top:3.5rem;
-      max-width:720px;
-      opacity:0; animation: fadeUp 0.7s 0.55s forwards;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 3rem;
     }
     .universe-pill {
-      cursor:pointer;
-      display:flex; align-items:center; gap:10px;
-      padding:12px 22px;
-      border-radius:99px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 22px;
+      border-radius: 99px;
       background: var(--surface);
-      border:1px solid var(--border);
-      font-size:0.85rem; font-weight:600;
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      font-weight: 600;
       transition: all 0.2s;
-      backdrop-filter: blur(8px);
     }
     .universe-pill:hover {
       border-color: var(--red);
       background: rgba(255,42,0,0.08);
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px var(--red-glow);
     }
 
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(20px); }
-      to   { opacity:1; transform:translateY(0); }
+    /* universe detail page (simple but complete) */
+    .universe-detail {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
     }
-
-    /* UNIVERSE PAGES (same as before) */
-    .universe-page-inner {
-      min-height:100vh;
-      padding-top:60px;
-      display:grid;
-      grid-template-columns: 360px 1fr;
+    @media (max-width: 800px) {
+      .universe-detail { grid-template-columns: 1fr; }
     }
-    @media(max-width:900px) {
-      .universe-page-inner { grid-template-columns:1fr; }
-    }
-    .universe-sidebar {
-      padding:2.5rem 2rem;
-      background: linear-gradient(180deg, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0.7) 100%);
-      border-right:1px solid var(--border);
-      position:sticky; top:60px;
-      height:calc(100vh - 60px);
-      overflow-y:auto;
-    }
-    .sidebar-hero-img {
-      width:100%;
-      aspect-ratio:3/4;
-      object-fit:cover;
-      border-radius:var(--radius);
-      border:1px solid var(--border);
-    }
-    .sidebar-hero-name {
-      font-family:'Bebas Neue',sans-serif;
-      font-size:2.2rem; letter-spacing:0.05em;
-      margin-top:1rem;
-    }
-    .sidebar-hero-rank {
-      font-size:0.72rem; font-weight:700; letter-spacing:0.25em;
-      text-transform:uppercase; color:var(--red);
-      margin-top:2px;
-    }
-    .stat-block {
+    .hero-card {
       background: var(--surface);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:1rem 1.2rem;
-      margin-top:1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
     }
-    .stat-label {
-      font-size:0.65rem; font-weight:700; letter-spacing:0.2em;
-      text-transform:uppercase; color:var(--muted); margin-bottom:6px;
+    .hero-card img {
+      width: 100%;
+      border-radius: var(--radius);
     }
-    .villains-section { margin-top:1.5rem; }
-    .villains-row {
-      display:flex; gap:10px; overflow-x:auto; padding-bottom:6px;
+    .hero-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      margin-top: 1rem;
     }
-    .villain-chip {
-      flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:6px;
+    .hero-rank {
+      color: var(--red);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
     }
-    .villain-chip img {
-      width:52px; height:52px; border-radius:50%;
-      border:2px solid var(--border);
+    .villains-list {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      margin-top: 1rem;
     }
-    .universe-main {
-      padding:2.5rem 2rem;
+    .villain-badge {
+      text-align: center;
+      min-width: 70px;
     }
-    .universe-hero-selector {
-      display:flex; flex-wrap:wrap; gap:8px; margin-bottom:2rem;
-    }
-    .hero-select-btn {
-      padding:8px 18px; border-radius:99px; font-size:0.78rem;
-      font-weight:600; cursor:pointer; border:1px solid var(--border);
-      background:var(--surface); color:var(--muted);
-      transition:0.2s;
-    }
-    .hero-select-btn.active, .hero-select-btn:hover {
-      border-color:var(--red); color:var(--text);
-      background:rgba(255,42,0,0.1);
-    }
-    .universe-banner {
-      border-radius:var(--radius);
-      overflow:hidden; aspect-ratio:16/6;
-      background: var(--surface);
-      border:1px solid var(--border);
-      display:flex; align-items:flex-end;
-      margin-top:1rem;
-    }
-    .universe-banner-content {
-      padding:1.5rem;
-      background:linear-gradient(0deg, rgba(5,5,8,0.9), transparent);
-      width:100%;
-    }
-    .universe-banner-title {
-      font-family:'Bebas Neue',sans-serif;
-      font-size:clamp(2rem,5vw,3.5rem);
+    .villain-badge img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
     }
 
-    /* BATTLE PAGE (fully restored) */
-    #battlePage { padding-top:60px; }
+    /* battle page */
     .battle-container {
-      max-width:1100px;
-      margin:0 auto;
-      padding:3rem 2rem;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
     }
     .battle-header {
-      text-align:center;
-      margin-bottom:3rem;
-    }
-    .battle-header h2 {
-      font-family:'Bebas Neue',sans-serif;
-      font-size:clamp(2.5rem,6vw,5rem);
+      text-align: center;
+      margin-bottom: 2rem;
     }
     .battle-arena {
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:30px;
-      flex-wrap:wrap;
-      width:100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      flex-wrap: wrap;
     }
     .fighter-card {
       background: var(--surface);
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:1.5rem;
-      width:280px;
-      display:flex;
-      flex-direction:column;
-      gap:1.2rem;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      width: 280px;
+      transition: 0.2s;
     }
-    .fighter-card.locked { border-color:var(--red); }
-    .fighter-avatar-wrap {
-      width:120px;
-      height:120px;
-      margin:0 auto;
+    .fighter-card.locked {
+      border-color: var(--red);
+      box-shadow: 0 0 15px var(--red-glow);
     }
-    .fighter-avatar-wrap img {
-      width:100%;
-      height:100%;
-      border-radius:50%;
-      border:2px solid var(--border);
-      object-fit:cover;
+    .fighter-avatar {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
     }
-    .fighter-name-display {
-      text-align:center;
-      font-family:'Syne',sans-serif;
-      font-size:1.2rem;
-      font-weight:700;
+    .fighter-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
     }
-    .fighter-universe-tag {
-      text-align:center;
-      font-size:0.7rem;
-      letter-spacing:0.2em;
-      text-transform:uppercase;
-      color:var(--muted);
+    .fighter-name {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-top: 0.8rem;
+    }
+    .fighter-universe {
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
     .fighter-nav {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 1rem 0;
     }
     .nav-arrow {
-      width:36px;
-      height:36px;
-      border-radius:50%;
-      border:1px solid var(--border);
-      background:var(--surface);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      transition:0.2s;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
     }
-    .nav-arrow:hover { border-color:var(--red); color:var(--red); }
-    .lock-btn-new {
-      width:100%;
-      padding:10px;
-      border-radius:99px;
-      border:1px solid var(--border);
-      background:var(--surface);
-      color:var(--text);
-      font-size:0.78rem;
-      font-weight:600;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
+    .nav-arrow:hover {
+      border-color: var(--red);
+      color: var(--red);
     }
-    .lock-btn-new.locked {
-      background:rgba(255,42,0,0.12);
-      border-color:var(--red);
-      color:var(--red);
+    .lock-btn {
+      width: 100%;
+      padding: 8px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .lock-btn.locked {
+      background: rgba(255,42,0,0.12);
+      border-color: var(--red);
+      color: var(--red);
     }
     .vs-column {
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:20px;
+      text-align: center;
     }
     .vs-badge {
-      font-family:'Bebas Neue',sans-serif;
-      font-size:2.5rem;
-      color:var(--muted);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      color: var(--muted);
     }
-    .fight-btn-new {
-      padding:14px 32px;
-      border-radius:99px;
+    .fight-btn {
       background: var(--red);
-      border:none;
-      color:#fff;
-      font-family:'Bebas Neue',sans-serif;
-      font-size:1.2rem;
-      cursor:pointer;
-      box-shadow: 0 4px 24px var(--red-glow);
+      border: none;
+      padding: 12px 28px;
+      border-radius: 99px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.1em;
+      color: white;
+      cursor: pointer;
+      margin-top: 1rem;
+      box-shadow: 0 4px 20px var(--red-glow);
     }
     .battle-log {
-      margin-top:2rem;
-      background:var(--surface);
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:1.5rem;
-      max-height:360px;
-      overflow-y:auto;
-      width:100%;
+      margin-top: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      max-height: 350px;
+      overflow-y: auto;
     }
-    .log-entry {
-      padding:12px 16px;
-      background:rgba(255,255,255,0.03);
-      border-radius:10px;
-      border-left:2px solid var(--border);
-      margin-bottom:8px;
-      font-size:0.85rem;
+    .log-line {
+      padding: 10px;
+      border-left: 2px solid var(--border);
+      margin-bottom: 8px;
+      font-size: 0.85rem;
     }
-    .log-entry.highlight { border-left-color:var(--amber); color:var(--amber); }
-    .log-entry.winner { border-left-color:var(--red); background:rgba(255,42,0,0.06); }
-    .comic-btn {
-      margin-top:1rem;
-      background:#4caf50;
-      padding:10px 20px;
-      border-radius:99px;
-      border:none;
-      color:#fff;
-      font-weight:600;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+    .log-line.winner {
+      border-left-color: var(--red);
+      background: rgba(255,42,0,0.05);
+    }
+    .comic-download-btn {
+      background: #4caf50;
+      margin-top: 1rem;
+      padding: 10px 20px;
+      border-radius: 99px;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
     }
 
-    /* BAZAAR PAGE (fully functional) */
-    #bazaarPage { padding-top:60px; }
+    /* bazaar page */
     .bazaar-container {
-      max-width:1100px;
-      margin:0 auto;
-      padding:3rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
     }
     .bazaar-header {
-      text-align:center;
-      margin-bottom:2rem;
-    }
-    .bazaar-header h2 {
-      font-family:'Bebas Neue',sans-serif;
-      font-size:clamp(2rem,5vw,3.5rem);
+      text-align: center;
+      margin-bottom: 2rem;
     }
     .category-tabs {
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
-      gap:8px;
-      margin-bottom:2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 2rem;
     }
     .cat-tab {
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 18px;
-      border-radius:99px;
-      border:1px solid var(--border);
-      background:var(--surface);
-      font-size:0.8rem;
-      font-weight:600;
-      color:var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 8px 20px;
+      border-radius: 99px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      transition: 0.2s;
     }
-    .cat-tab.active {
-      border-color:var(--red);
-      color:var(--text);
-      background:rgba(255,42,0,0.1);
+    .cat-tab.active, .cat-tab:hover {
+      border-color: var(--red);
+      background: rgba(255,42,0,0.1);
+      color: var(--text);
     }
     .upload-panel {
-      background:var(--surface);
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:2rem;
-      margin-bottom:2rem;
-      display:none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: none;
     }
-    .form-row {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-bottom:12px;
+    .form-group {
+      margin-bottom: 1rem;
     }
-    .field {
-      display:flex;
-      flex-direction:column;
-      gap:6px;
+    .form-group label {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+      color: var(--muted);
     }
-    .field label {
-      font-size:0.7rem;
-      font-weight:700;
-      letter-spacing:0.15em;
-      text-transform:uppercase;
-      color:var(--muted);
-    }
-    .field input, .field textarea {
-      background:rgba(255,255,255,0.05);
-      border:1px solid var(--border);
-      color:var(--text);
-      padding:10px 14px;
-      border-radius:10px;
-      font-family:inherit;
+    .form-group input, .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px;
+      border-radius: 10px;
+      font-family: inherit;
     }
     .publish-btn {
-      padding:11px 28px;
-      border-radius:99px;
-      background:var(--red);
-      border:none;
-      color:#fff;
-      font-weight:700;
-      cursor:pointer;
+      background: var(--red);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 99px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
     }
     .listings-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
-      gap:16px;
-      margin-top:1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
     }
     .listing-card {
-      background:var(--surface);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:1.5rem;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
     }
-    .listing-card-icon {
-      width:44px;
-      height:44px;
-      border-radius:12px;
-      background:rgba(255,42,0,0.1);
-      border:1px solid rgba(255,42,0,0.2);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:1.2rem;
-      color:var(--red);
+    .listing-icon {
+      font-size: 1.8rem;
+      color: var(--red);
+      margin-bottom: 0.5rem;
     }
-    .listing-card-title { font-weight:700; }
-    .listing-card-desc { font-size:0.78rem; color:var(--muted); }
-    .listing-card-footer {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-top:8px;
+    .listing-title {
+      font-weight: bold;
+      margin: 0.5rem 0;
     }
-    .listing-price { font-weight:700; color:var(--amber); }
+    .listing-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .listing-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .listing-price {
+      color: var(--amber);
+      font-weight: bold;
+    }
     .buy-btn {
-      padding:5px 12px;
-      border-radius:99px;
-      font-size:0.7rem;
-      font-weight:700;
-      border:1px solid var(--red);
-      background:transparent;
-      color:var(--red);
-      cursor:pointer;
+      background: transparent;
+      border: 1px solid var(--red);
+      color: var(--red);
+      padding: 4px 12px;
+      border-radius: 99px;
+      cursor: pointer;
     }
+
+    /* modal */
     .modal-overlay {
-      display:none;
-      position:fixed;
-      inset:0;
-      z-index:1000;
-      background:rgba(5,5,8,0.85);
-      backdrop-filter:blur(16px);
-      align-items:center;
-      justify-content:center;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
     }
-    .modal-overlay.open { display:flex; }
+    .modal-overlay.open {
+      display: flex;
+    }
     .modal-box {
-      background: rgba(12,12,18,0.95);
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:2rem;
-      width:100%;
-      max-width:400px;
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
     }
     footer {
-      text-align:center;
-      padding:24px;
-      border-top:1px solid var(--border);
-      font-size:0.75rem;
-      color:var(--muted);
-    }
-    @media(max-width:700px) {
-      .battle-arena { flex-direction:column; }
-      .vs-column { order:2; margin:20px 0; }
+      text-align: center;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--muted);
     }
   </style>
 </head>
 <body>
-
 <div class="home-bg"></div>
 
 <nav class="navbar">
@@ -592,9 +548,8 @@
   </div>
 </nav>
 
-<!-- HOME -->
+<!-- HOME PAGE -->
 <div id="homePage" class="page active-page">
-  <div class="home-kicker">The Multiverse Hub</div>
   <div class="worlds-title">
     <span>W</span><span class="rotating-o">🪐</span><span>RLDS</span>
   </div>
@@ -602,51 +557,48 @@
   <div class="universes-grid" id="universeGrid"></div>
 </div>
 
-<div id="universePagesContainer"></div>
+<!-- UNIVERSE PAGES (will be populated) -->
+<div id="universePages"></div>
 
 <!-- BATTLE PAGE -->
 <div id="battlePage" class="page">
   <div class="battle-container">
     <div class="battle-header">
-      <h2>Battle Arena</h2>
-      <p>Select two fighters, lock them in, and simulate the clash.</p>
+      <h2 style="font-family:'Bebas Neue'; font-size:3rem;">BATTLE ARENA</h2>
+      <p>Select fighters → Lock → Fight → Download Comic</p>
     </div>
     <div class="battle-arena">
       <div class="fighter-card" id="fighter1Card">
-        <div class="fighter-avatar-wrap"><img id="fighter1Img" src=""></div>
-        <div>
-          <div class="fighter-name-display" id="fighter1Name">—</div>
-          <div class="fighter-universe-tag" id="fighter1Uni">—</div>
-        </div>
+        <div class="fighter-avatar"><img id="fighter1Img" src=""></div>
+        <div class="fighter-name" id="fighter1Name">—</div>
+        <div class="fighter-universe" id="fighter1Uni">—</div>
         <div class="fighter-nav">
           <div class="nav-arrow" id="f1Prev"><i class="fas fa-chevron-left"></i></div>
-          <div class="fighter-index" id="f1Idx">1/1</div>
+          <span id="f1Idx" style="font-size:0.7rem;">0/0</span>
           <div class="nav-arrow" id="f1Next"><i class="fas fa-chevron-right"></i></div>
         </div>
-        <button class="lock-btn-new" id="lock1Btn"><i class="fas fa-lock-open"></i> Lock Fighter</button>
+        <button class="lock-btn" id="lock1Btn"><i class="fas fa-lock-open"></i> Lock Fighter</button>
       </div>
       <div class="vs-column">
         <div class="vs-badge">VS</div>
-        <button class="fight-btn-new" id="startFightBtn">FIGHT</button>
+        <button class="fight-btn" id="fightBtn">FIGHT</button>
       </div>
       <div class="fighter-card" id="fighter2Card">
-        <div class="fighter-avatar-wrap"><img id="fighter2Img" src=""></div>
-        <div>
-          <div class="fighter-name-display" id="fighter2Name">—</div>
-          <div class="fighter-universe-tag" id="fighter2Uni">—</div>
-        </div>
+        <div class="fighter-avatar"><img id="fighter2Img" src=""></div>
+        <div class="fighter-name" id="fighter2Name">—</div>
+        <div class="fighter-universe" id="fighter2Uni">—</div>
         <div class="fighter-nav">
           <div class="nav-arrow" id="f2Prev"><i class="fas fa-chevron-left"></i></div>
-          <div class="fighter-index" id="f2Idx">1/1</div>
+          <span id="f2Idx" style="font-size:0.7rem;">0/0</span>
           <div class="nav-arrow" id="f2Next"><i class="fas fa-chevron-right"></i></div>
         </div>
-        <button class="lock-btn-new" id="lock2Btn"><i class="fas fa-lock-open"></i> Lock Fighter</button>
+        <button class="lock-btn" id="lock2Btn"><i class="fas fa-lock-open"></i> Lock Fighter</button>
       </div>
     </div>
     <div class="battle-log" id="battleLog">
-      <div class="log-entry">Select two fighters, lock them in, then hit FIGHT.</div>
+      <div class="log-line">Select two fighters, lock them, then press FIGHT.</div>
     </div>
-    <div id="comicBtnContainer" style="text-align:center; margin-top:1rem;"></div>
+    <div id="comicBtnArea" style="text-align:center;"></div>
   </div>
 </div>
 
@@ -654,8 +606,8 @@
 <div id="bazaarPage" class="page">
   <div class="bazaar-container">
     <div class="bazaar-header">
-      <h2>Creator's Bazaar</h2>
-      <p>Sell your original superhero creations to the multiverse.</p>
+      <h2 style="font-family:'Bebas Neue'; font-size:3rem;">Creator's Bazaar</h2>
+      <p>Sell your original superhero creations – comics, edits, models, art, cosplay</p>
     </div>
     <div class="category-tabs" id="categoryTabs">
       <div class="cat-tab" data-type="comic"><i class="fas fa-book-open"></i> Comics</div>
@@ -665,18 +617,16 @@
       <div class="cat-tab" data-type="cosplay"><i class="fas fa-mask"></i> Cosplay</div>
     </div>
     <div class="upload-panel" id="uploadPanel">
-      <h3 style="margin-bottom:1rem;">Upload your work</h3>
-      <div class="form-row">
-        <div class="field"><label>Title</label><input id="uploadTitle" placeholder="Name your creation"></div>
-        <div class="field"><label>Price (USD)</label><input id="uploadPrice" type="number" placeholder="0.00"></div>
-      </div>
-      <div class="field"><label>Description</label><textarea id="uploadDesc" rows="2" placeholder="Describe your work..."></textarea></div>
-      <button class="publish-btn" id="publishBtn" style="margin-top:1rem;">Publish to Bazaar</button>
+      <h3>Upload your work</h3>
+      <div class="form-group"><label>Title</label><input id="uploadTitle" placeholder="e.g., My Comic"></div>
+      <div class="form-group"><label>Price (USD)</label><input id="uploadPrice" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label>Description</label><textarea id="uploadDesc" rows="2" placeholder="Describe your creation..."></textarea></div>
+      <button class="publish-btn" id="publishBtn">Publish to Bazaar</button>
     </div>
     <div class="listings-grid" id="bazaarListings">
-      <!-- Demo listings -->
-      <div class="listing-card"><div class="listing-card-icon"><i class="fas fa-book-open"></i></div><div class="listing-card-title">Dark Tomorrow</div><div class="listing-card-desc">A gritty indie comic about a fallen hero.</div><div class="listing-card-footer"><span class="listing-price">$4.99</span><button class="buy-btn">Buy</button></div></div>
-      <div class="listing-card"><div class="listing-card-icon"><i class="fas fa-video"></i></div><div class="listing-card-title">Rivals Tribute</div><div class="listing-card-desc">Fan-made cinematic edit.</div><div class="listing-card-footer"><span class="listing-price">$1.99</span><button class="buy-btn">Buy</button></div></div>
+      <!-- demo listings -->
+      <div class="listing-card"><div class="listing-icon"><i class="fas fa-book-open"></i></div><div class="listing-title">Dark Tomorrow</div><div class="listing-desc">A gritty indie comic about a fallen hero.</div><div class="listing-footer"><span class="listing-price">$4.99</span><button class="buy-btn">Buy</button></div></div>
+      <div class="listing-card"><div class="listing-icon"><i class="fas fa-video"></i></div><div class="listing-title">Rivals Tribute</div><div class="listing-desc">Fan-made cinematic edit.</div><div class="listing-footer"><span class="listing-price">$1.99</span><button class="buy-btn">Buy</button></div></div>
     </div>
   </div>
 </div>
@@ -684,211 +634,240 @@
 <!-- AUTH MODAL -->
 <div class="modal-overlay" id="authModal">
   <div class="modal-box">
-    <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:1rem;"><h3>Join WORLDS</h3><div class="modal-close" id="closeModal" style="cursor:pointer;">&times;</div></div>
-    <div class="modal-field"><input placeholder="Username"></div>
-    <div class="modal-field"><input placeholder="Email"></div>
-    <div class="modal-field"><input placeholder="Password" type="password"></div>
-    <button class="modal-submit" id="mockSignup" style="width:100%; padding:10px; background:var(--red); border:none; color:#fff; border-radius:99px; margin-top:1rem;">Create Account</button>
+    <div style="display:flex; justify-content:space-between; margin-bottom:1rem;"><h3>Join WORLDS</h3><span id="closeModal" style="cursor:pointer;">&times;</span></div>
+    <div class="form-group"><input placeholder="Username"></div>
+    <div class="form-group"><input placeholder="Email"></div>
+    <div class="form-group"><input placeholder="Password" type="password"></div>
+    <button class="publish-btn" id="mockSignup" style="width:100%;">Create Account</button>
   </div>
 </div>
 
-<footer>⚡ <span>WORLDS</span> — Where every universe collides</footer>
+<footer>⚡ <span style="color:var(--red);">WORLDS</span> — Where every universe collides</footer>
 
 <script>
-// ======================== UNIVERSE DATA ========================
+// ----------------------------- DATA -----------------------------
 const universes = [
-  { id:"marvel", name:"Marvel", icon:"fab fa-marvel", color:"#e23636", characters:[
-    { name:"Captain America", rank:"Super Soldier", powers:"Peak human physiology, vibranium shield mastery", weaknesses:"Mortal — no superhuman durability", image:"https://api.dicebear.com/9.x/avataaars/svg?seed=CaptainAmerica", villains:["Red Skull","Crossbones"] },
-    { name:"Wolverine", rank:"Omega Mutant", powers:"Regenerative healing, adamantium claws", weaknesses:"Adamantium poisoning", image:"https://api.dicebear.com/9.x/avataaars/svg?seed=Wolverine", villains:["Sabretooth","Lady Deathstrike"] },
-    { name:"Iron Man", rank:"Genius", powers:"Powered armor, repulsor tech", weaknesses:"Power drainage", image:"https://api.dicebear.com/9.x/avataaars/svg?seed=IronMan", villains:["Iron Monger","Ultron"] }
-  ]},
-  { id:"dc", name:"DC", icon:"fas fa-bolt", color:"#2c6e9e", characters:[
-    { name:"Superman", rank:"Kryptonian", powers:"Heat vision, super strength, flight", weaknesses:"Kryptonite, magic", image:"https://api.dicebear.com/9.x/avataaars/svg?seed=Superman", villains:["Lex Luthor","Doomsday"] },
-    { name:"Batman", rank:"Dark Knight", powers:"Intellect, martial arts, gadgets", weaknesses:"Mortal, no powers", image:"https://api.dicebear.com/9.x/avataaars/svg?seed=Batman", villains:["Joker","Bane"] }
-  ]},
-  { id:"invincible", name:"Invincible", icon:"fas fa-fist-raised", color:"#f5a623", characters:[
-    { name:"Invincible", rank:"Viltrumite", powers:"Flight, super strength", weaknesses:"Emotional", image:"https://api.dicebear.com/9.x/avataaars/svg?seed=Invincible", villains:["Omni-Man","Angstrom Levy"] }
-  ]},
-  { id:"theboys", name:"The Boys", icon:"fas fa-skull", color:"#8b0000", characters:[
-    { name:"Homelander", rank:"Supe", powers:"Laser vision, flight", weaknesses:"Psychological", image:"https://api.dicebear.com/9.x/avataaars/svg?seed=Homelander", villains:["Billy Butcher"] }
-  ]},
-  { id:"anime", name:"Anime", icon:"fas fa-dragon", color:"#ff69b4", characters:[
-    { name:"Goku", rank:"Saiyan", powers:"Kamehameha, Ultra Instinct", weaknesses:"Stamina", image:"https://api.dicebear.com/9.x/avataaars/svg?seed=Goku", villains:["Frieza","Jiren"] },
-    { name:"Naruto", rank:"Hokage", powers:"Rasengan, Shadow Clones", weaknesses:"Chakra", image:"https://api.dicebear.com/9.x/avataaars/svg?seed=Naruto", villains:["Madara","Pain"] }
-  ]}
+  { id: "marvel", name: "Marvel", icon: "fab fa-marvel", color: "#e23636",
+    characters: [
+      { name: "Captain America", rank: "Super Soldier", powers: "Peak human, vibranium shield", weaknesses: "Mortal", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=CaptainAmerica", villains: ["Red Skull","Crossbones"] },
+      { name: "Wolverine", rank: "Omega Mutant", powers: "Healing, adamantium claws", weaknesses: "Adamantium poisoning", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Wolverine", villains: ["Sabretooth","Lady Deathstrike"] },
+      { name: "Iron Man", rank: "Genius", powers: "Repulsors, flight", weaknesses: "Power drainage", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=IronMan", villains: ["Iron Monger","Ultron"] }
+    ] },
+  { id: "dc", name: "DC", icon: "fas fa-bolt", color: "#2c6e9e",
+    characters: [
+      { name: "Superman", rank: "Kryptonian", powers: "Heat vision, super strength", weaknesses: "Kryptonite", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Superman", villains: ["Lex Luthor","Doomsday"] },
+      { name: "Batman", rank: "Dark Knight", powers: "Intellect, gadgets", weaknesses: "Mortal", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Batman", villains: ["Joker","Bane"] }
+    ] },
+  { id: "invincible", name: "Invincible", icon: "fas fa-fist-raised", color: "#f5a623",
+    characters: [
+      { name: "Invincible", rank: "Viltrumite", powers: "Flight, super strength", weaknesses: "Emotional", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Invincible", villains: ["Omni-Man","Angstrom Levy"] }
+    ] },
+  { id: "theboys", name: "The Boys", icon: "fas fa-skull", color: "#8b0000",
+    characters: [
+      { name: "Homelander", rank: "Supe", powers: "Laser vision, flight", weaknesses: "Psychological", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Homelander", villains: ["Billy Butcher"] }
+    ] },
+  { id: "anime", name: "Anime", icon: "fas fa-dragon", color: "#ff69b4",
+    characters: [
+      { name: "Goku", rank: "Saiyan", powers: "Kamehameha, Ultra Instinct", weaknesses: "Stamina", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Goku", villains: ["Frieza","Jiren"] },
+      { name: "Naruto", rank: "Hokage", powers: "Rasengan, Shadow Clones", weaknesses: "Chakra", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Naruto", villains: ["Madara","Pain"] }
+    ] }
 ];
 
-let allChars = [];
-universes.forEach(u => u.characters.forEach(c => allChars.push({...c, universe:u.name})));
+// Flatten all characters for battle
+let allBattleChars = [];
+universes.forEach(u => {
+  u.characters.forEach(c => {
+    allBattleChars.push({
+      name: c.name,
+      universe: u.name,
+      image: c.image,
+      powers: c.powers,
+      weaknesses: c.weaknesses
+    });
+  });
+});
 
-// Build home universe pills
-const grid = document.getElementById('universeGrid');
+// ----------------------------- HOME: build universe pills -----------------------------
+const universeGrid = document.getElementById('universeGrid');
 universes.forEach(u => {
   const pill = document.createElement('div');
   pill.className = 'universe-pill';
-  pill.innerHTML = `<i class="${u.icon}" style="color:${u.color}"></i>${u.name}`;
-  pill.onclick = () => showPage(`universe-${u.id}`);
-  grid.appendChild(pill);
+  pill.innerHTML = `<i class="${u.icon}" style="color:${u.color}"></i> ${u.name}`;
+  pill.onclick = () => showUniversePage(u);
+  universeGrid.appendChild(pill);
 });
 
-// Build universe pages
-const pagesContainer = document.getElementById('universePagesContainer');
-universes.forEach(u => {
+// ----------------------------- UNIVERSE PAGES -----------------------------
+const universePagesDiv = document.getElementById('universePages');
+function showUniversePage(univ) {
+  // Remove existing universe page if any
+  const existing = document.getElementById(`univ-${univ.id}`);
+  if (existing) existing.remove();
+  
   const pageDiv = document.createElement('div');
-  pageDiv.id = `universe-${u.id}`;
+  pageDiv.id = `univ-${univ.id}`;
   pageDiv.className = 'page';
   pageDiv.innerHTML = `
-    <div class="universe-page-inner">
-      <div class="universe-sidebar">
-        <img class="sidebar-hero-img" id="heroImg-${u.id}" src="">
-        <div class="sidebar-hero-name" id="heroName-${u.id}"></div>
-        <div class="sidebar-hero-rank" id="heroRank-${u.id}"></div>
-        <div class="stat-block"><div class="stat-label">Powers</div><div class="stat-value" id="heroPowers-${u.id}"></div></div>
-        <div class="stat-block"><div class="stat-label">Weaknesses</div><div class="stat-value" id="heroWeaknesses-${u.id}"></div></div>
-        <div class="villains-section"><h4 style="color:var(--muted); font-size:0.65rem;">Known Villains</h4><div class="villains-row" id="villainList-${u.id}"></div></div>
+    <div class="universe-detail">
+      <div class="hero-card" id="heroCard-${univ.id}">
+        <img id="heroImg-${univ.id}" src="">
+        <div class="hero-name" id="heroName-${univ.id}"></div>
+        <div class="hero-rank" id="heroRank-${univ.id}"></div>
+        <div style="margin-top:1rem;"><strong>Powers:</strong> <span id="heroPowers-${univ.id}"></span></div>
+        <div><strong>Weaknesses:</strong> <span id="heroWeaknesses-${univ.id}"></span></div>
       </div>
-      <div class="universe-main">
-        <div class="universe-hero-selector" id="heroSelector-${u.id}"></div>
-        <div class="universe-banner" style="background:linear-gradient(135deg,rgba(${hexToRgb(u.color)},0.15),transparent);"><div class="universe-banner-content"><div class="universe-banner-title">${u.name} Universe</div><div class="universe-banner-sub">Explore heroes, powers, and rivalries from the ${u.name} canon.</div></div></div>
+      <div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1rem;" id="heroSelector-${univ.id}"></div>
+        <div class="hero-card">
+          <h3>Known Villains</h3>
+          <div class="villains-list" id="villainList-${univ.id}"></div>
+        </div>
       </div>
     </div>
   `;
-  pagesContainer.appendChild(pageDiv);
-  const selector = pageDiv.querySelector(`#heroSelector-${u.id}`);
-  u.characters.forEach((hero, idx) => {
+  universePagesDiv.appendChild(pageDiv);
+  
+  // Populate hero selector
+  const selector = pageDiv.querySelector(`#heroSelector-${univ.id}`);
+  univ.characters.forEach((hero, idx) => {
     const btn = document.createElement('button');
-    btn.className = 'hero-select-btn' + (idx===0?' active':'');
+    btn.className = 'cat-tab';
     btn.textContent = hero.name;
     btn.onclick = () => {
-      selector.querySelectorAll('.hero-select-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll(`#heroSelector-${univ.id} .cat-tab`).forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      loadHero(u.id, idx);
+      loadUniverseHero(univ.id, idx);
     };
     selector.appendChild(btn);
   });
-  loadHero(u.id, 0);
-});
-
-function hexToRgb(hex) {
-  const r = parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
-  return `${r},${g},${b}`;
-}
-function loadHero(uId, hIdx) {
-  const u = universes.find(x=>x.id===uId);
-  const h = u.characters[hIdx];
-  document.getElementById(`heroImg-${uId}`).src = h.image;
-  document.getElementById(`heroName-${uId}`).textContent = h.name;
-  document.getElementById(`heroRank-${uId}`).textContent = h.rank;
-  document.getElementById(`heroPowers-${uId}`).textContent = h.powers;
-  document.getElementById(`heroWeaknesses-${uId}`).textContent = h.weaknesses;
-  document.getElementById(`villainList-${uId}`).innerHTML = h.villains.map(v => `<div class="villain-chip"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${v}" alt=""><span>${v}</span></div>`).join('');
-}
-
-function showPage(id) {
+  // Load first hero
+  loadUniverseHero(univ.id, 0);
+  
+  // Show this page and hide others
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-  const target = document.getElementById(id);
-  if (target) target.classList.add('active-page');
-  window.scrollTo({top:0});
+  pageDiv.classList.add('active-page');
+  window.scrollTo(0,0);
 }
-document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', () => showPage(el.dataset.page)));
 
-// ======================== BATTLE PAGE ========================
-let f1i=0, f2i=1, f1locked=false, f2locked=false;
-let lastFightLogs = [], lastWinner = null, lastFighterA = null, lastFighterB = null;
+function loadUniverseHero(univId, heroIdx) {
+  const univ = universes.find(u => u.id === univId);
+  const hero = univ.characters[heroIdx];
+  document.getElementById(`heroImg-${univId}`).src = hero.image;
+  document.getElementById(`heroName-${univId}`).innerText = hero.name;
+  document.getElementById(`heroRank-${univId}`).innerText = hero.rank;
+  document.getElementById(`heroPowers-${univId}`).innerText = hero.powers;
+  document.getElementById(`heroWeaknesses-${univId}`).innerText = hero.weaknesses;
+  const villainContainer = document.getElementById(`villainList-${univId}`);
+  villainContainer.innerHTML = hero.villains.map(v => `
+    <div class="villain-badge">
+      <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${v}" alt="${v}">
+      <div style="font-size:0.7rem;">${v}</div>
+    </div>
+  `).join('');
+}
+
+// ----------------------------- BATTLE PAGE -----------------------------
+let fighter1Index = 0, fighter2Index = 1;
+let fighter1Locked = false, fighter2Locked = false;
+let lastBattleLogs = [], lastWinner = null, lastF1 = null, lastF2 = null;
 
 function updateBattleUI() {
-  const f1 = allChars[f1i], f2 = allChars[f2i];
+  const f1 = allBattleChars[fighter1Index];
+  const f2 = allBattleChars[fighter2Index];
   document.getElementById('fighter1Img').src = f1.image;
   document.getElementById('fighter1Name').innerText = f1.name;
   document.getElementById('fighter1Uni').innerText = f1.universe;
-  document.getElementById('f1Idx').innerText = `${f1i+1}/${allChars.length}`;
+  document.getElementById('fighter1Idx').innerText = `${fighter1Index+1}/${allBattleChars.length}`;
   document.getElementById('fighter2Img').src = f2.image;
   document.getElementById('fighter2Name').innerText = f2.name;
   document.getElementById('fighter2Uni').innerText = f2.universe;
-  document.getElementById('f2Idx').innerText = `${f2i+1}/${allChars.length}`;
-  document.getElementById('fighter1Card').classList.toggle('locked', f1locked);
-  document.getElementById('fighter2Card').classList.toggle('locked', f2locked);
-  const l1 = document.getElementById('lock1Btn');
-  const l2 = document.getElementById('lock2Btn');
-  l1.className = 'lock-btn-new' + (f1locked ? ' locked' : '');
-  l1.innerHTML = f1locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock Fighter';
-  l2.className = 'lock-btn-new' + (f2locked ? ' locked' : '');
-  l2.innerHTML = f2locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock Fighter';
+  document.getElementById('fighter2Idx').innerText = `${fighter2Index+1}/${allBattleChars.length}`;
+  
+  const card1 = document.getElementById('fighter1Card');
+  const card2 = document.getElementById('fighter2Card');
+  const lock1 = document.getElementById('lock1Btn');
+  const lock2 = document.getElementById('lock2Btn');
+  card1.classList.toggle('locked', fighter1Locked);
+  card2.classList.toggle('locked', fighter2Locked);
+  lock1.className = 'lock-btn' + (fighter1Locked ? ' locked' : '');
+  lock1.innerHTML = fighter1Locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock Fighter';
+  lock2.className = 'lock-btn' + (fighter2Locked ? ' locked' : '');
+  lock2.innerHTML = fighter2Locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock Fighter';
 }
-document.getElementById('f1Prev').onclick = () => { if(!f1locked) { f1i = (f1i-1+allChars.length)%allChars.length; updateBattleUI(); } };
-document.getElementById('f1Next').onclick = () => { if(!f1locked) { f1i = (f1i+1)%allChars.length; updateBattleUI(); } };
-document.getElementById('f2Prev').onclick = () => { if(!f2locked) { f2i = (f2i-1+allChars.length)%allChars.length; updateBattleUI(); } };
-document.getElementById('f2Next').onclick = () => { if(!f2locked) { f2i = (f2i+1)%allChars.length; updateBattleUI(); } };
-document.getElementById('lock1Btn').onclick = () => { f1locked = !f1locked; updateBattleUI(); };
-document.getElementById('lock2Btn').onclick = () => { f2locked = !f2locked; updateBattleUI(); };
 
-const canonFights = {
-  "Superman vs Doomsday":"In 'The Death of Superman', Doomsday and Superman trade devastating blows across Metropolis. Superman's final punch kills them both simultaneously.",
-  "Batman vs Joker":"In 'The Killing Joke', Joker shoots Barbara Gordon, then faces Batman in a derelict carnival — ending in an uneasy standoff.",
-  "Goku vs Frieza":"On Planet Namek, Goku's Super Saiyan transformation decimates Frieza before the planet's destruction.",
-  "Wolverine vs Sabretooth":"A brutal rivalry spanning decades — their regenerative abilities make decisive victories nearly impossible."
+document.getElementById('f1Prev').onclick = () => { if (!fighter1Locked) { fighter1Index = (fighter1Index - 1 + allBattleChars.length) % allBattleChars.length; updateBattleUI(); } };
+document.getElementById('f1Next').onclick = () => { if (!fighter1Locked) { fighter1Index = (fighter1Index + 1) % allBattleChars.length; updateBattleUI(); } };
+document.getElementById('f2Prev').onclick = () => { if (!fighter2Locked) { fighter2Index = (fighter2Index - 1 + allBattleChars.length) % allBattleChars.length; updateBattleUI(); } };
+document.getElementById('f2Next').onclick = () => { if (!fighter2Locked) { fighter2Index = (fighter2Index + 1) % allBattleChars.length; updateBattleUI(); } };
+document.getElementById('lock1Btn').onclick = () => { fighter1Locked = !fighter1Locked; updateBattleUI(); };
+document.getElementById('lock2Btn').onclick = () => { fighter2Locked = !fighter2Locked; updateBattleUI(); };
+
+const canonBattles = {
+  "Superman vs Doomsday": "In 'The Death of Superman', they trade devastating blows across Metropolis. Both fall.",
+  "Batman vs Joker": "In 'The Killing Joke', Joker shoots Barbara, then faces Batman in a grim carnival.",
+  "Goku vs Frieza": "On Namek, Goku's first Super Saiyan transformation annihilates Frieza."
 };
 
 function simulateFight() {
-  const f1 = allChars[f1i], f2 = allChars[f2i];
-  lastFighterA = f1; lastFighterB = f2;
+  const f1 = allBattleChars[fighter1Index];
+  const f2 = allBattleChars[fighter2Index];
+  lastF1 = f1; lastF2 = f2;
   const logDiv = document.getElementById('battleLog');
   logDiv.innerHTML = '';
   const lines = [];
   const key = `${f1.name} vs ${f2.name}`;
-  const canon = canonFights[key] || canonFights[`${f2.name} vs ${f1.name}`];
+  const canon = canonBattles[key] || canonBattles[`${f2.name} vs ${f1.name}`];
   const winner = Math.random() > 0.5 ? f1.name : f2.name;
   lastWinner = winner;
-  lines.push({cls:'', text:`📍 Location: ${f1.universe !== f2.universe ? `Crossover — ${f1.universe} / ${f2.universe} realms collide` : f1.universe + ' universe'}`});
-  lines.push({cls:'highlight', text:`⚔️ ${f1.name} vs ${f2.name}`});
+  lines.push(`📍 Location: ${f1.universe !== f2.universe ? `Crossover — ${f1.universe} / ${f2.universe} realms` : f1.universe + ' universe'}`);
+  lines.push(`⚔️ ${f1.name} vs ${f2.name}`);
   if (canon) {
-    lines.push({cls:'', text:`📖 Canon record: ${canon}`});
+    lines.push(`📖 Canon: ${canon}`);
   } else {
-    lines.push({cls:'', text:`${f1.name} opens with ${f1.powers.split(',')[0].toLowerCase()}, forcing ${f2.name} onto the back foot.`});
-    lines.push({cls:'', text:`${f2.name} counters — exploiting ${f1.weaknesses.split(',')[0].toLowerCase()} as a critical weakness.`});
-    lines.push({cls:'', text:`A devastating exchange shakes the arena. Both fighters are pushed to their absolute limits.`});
+    lines.push(`${f1.name} opens with ${f1.powers.split(',')[0].toLowerCase()}, forcing ${f2.name} to retreat.`);
+    lines.push(`${f2.name} exploits ${f1.weaknesses.split(',')[0].toLowerCase()} to gain the upper hand.`);
+    lines.push(`A brutal exchange shakes the arena! Both fighters are exhausted.`);
   }
-  lines.push({cls:'winner', text:`🏆 Winner: ${winner}`});
-  lastFightLogs = lines.map(l => l.text);
-  lines.forEach((l, idx) => {
+  lines.push(`🏆 WINNER: ${winner}`);
+  lastBattleLogs = lines;
+  lines.forEach((line, idx) => {
     setTimeout(() => {
       const div = document.createElement('div');
-      div.className = `log-entry ${l.cls}`;
-      div.textContent = l.text;
+      div.className = 'log-line' + (line.includes('WINNER') ? ' winner' : '');
+      div.textContent = line;
       logDiv.appendChild(div);
       logDiv.scrollTop = logDiv.scrollHeight;
     }, idx * 400);
   });
   // Show comic download button
-  const comicContainer = document.getElementById('comicBtnContainer');
-  comicContainer.innerHTML = '';
+  const comicArea = document.getElementById('comicBtnArea');
+  comicArea.innerHTML = '';
   const comicBtn = document.createElement('button');
-  comicBtn.className = 'comic-btn';
+  comicBtn.className = 'comic-download-btn';
   comicBtn.innerHTML = '<i class="fas fa-download"></i> Download as Comic (HTML)';
   comicBtn.onclick = downloadComic;
-  comicContainer.appendChild(comicBtn);
+  comicArea.appendChild(comicBtn);
 }
 
 function downloadComic() {
-  if (!lastFighterA || !lastWinner) return;
+  if (!lastF1 || !lastWinner) return;
   const comicHtml = `<!DOCTYPE html>
-  <html><head><meta charset="UTF-8"><title>WORLDS COMIC: ${lastFighterA.name} vs ${lastFighterB.name}</title>
-  <style>body{font-family:monospace; background:#0a0a1a; color:#eee; padding:2rem;} .panel{background:#1e1e2e; margin:1rem; padding:1rem; border-radius:16px;}</style></head>
-  <body><h1>BATTLE COMIC</h1><div>${lastFightLogs.map(log => `<div class="panel">${log}</div>`).join('')}<div class="panel">WINNER: ${lastWinner}</div></div></body></html>`;
-  const blob = new Blob([comicHtml], {type:'text/html'});
+  <html><head><meta charset="UTF-8"><title>WORLDS COMIC: ${lastF1.name} vs ${lastF2.name}</title>
+  <style>body{background:#0a0a1a;color:#eee;font-family:monospace;padding:2rem;} .panel{background:#1e1e2e;margin:1rem;padding:1rem;border-radius:16px;}</style></head>
+  <body><h1>BATTLE COMIC</h1><div>${lastBattleLogs.map(log => `<div class="panel">${log}</div>`).join('')}<div class="panel">WINNER: ${lastWinner}</div></div></body></html>`;
+  const blob = new Blob([comicHtml], {type: 'text/html'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `comic_${lastFighterA.name}_vs_${lastFighterB.name}.html`;
+  a.download = `comic_${lastF1.name}_vs_${lastF2.name}.html`;
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
-document.getElementById('startFightBtn').onclick = simulateFight;
+document.getElementById('fightBtn').onclick = simulateFight;
 updateBattleUI();
 
-// ======================== BAZAAR ========================
+// ----------------------------- BAZAAR -----------------------------
 let currentType = '';
-const iconMap = { comic:'fa-book-open', video:'fa-video', '3d':'fa-cube', art:'fa-paintbrush', cosplay:'fa-mask' };
 const uploadPanel = document.getElementById('uploadPanel');
 document.querySelectorAll('.cat-tab').forEach(tab => {
   tab.onclick = () => {
@@ -903,13 +882,15 @@ document.getElementById('publishBtn').onclick = () => {
   const price = document.getElementById('uploadPrice').value;
   const desc = document.getElementById('uploadDesc').value.trim();
   if (!title) return;
+  const iconMap = { comic: 'fa-book-open', video: 'fa-video', '3d': 'fa-cube', art: 'fa-paintbrush', cosplay: 'fa-mask' };
+  const icon = iconMap[currentType] || 'fa-star';
   const listing = document.createElement('div');
   listing.className = 'listing-card';
   listing.innerHTML = `
-    <div class="listing-card-icon"><i class="fas ${iconMap[currentType]||'fa-star'}"></i></div>
-    <div class="listing-card-title">${title}</div>
-    <div class="listing-card-desc">${desc.substring(0,120) || 'No description'}</div>
-    <div class="listing-card-footer"><span class="listing-price">${price ? '$'+parseFloat(price).toFixed(2) : 'Free'}</span><button class="buy-btn">Buy</button></div>
+    <div class="listing-icon"><i class="fas ${icon}"></i></div>
+    <div class="listing-title">${escapeHtml(title)}</div>
+    <div class="listing-desc">${escapeHtml(desc.substring(0,100))}</div>
+    <div class="listing-footer"><span class="listing-price">${price ? '$'+parseFloat(price).toFixed(2) : 'Free'}</span><button class="buy-btn">Buy</button></div>
   `;
   document.getElementById('bazaarListings').prepend(listing);
   document.getElementById('uploadTitle').value = '';
@@ -918,13 +899,34 @@ document.getElementById('publishBtn').onclick = () => {
   uploadPanel.style.display = 'none';
   document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
 };
+function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
-// AUTH
+// ----------------------------- PAGE SWITCHING -----------------------------
+const pages = {
+  home: document.getElementById('homePage'),
+  bazaar: document.getElementById('bazaarPage'),
+  battle: document.getElementById('battlePage')
+};
+document.querySelectorAll('[data-page]').forEach(el => {
+  el.addEventListener('click', () => {
+    const pageId = el.dataset.page;
+    // hide all pages
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    if (pages[pageId]) pages[pageId].classList.add('active-page');
+    else if (pageId === 'home') pages.home.classList.add('active-page');
+    window.scrollTo(0,0);
+  });
+});
+
+// ----------------------------- AUTH MODAL -----------------------------
 const modal = document.getElementById('authModal');
 document.getElementById('openAuthBtn').onclick = () => modal.classList.add('open');
 document.getElementById('closeModal').onclick = () => modal.classList.remove('open');
-modal.onclick = (e) => { if(e.target === modal) modal.classList.remove('open'); };
-document.getElementById('mockSignup').onclick = () => { modal.classList.remove('open'); alert('Welcome to WORLDS! (Demo account created)'); };
+modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('open'); };
+document.getElementById('mockSignup').onclick = () => {
+  modal.classList.remove('open');
+  alert('Welcome to WORLDS! (Demo account created)');
+};
 </script>
 </body>
 </html>
