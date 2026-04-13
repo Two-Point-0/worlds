@@ -29,7 +29,6 @@
       min-height: 100vh;
     }
 
-    /* noise overlay */
     body::before {
       content: '';
       position: fixed;
@@ -44,7 +43,6 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 99px; }
 
-    /* navbar */
     .navbar {
       position: fixed;
       top: 0;
@@ -103,7 +101,6 @@
       box-shadow: 0 0 20px var(--red-glow);
     }
 
-    /* pages */
     .page {
       display: none;
       min-height: 100vh;
@@ -124,9 +121,7 @@
       text-align: center;
       padding: 80px 2rem 4rem;
     }
-    #homePage.active-page {
-      display: flex;
-    }
+    #homePage.active-page { display: flex; }
     .home-bg {
       position: fixed;
       inset: 0;
@@ -205,7 +200,6 @@
       color: var(--muted);
       max-width: 500px;
     }
-    /* horizontal scroll universe grid */
     .universe-scroll-wrapper {
       position: relative;
       max-width: 90vw;
@@ -223,9 +217,7 @@
       scrollbar-width: none;
       flex: 1;
     }
-    .universes-grid::-webkit-scrollbar {
-      display: none;
-    }
+    .universes-grid::-webkit-scrollbar { display: none; }
     .scroll-univ-btn {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -263,7 +255,7 @@
       transform: translateY(-2px);
     }
 
-    /* universe detail page (heroes right, villains left, center bio) */
+    /* universe detail page */
     .universe-detail {
       max-width: 1400px;
       margin: 0 auto;
@@ -273,10 +265,7 @@
       gap: 1.5rem;
     }
     @media (max-width: 1000px) {
-      .universe-detail {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
+      .universe-detail { grid-template-columns: 1fr; }
     }
     .char-column {
       background: var(--surface);
@@ -312,9 +301,6 @@
       border-radius: 50%;
       object-fit: cover;
       border: 1px solid var(--border);
-    }
-    .char-item .char-name {
-      font-weight: 600;
     }
     .center-bio {
       background: var(--surface);
@@ -473,7 +459,7 @@
       cursor: pointer;
     }
 
-    /* bazaar (creator's market) */
+    /* market page */
     .market-container {
       max-width: 1100px;
       margin: 0 auto;
@@ -518,7 +504,7 @@
       margin-bottom: 4px;
       color: var(--muted);
     }
-    .form-group input, .form-group textarea, .form-group select {
+    .form-group input, .form-group textarea {
       width: 100%;
       background: rgba(255,255,255,0.05);
       border: 1px solid var(--border);
@@ -641,6 +627,7 @@
   </div>
 </div>
 
+<!-- container for dynamic universe pages -->
 <div id="universePagesContainer"></div>
 
 <!-- BATTLE PAGE -->
@@ -685,10 +672,10 @@
   </div>
 </div>
 
-<!-- CREATOR'S MARKET (formerly Bazaar) -->
+<!-- CREATOR'S MARKET -->
 <div id="marketPage" class="page">
   <div class="market-container">
-    <div class="bazaar-header" style="text-align:center; margin-bottom:2rem;">
+    <div style="text-align:center; margin-bottom:2rem;">
       <h2 style="font-family:'Bebas Neue'; font-size:3rem;">Creator's Market</h2>
       <p>Sell your original superhero creations – comics, video edits, 3D models, art, cosplay</p>
     </div>
@@ -728,7 +715,7 @@
 <footer>⚡ <span style="color:var(--red);">WORLDS</span> — Where every universe collides</footer>
 
 <script>
-// ----------------------------- GENERATE 50+ UNIVERSES -----------------------------
+// ----------------------------- 50+ UNIVERSES -----------------------------
 const universeNames = [
   "Marvel", "DC", "Invincible", "The Boys", "Dragon Ball", "Naruto", "One Punch Man", "Attack on Titan",
   "My Hero Academia", "Jujutsu Kaisen", "Demon Slayer", "One Piece", "Bleach", "Hunter x Hunter", "Fairy Tail",
@@ -754,7 +741,7 @@ const iconMap = {
   "Arcane":"fas fa-magic", "The Legend of Zelda":"fas fa-trash-alt", "Metroid":"fas fa-bug"
 };
 
-function generateStory(universe) {
+function getStory(universe) {
   const stories = {
     "Marvel": "The Marvel Universe is a vast reality where superhumans, gods, aliens, and mutants coexist. From the Avengers to the X-Men, heroes battle villains like Thanos and Doctor Doom to protect Earth and the cosmos.",
     "DC": "DC's multiverse is home to iconic heroes like Superman, Batman, and Wonder Woman. They defend truth and justice against forces like Darkseid, the Joker, and Lex Luthor.",
@@ -768,87 +755,104 @@ function generateStory(universe) {
   return stories[universe] || `${universe} is a rich universe filled with unique heroes, villains, and epic conflicts. Explore its characters and stories.`;
 }
 
-function getRandomHeroesVillains(universe) {
-  // For simplicity, generate 4 heroes and 4 villains per universe with placeholder data
-  const heroes = [];
-  const villains = [];
-  for (let i = 1; i <= 4; i++) {
-    heroes.push({
-      name: `${universe} Hero ${i}`,
-      image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${universe}Hero${i}`,
-      powers: "Super strength, flight, energy projection",
-      weaknesses: "Magic, kryptonite-like substance",
-      bio: `A legendary hero from the ${universe} universe, known for bravery and selflessness.`
-    });
-    villains.push({
-      name: `${universe} Villain ${i}`,
-      image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${universe}Villain${i}`,
-      powers: "Dark magic, immense strength, mind control",
-      weaknesses: "Overconfidence, specific artifact",
-      bio: `A notorious foe who constantly threatens the peace of ${universe}.`
-    });
-  }
-  // Override with some known characters for popular universes
+function getHeroesAndVillains(universe) {
+  // Generate 4 heroes and 4 villains per universe (some known ones for popular)
+  let heroes = [], villains = [];
   if (universe === "Marvel") {
-    heroes[0] = { name: "Spider-Man", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=SpiderMan", powers: "Wall-crawling, spider-sense, super strength", weaknesses: "Guilt, family at risk", bio: "Peter Parker balances life as a teenager and a hero." };
-    heroes[1] = { name: "Iron Man", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=IronMan", powers: "Powered armor, repulsors", weaknesses: "Power drainage", bio: "Genius billionaire inventor Tony Stark." };
-    villains[0] = { name: "Thanos", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Thanos", powers: "Superhuman strength, cosmic powers", weaknesses: "Overconfidence", bio: "The Mad Titan seeks to balance the universe." };
+    heroes = [
+      { name: "Spider-Man", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=SpiderMan", powers: "Wall-crawling, spider-sense, super strength", weaknesses: "Guilt, family at risk", bio: "Peter Parker balances life as a teenager and a hero." },
+      { name: "Iron Man", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=IronMan", powers: "Powered armor, repulsors, flight", weaknesses: "Power drainage, arrogance", bio: "Genius billionaire inventor Tony Stark." },
+      { name: "Captain America", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=CaptainAmerica", powers: "Peak human, vibranium shield", weaknesses: "Mortal", bio: "The first Avenger, symbol of freedom." },
+      { name: "Thor", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Thor", powers: "Lightning, Mjolnir, godly strength", weaknesses: "Without Mjolnir, vulnerable", bio: "God of Thunder, prince of Asgard." }
+    ];
+    villains = [
+      { name: "Thanos", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Thanos", powers: "Superhuman strength, cosmic powers", weaknesses: "Overconfidence", bio: "The Mad Titan seeks to balance the universe." },
+      { name: "Loki", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Loki", powers: "Illusion, magic, shapeshifting", weaknesses: "Arrogance", bio: "God of Mischief, Thor's adopted brother." },
+      { name: "Ultron", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Ultron", powers: "Super intelligence, robotic army", weaknesses: "Emotional instability", bio: "AI created by Tony Stark that went rogue." },
+      { name: "Red Skull", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=RedSkull", powers: "Super soldier, strategic genius", weaknesses: "Obsession", bio: "Leader of HYDRA, archenemy of Captain America." }
+    ];
   } else if (universe === "DC") {
-    heroes[0] = { name: "Superman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Superman", powers: "Heat vision, flight, invulnerability", weaknesses: "Kryptonite", bio: "The last son of Krypton, protector of Earth." };
-    villains[0] = { name: "Joker", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Joker", powers: "Chaos genius, toxins", weaknesses: "Batman's refusal to kill", bio: "Agent of chaos and Batman's greatest enemy." };
+    heroes = [
+      { name: "Superman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Superman", powers: "Heat vision, flight, invulnerability", weaknesses: "Kryptonite", bio: "The last son of Krypton, protector of Earth." },
+      { name: "Batman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Batman", powers: "Intellect, martial arts, gadgets", weaknesses: "Mortal", bio: "Dark Knight of Gotham." },
+      { name: "Wonder Woman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=WonderWoman", powers: "Super strength, lasso of truth", weaknesses: "Piercing weapons", bio: "Amazon princess and warrior." },
+      { name: "The Flash", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Flash", powers: "Super speed, time travel", weaknesses: "Speed force instability", bio: "Fastest man alive." }
+    ];
+    villains = [
+      { name: "Joker", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Joker", powers: "Chaos genius, toxins", weaknesses: "Batman's refusal to kill", bio: "Agent of chaos." },
+      { name: "Lex Luthor", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=LexLuthor", powers: "Genius intellect, power suit", weaknesses: "Arrogance", bio: "Billionaire rival of Superman." },
+      { name: "Darkseid", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Darkseid", powers: "Omega beams, godly strength", weaknesses: "Radion", bio: "Tyrant of Apokolips." },
+      { name: "Doomsday", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Doomsday", powers: "Infinite adaptation, super strength", weaknesses: "No strategy", bio: "The beast that killed Superman." }
+    ];
+  } else {
+    for (let i = 1; i <= 4; i++) {
+      heroes.push({
+        name: `${universe} Hero ${i}`,
+        image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${universe}Hero${i}`,
+        powers: "Super strength, energy projection",
+        weaknesses: "Magic, specific artifact",
+        bio: `A legendary hero from the ${universe} universe.`
+      });
+      villains.push({
+        name: `${universe} Villain ${i}`,
+        image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${universe}Villain${i}`,
+        powers: "Dark magic, immense strength",
+        weaknesses: "Overconfidence",
+        bio: `A notorious foe from the ${universe} universe.`
+      });
+    }
   }
   return { heroes, villains };
 }
 
 // Build universes array
-const universes = universeNames.map((name, idx) => ({
-  id: `univ_${idx}`,
-  name: name,
-  icon: iconMap[name] || "fas fa-globe",
-  color: "#ffaa44",
-  story: generateStory(name),
-  characters: (() => {
-    const { heroes, villains } = getRandomHeroesVillains(name);
-    return [...heroes, ...villains];
-  })(),
-  heroes: getRandomHeroesVillains(name).heroes,
-  villains: getRandomHeroesVillains(name).villains
-}));
+const universes = universeNames.map((name, idx) => {
+  const { heroes, villains } = getHeroesAndVillains(name);
+  return {
+    id: `univ_${idx}`,
+    name: name,
+    icon: iconMap[name] || "fas fa-globe",
+    color: "#ffaa44",
+    story: getStory(name),
+    heroes: heroes,
+    villains: villains
+  };
+});
 
-// Build home universe pills (horizontal scroll)
-const universeGrid = document.getElementById('universeGrid');
+// Populate universe pills with horizontal scroll
+const universeGridDiv = document.getElementById('universeGrid');
 universes.forEach(u => {
   const pill = document.createElement('div');
   pill.className = 'universe-pill';
   pill.innerHTML = `<i class="${u.icon}" style="color:${u.color}"></i> ${u.name}`;
   pill.onclick = () => showUniversePage(u);
-  universeGrid.appendChild(pill);
+  universeGridDiv.appendChild(pill);
 });
-// scroll buttons
 document.getElementById('scrollUnivLeft').onclick = () => {
-  universeGrid.scrollBy({ left: -200, behavior: 'smooth' });
+  universeGridDiv.scrollBy({ left: -200, behavior: 'smooth' });
 };
 document.getElementById('scrollUnivRight').onclick = () => {
-  universeGrid.scrollBy({ left: 200, behavior: 'smooth' });
+  universeGridDiv.scrollBy({ left: 200, behavior: 'smooth' });
 };
 
-// Universe page container
-const pagesContainer = document.getElementById('universePagesContainer');
+// Container for universe pages
+const universePagesContainer = document.getElementById('universePagesContainer');
 
 function showUniversePage(univ) {
+  // Remove existing page for this universe if any
   const existing = document.getElementById(`univ-${univ.id}`);
   if (existing) existing.remove();
-  
+
   const pageDiv = document.createElement('div');
   pageDiv.id = `univ-${univ.id}`;
   pageDiv.className = 'page';
   pageDiv.innerHTML = `
     <div class="universe-detail">
-      <div class="char-column" id="villainsCol-${univ.id}">
+      <div class="char-column" id="villainsCol">
         <h3><i class="fas fa-skull"></i> Villains</h3>
-        <div id="villainsList-${univ.id}"></div>
+        <div id="villainsList"></div>
       </div>
-      <div class="center-bio" id="centerBio-${univ.id}">
+      <div class="center-bio" id="centerBio">
         <div class="universe-story">${univ.story}</div>
         <div id="charBioContent">
           <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Placeholder">
@@ -856,24 +860,23 @@ function showUniversePage(univ) {
           <p>Click on any character to see their bio, powers, and weaknesses.</p>
         </div>
       </div>
-      <div class="char-column" id="heroesCol-${univ.id}">
+      <div class="char-column" id="heroesCol">
         <h3><i class="fas fa-shield-alt"></i> Heroes</h3>
-        <div id="heroesList-${univ.id}"></div>
+        <div id="heroesList"></div>
       </div>
     </div>
   `;
-  pagesContainer.appendChild(pageDiv);
-  
-  // Populate heroes and villains
-  const heroesContainer = pageDiv.querySelector(`#heroesList-${univ.id}`);
-  const villainsContainer = pageDiv.querySelector(`#villainsList-${univ.id}`);
-  
+  universePagesContainer.appendChild(pageDiv);
+
+  // Populate heroes
+  const heroesContainer = pageDiv.querySelector('#heroesList');
   univ.heroes.forEach(hero => {
     const item = document.createElement('div');
     item.className = 'char-item';
     item.innerHTML = `<img src="${hero.image}" alt=""><div class="char-name">${hero.name}</div>`;
     item.onclick = () => {
-      document.getElementById(`centerBio-${univ.id}`).innerHTML = `
+      const centerBio = pageDiv.querySelector('#centerBio');
+      centerBio.innerHTML = `
         <div class="universe-story">${univ.story}</div>
         <div id="charBioContent">
           <img src="${hero.image}" style="width:180px; height:180px; border-radius:50%;">
@@ -886,13 +889,16 @@ function showUniversePage(univ) {
     };
     heroesContainer.appendChild(item);
   });
-  
+
+  // Populate villains
+  const villainsContainer = pageDiv.querySelector('#villainsList');
   univ.villains.forEach(villain => {
     const item = document.createElement('div');
     item.className = 'char-item';
     item.innerHTML = `<img src="${villain.image}" alt=""><div class="char-name">${villain.name}</div>`;
     item.onclick = () => {
-      document.getElementById(`centerBio-${univ.id}`).innerHTML = `
+      const centerBio = pageDiv.querySelector('#centerBio');
+      centerBio.innerHTML = `
         <div class="universe-story">${univ.story}</div>
         <div id="charBioContent">
           <img src="${villain.image}" style="width:180px; height:180px; border-radius:50%;">
@@ -905,55 +911,59 @@ function showUniversePage(univ) {
     };
     villainsContainer.appendChild(item);
   });
-  
+
+  // Show this page and hide others
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
   pageDiv.classList.add('active-page');
-  window.scrollTo(0,0);
+  window.scrollTo(0, 0);
 }
 
-// ----------------------------- BATTLE (all characters from all universes) -----------------------------
-let allChars = [];
+// ----------------------------- BATTLE PAGE -----------------------------
+// Build all characters from all universes for battle
+let allBattleChars = [];
 universes.forEach(u => {
   [...u.heroes, ...u.villains].forEach(c => {
-    allChars.push({
+    allBattleChars.push({
       name: c.name,
       universe: u.name,
       image: c.image,
       powers: c.powers,
-      weaknesses: c.weaknesses,
-      bio: c.bio
+      weaknesses: c.weaknesses
     });
   });
 });
 
-let f1i=0, f2i=1, f1locked=false, f2locked=false;
+let fighter1Index = 0, fighter2Index = 1;
+let fighter1Locked = false, fighter2Locked = false;
 let lastLogs = [], lastWinner = null, lastF1 = null, lastF2 = null;
 
 function updateBattleUI() {
-  const f1 = allChars[f1i], f2 = allChars[f2i];
+  const f1 = allBattleChars[fighter1Index];
+  const f2 = allBattleChars[fighter2Index];
   document.getElementById('fighter1Img').src = f1.image;
   document.getElementById('fighter1Name').innerText = f1.name;
   document.getElementById('fighter1Uni').innerText = f1.universe;
-  document.getElementById('f1Idx').innerText = `${f1i+1}/${allChars.length}`;
+  document.getElementById('f1Idx').innerText = `${fighter1Index+1}/${allBattleChars.length}`;
   document.getElementById('fighter2Img').src = f2.image;
   document.getElementById('fighter2Name').innerText = f2.name;
   document.getElementById('fighter2Uni').innerText = f2.universe;
-  document.getElementById('f2Idx').innerText = `${f2i+1}/${allChars.length}`;
-  document.getElementById('fighter1Card').classList.toggle('locked', f1locked);
-  document.getElementById('fighter2Card').classList.toggle('locked', f2locked);
+  document.getElementById('f2Idx').innerText = `${fighter2Index+1}/${allBattleChars.length}`;
+  document.getElementById('fighter1Card').classList.toggle('locked', fighter1Locked);
+  document.getElementById('fighter2Card').classList.toggle('locked', fighter2Locked);
   const l1 = document.getElementById('lock1Btn');
   const l2 = document.getElementById('lock2Btn');
-  l1.className = 'lock-btn' + (f1locked ? ' locked' : '');
-  l1.innerHTML = f1locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
-  l2.className = 'lock-btn' + (f2locked ? ' locked' : '');
-  l2.innerHTML = f2locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
+  l1.className = 'lock-btn' + (fighter1Locked ? ' locked' : '');
+  l1.innerHTML = fighter1Locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
+  l2.className = 'lock-btn' + (fighter2Locked ? ' locked' : '');
+  l2.innerHTML = fighter2Locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
 }
-document.getElementById('f1Prev').onclick = () => { if(!f1locked) { f1i = (f1i-1+allChars.length)%allChars.length; updateBattleUI(); } };
-document.getElementById('f1Next').onclick = () => { if(!f1locked) { f1i = (f1i+1)%allChars.length; updateBattleUI(); } };
-document.getElementById('f2Prev').onclick = () => { if(!f2locked) { f2i = (f2i-1+allChars.length)%allChars.length; updateBattleUI(); } };
-document.getElementById('f2Next').onclick = () => { if(!f2locked) { f2i = (f2i+1)%allChars.length; updateBattleUI(); } };
-document.getElementById('lock1Btn').onclick = () => { f1locked = !f1locked; updateBattleUI(); };
-document.getElementById('lock2Btn').onclick = () => { f2locked = !f2locked; updateBattleUI(); };
+
+document.getElementById('f1Prev').onclick = () => { if (!fighter1Locked) { fighter1Index = (fighter1Index - 1 + allBattleChars.length) % allBattleChars.length; updateBattleUI(); } };
+document.getElementById('f1Next').onclick = () => { if (!fighter1Locked) { fighter1Index = (fighter1Index + 1) % allBattleChars.length; updateBattleUI(); } };
+document.getElementById('f2Prev').onclick = () => { if (!fighter2Locked) { fighter2Index = (fighter2Index - 1 + allBattleChars.length) % allBattleChars.length; updateBattleUI(); } };
+document.getElementById('f2Next').onclick = () => { if (!fighter2Locked) { fighter2Index = (fighter2Index + 1) % allBattleChars.length; updateBattleUI(); } };
+document.getElementById('lock1Btn').onclick = () => { fighter1Locked = !fighter1Locked; updateBattleUI(); };
+document.getElementById('lock2Btn').onclick = () => { fighter2Locked = !fighter2Locked; updateBattleUI(); };
 
 const actionPhrases = {
   "Spider-Man": "swings in and shoots webs at his opponent!",
@@ -968,7 +978,8 @@ const actionPhrases = {
 };
 
 function simulateFight() {
-  const f1 = allChars[f1i], f2 = allChars[f2i];
+  const f1 = allBattleChars[fighter1Index];
+  const f2 = allBattleChars[fighter2Index];
   lastF1 = f1; lastF2 = f2;
   const logDiv = document.getElementById('battleLog');
   logDiv.innerHTML = '';
@@ -1004,7 +1015,7 @@ function simulateFight() {
     <html><head><meta charset="UTF-8"><title>WORLDS COMIC: ${f1.name} vs ${f2.name}</title>
     <style>body{background:#0a0a1a;color:#eee;font-family:monospace;padding:2rem;} .panel{background:#1e1e2e;margin:1rem;padding:1rem;border-radius:16px;}</style></head>
     <body><h1>BATTLE COMIC</h1><div>${logs.map(l => `<div class="panel">${l}</div>`).join('')}<div class="panel">WINNER: ${winner}</div></div></body></html>`;
-    const blob = new Blob([comicHtml], {type:'text/html'});
+    const blob = new Blob([comicHtml], {type: 'text/html'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `comic_${f1.name}_vs_${f2.name}.html`;
@@ -1013,15 +1024,17 @@ function simulateFight() {
   };
   comicArea.appendChild(comicBtn);
 }
+
 document.getElementById('fightBtn').onclick = simulateFight;
 updateBattleUI();
 
 // ----------------------------- CREATOR'S MARKET -----------------------------
 let currentType = '';
 const uploadPanel = document.getElementById('uploadPanel');
-document.querySelectorAll('.cat-tab').forEach(tab => {
+const catTabs = document.querySelectorAll('.cat-tab');
+catTabs.forEach(tab => {
   tab.onclick = () => {
-    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+    catTabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     currentType = tab.dataset.type;
     uploadPanel.style.display = 'block';
@@ -1048,28 +1061,40 @@ document.getElementById('publishBtn').onclick = () => {
   document.getElementById('uploadDesc').value = '';
   document.getElementById('uploadFile').value = '';
   uploadPanel.style.display = 'none';
-  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  catTabs.forEach(t => t.classList.remove('active'));
 };
-function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+function escapeHtml(str) {
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
 
 // ----------------------------- PAGE SWITCHING -----------------------------
-function showPage(id) {
+function switchToPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-  const target = document.getElementById(id);
+  const target = document.getElementById(pageId);
   if (target) target.classList.add('active-page');
-  window.scrollTo(0,0);
+  window.scrollTo(0, 0);
 }
 document.querySelectorAll('[data-page]').forEach(el => {
-  el.addEventListener('click', () => showPage(el.dataset.page));
+  el.addEventListener('click', () => {
+    const pageId = el.dataset.page;
+    if (pageId === 'home') switchToPage('homePage');
+    else if (pageId === 'market') switchToPage('marketPage');
+    else if (pageId === 'battle') switchToPage('battlePage');
+  });
 });
 
 // Auth modal
-const modal = document.getElementById('authModal');
-document.getElementById('openAuthBtn').onclick = () => modal.classList.add('open');
-document.getElementById('closeModal').onclick = () => modal.classList.remove('open');
-modal.onclick = e => { if(e.target === modal) modal.classList.remove('open'); };
+const authModal = document.getElementById('authModal');
+document.getElementById('openAuthBtn').onclick = () => authModal.classList.add('open');
+document.getElementById('closeModal').onclick = () => authModal.classList.remove('open');
+authModal.onclick = e => { if (e.target === authModal) authModal.classList.remove('open'); };
 document.getElementById('mockSignup').onclick = () => {
-  modal.classList.remove('open');
+  authModal.classList.remove('open');
   alert('Welcome to WORLDS! (Demo account created)');
 };
 </script>
