@@ -1,490 +1,669 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Form - GET & POST Demo with PHP</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Worlds – Superhero Hub</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      overflow-x: hidden;
+    }
 
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
+    /* GLOBAL NAVIGATION */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
-        .form-card {
-            background: white;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
 
-        h1 {
-            font-size: 28px;
-            font-weight: 600;
-            color: #1a2c3e;
-            margin-bottom: 8px;
-            text-align: center;
-        }
+    .nav-links {
+      display: flex;
+      gap: 1.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
-        .subtitle {
-            text-align: center;
-            color: #6c7a8a;
-            font-size: 14px;
-            margin-bottom: 32px;
-        }
+    .nav-item {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      transition: 0.2s;
+      padding: 6px 12px;
+      border-radius: 40px;
+      background: rgba(255,255,255,0.05);
+    }
 
-        .method-buttons {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
+    .nav-item i {
+      font-size: 1.2rem;
+    }
 
-        .method-btn {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
+    .nav-item:hover {
+      background: #ff4b2b;
+      transform: scale(1.02);
+    }
 
-        .method-btn.active {
-            background: #4a90e2;
-            border-color: #4a90e2;
-            color: white;
-        }
+    .world-icons {
+      display: flex;
+      gap: 0.8rem;
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    .world-icon {
+      width: 42px;
+      height: 42px;
+      background: #1e1e2f;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
 
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: #2c3e50;
-            margin-bottom: 6px;
-        }
+    .world-icon:hover {
+      background: #ff4b2b;
+      transform: translateY(-3px);
+    }
 
-        input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #dce4ec;
-            border-radius: 10px;
-            font-size: 15px;
-            transition: all 0.2s;
-        }
+    /* PAGE CONTAINERS */
+    .page {
+      display: none;
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+    }
 
-        input:focus {
-            outline: none;
-            border-color: #4a90e2;
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-        }
+    .active-page {
+      display: block;
+    }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #4a90e2;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 8px;
-        }
+    /* MARVEL STYLES (video bg + fade left) */
+    .marvel-container {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
 
-        button:hover {
-            background: #3a7bc9;
-        }
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
 
-        .message {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 14px;
-            display: none;
-        }
+    .marvel-overlay {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      min-height: 100vh;
+      backdrop-filter: brightness(0.9);
+    }
 
-        .message.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            display: block;
-        }
+    .left-fade {
+      width: 38%;
+      background: linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0) 100%);
+      padding: 6rem 2rem 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
 
-        .message.error {
-            background: #ffebee;
-            color: #c62828;
-            display: block;
-        }
+    .hero-portrait {
+      text-align: center;
+      background: rgba(0,0,0,0.5);
+      border-radius: 28px;
+      padding: 1rem;
+    }
 
-        .info-box {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            border-left: 4px solid #4a90e2;
-        }
+    .hero-portrait img {
+      width: 100%;
+      max-width: 280px;
+      border-radius: 24px;
+      border: 2px solid #ff4b2b;
+      box-shadow: 0 0 20px rgba(255,75,43,0.4);
+    }
 
-        .info-box h3 {
-            font-size: 14px;
-            color: #2c3e50;
-            margin-bottom: 12px;
-        }
+    .villains-scroll {
+      background: rgba(10,10,20,0.7);
+      border-radius: 28px;
+      padding: 1rem;
+    }
 
-        .data-display {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 12px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            overflow-x: auto;
-            margin-top: 10px;
-        }
-    </style>
+    .villains-scroll h3 {
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .villain-thumb-list {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .villain-thumb {
+      min-width: 80px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      background: rgba(0,0,0,0.6);
+      border-radius: 16px;
+      padding: 8px;
+    }
+
+    .villain-thumb img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #aaa;
+    }
+
+    .villain-thumb span {
+      display: block;
+      font-size: 0.7rem;
+      margin-top: 5px;
+    }
+
+    .middle-area {
+      flex: 1;
+      padding: 6rem 2rem 3rem 2rem;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-stats {
+      background: rgba(0,0,0,0.7);
+      border-radius: 32px;
+      padding: 2rem;
+      border-left: 6px solid #ff4b2b;
+    }
+
+    .hero-name {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-rank {
+      display: inline-block;
+      background: #ff4b2b;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* DC PAGE */
+    .dc-container {
+      position: relative;
+      min-height: 100vh;
+    }
+    .dc-bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .dc-content {
+      position: relative;
+      z-index: 3;
+      padding-top: 90px;
+      padding-bottom: 3rem;
+    }
+    .hero-carousel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px auto;
+      flex-wrap: wrap;
+    }
+    .hero-card {
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 60px;
+      padding: 8px 20px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+      border: 1px solid gold;
+    }
+    .active-dc-hero {
+      background: #ff4b2b;
+      transform: scale(1.05);
+    }
+    .villains-dual {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 30px 20px;
+    }
+    .villain-col {
+      flex: 1;
+      background: rgba(0,0,0,0.6);
+      border-radius: 32px;
+      padding: 1rem;
+      max-height: 450px;
+      overflow-y: auto;
+    }
+    .villain-item {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .villain-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 30px;
+      object-fit: cover;
+    }
+    .small-scroll {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .villain-detail-panel {
+      background: rgba(0,0,0,0.8);
+      border-radius: 28px;
+      margin: 20px;
+      padding: 1.5rem;
+    }
+
+    /* MARKETPLACE / UPLOAD */
+    .marketplace-grid, .free-vault-grid {
+      padding: 7rem 2rem 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    .card {
+      background: #1e1e2e;
+      border-radius: 28px;
+      padding: 1.5rem;
+      transition: 0.2s;
+    }
+    button {
+      background: #ff4b2b;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 40px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      border-radius: 20px;
+      border: none;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #111;
+      padding: 2rem;
+      border-radius: 32px;
+      width: 90%;
+      max-width: 400px;
+    }
+    .close-modal {
+      float: right;
+      cursor: pointer;
+      font-size: 24px;
+    }
+    @media (max-width: 800px) {
+      .left-fade { width: 100%; background: linear-gradient(180deg, rgba(0,0,0,0.9), rgba(0,0,0,0.7)); }
+      .marvel-overlay { flex-direction: column; }
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #050505;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="form-card">
-            <h1>Create Account</h1>
-            <div class="subtitle">Choose method: GET (visible) or POST (hidden)</div>
-            
-            <div class="method-buttons">
-                <button type="button" id="postBtn" class="method-btn active">📮 POST Method</button>
-                <button type="button" id="getBtn" class="method-btn">🔗 GET Method</button>
-            </div>
-            
-            <form id="registerForm" method="POST" action="">
-                <div class="form-group">
-                    <label>First Name</label>
-                    <input type="text" id="firstName" name="first_name" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Last Name</label>
-                    <input type="text" id="lastName" name="last_name" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="text" id="password" name="password" value="0000" required>
-                </div>
-                
-                <button type="submit">Register</button>
-            </form>
-            
-            <div id="message" class="message"></div>
-        </div>
-        
-        <div class="info-box">
-            <h3>📊 Database Status & Recent Submissions</h3>
-            <div id="dataDisplay" class="data-display">Loading...</div>
-        </div>
-    </div>
 
-    <?php
-    // ============================================
-    // PHP BACKEND - Handles both GET and POST
-    // ============================================
-    
-    // Dummy Database File (simulates real database)
-    $dbFile = 'dummy_database.json';
-    
-    // Initialize dummy database if not exists
-    if (!file_exists($dbFile)) {
-        $initData = ['users' => [], 'counter' => 0];
-        file_put_contents($dbFile, json_encode($initData, JSON_PRETTY_PRINT));
+<nav class="navbar">
+  <div class="logo">🌍 WORLDS</div>
+  <div class="nav-links">
+    <div class="nav-item" data-page="home"><i class="fas fa-home"></i> Home</div>
+    <div class="world-icons">
+      <div class="world-icon" data-world="marvel">M</div>
+      <div class="world-icon" data-world="dc">DC</div>
+      <div class="world-icon" data-world="invincible">I</div>
+    </div>
+    <div class="nav-item" data-page="marketplace"><i class="fas fa-store"></i> Market</div>
+    <div class="nav-item" data-page="freevault"><i class="fas fa-download"></i> Free Vault</div>
+    <div class="nav-item" id="openAuthBtn"><i class="fas fa-user-circle"></i> Account</div>
+  </div>
+</nav>
+
+<!-- PAGES -->
+<div id="homePage" class="page active-page" style="background: radial-gradient(circle at 20% 30%, #0b0b1a, #000); padding-top: 100px; text-align: center;">
+  <h1 style="font-size: 4rem;">Welcome to WORLDS</h1>
+  <p style="font-size: 1.4rem; max-width: 700px; margin: 20px auto;">Explore multiverses, heroes, villains, and fan creations. Select a world above!</p>
+  <div style="display: flex; gap: 20px; justify-content: center; margin-top: 40px;">
+    <button class="world-icon" data-world="marvel" style="width: auto; padding: 12px 30px;">⚡ Marvel Universe</button>
+    <button class="world-icon" data-world="dc" style="width: auto; padding: 12px 30px;">🦸 DC Universe</button>
+  </div>
+  <div style="margin-top: 50px;"><i class="fas fa-globe-americas" style="font-size: 60px; opacity: 0.4;"></i></div>
+</div>
+
+<!-- MARVEL PAGE -->
+<div id="marvelPage" class="page">
+  <div class="marvel-container">
+    <video id="marvelBgVideo" class="bg-video" autoplay muted loop playsinline></video>
+    <div class="marvel-overlay">
+      <div class="left-fade">
+        <div class="hero-portrait" id="marvelHeroImgDiv">
+          <img id="marvelHeroImage" src="https://placehold.co/400x500?text=Hero+Image" alt="Hero">
+        </div>
+        <div class="villains-scroll">
+          <h3><i class="fas fa-skull"></i> Rogues Gallery</h3>
+          <div id="villainThumbList" class="villain-thumb-list"></div>
+        </div>
+      </div>
+      <div class="middle-area">
+        <div class="hero-stats" id="marvelStats">
+          <div class="hero-name" id="marvelHeroName">Captain America</div>
+          <div class="hero-rank" id="marvelHeroRank">Rank: Super Soldier</div>
+          <div><strong>💪 Powers:</strong> <span id="marvelPowers">Peak human strength, vibranium shield, tactical genius</span></div>
+          <div style="margin-top: 12px;"><strong>⚠️ Weaknesses:</strong> <span id="marvelWeaknesses">Moral compass, no superhuman durability vs magic</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DC PAGE -->
+<div id="dcPage" class="page">
+  <div class="dc-container">
+    <video id="dcBgVideo" class="dc-bg-video" autoplay muted loop playsinline>
+      <source src="/videos/dc/superman-radiant-rise.1920x1080.mp4" type="video/mp4">
+    </video>
+    <div class="dc-content">
+      <div class="hero-carousel" id="dcHeroCarousel"></div>
+      <div class="villains-dual">
+        <div class="villain-col"><h3>👥 LEFT FOES</h3><div id="dcVillainsLeft" class="small-scroll"></div></div>
+        <div class="villain-col"><h3>👥 RIGHT FOES</h3><div id="dcVillainsRight" class="small-scroll"></div></div>
+      </div>
+      <div id="dcVillainDetail" class="villain-detail-panel">
+        <h3 id="selectedVillainName">Click any villain</h3>
+        <p id="villainStrengths">Strengths: —</p>
+        <p id="villainWeaknesses">Weaknesses: —</p>
+        <p id="villainBeef">Why they beef: —</p>
+        <p id="villainFights">Notable fights: —</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MARKETPLACE -->
+<div id="marketplacePage" class="page">
+  <div style="padding: 100px 2rem 2rem;">
+    <h2>🎨 Creator Marketplace</h2>
+    <p>Sell comics, video edits, cosplay, novels. Create an account to upload.</p>
+    <div class="marketplace-grid" id="marketplaceItems">
+      <div class="card"><i class="fas fa-book-open"></i> <strong>Original Comic: “Dark Multiverse”</strong><br>by Alex Fan<br>Price: $4.99 <button>Buy</button></div>
+      <div class="card"><i class="fas fa-video"></i> <strong>Fan Edit: Marvel Rivals Tribute</strong><br>by CosmicEdits<br>Price: $1.99 <button>Buy</button></div>
+      <div class="card"><i class="fas fa-mask"></i> <strong>Cosplay: Iron Man MK85</strong><br>by ArmorMaker<br>Price: $120 <button>Inquire</button></div>
+    </div>
+    <button id="showUploadFormBtn" style="margin-top: 20px;">+ Upload Your Work</button>
+    <div id="uploadFormContainer" style="display:none; margin-top: 30px; background:#1e1e2e; padding:20px; border-radius:28px;">
+      <h3>Sell your creation</h3>
+      <input type="text" placeholder="Title" id="uploadTitle">
+      <select id="uploadType"><option>Comic</option><option>Video Edit</option><option>Novel</option><option>Cosplay</option></select>
+      <input type="number" placeholder="Price (USD)">
+      <textarea placeholder="Description"></textarea>
+      <button id="mockUpload">Submit (demo)</button>
+    </div>
+  </div>
+</div>
+
+<!-- FREE VAULT -->
+<div id="freevaultPage" class="page">
+  <div style="padding: 100px 2rem 2rem;">
+    <h2>📚 Free Comics & Downloads</h2>
+    <div class="free-vault-grid">
+      <div class="card"><i class="fas fa-file-pdf"></i> <strong>Superman: Birthright (sample)</strong><br><a href="#">Download PDF</a></div>
+      <div class="card"><i class="fas fa-file-pdf"></i> <strong>Invincible #1 Free Preview</strong><br><a href="#">Download</a></div>
+      <div class="card"><i class="fas fa-images"></i> <strong>Marvel Fanart Pack</strong><br><a href="#">Get Zip</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h3>Join Worlds</h3>
+    <input type="text" placeholder="Username">
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Password">
+    <button id="mockSignup">Sign Up / Login (demo)</button>
+    <p style="margin-top: 10px;">After login you can upload & sell.</p>
+  </div>
+</div>
+
+<footer>⚡ Worlds — Battle Simulator: <span id="battleDemo">Captain America vs Red Skull</span> <button onclick="alert('Vote: Cap wins 87%')">Vote Winner</button> &nbsp;| Timeline view available per hero</footer>
+
+<script>
+  // ------------------------- MARVEL DATA (from user provided heroes & villains)
+  const marvelHeroes = [
+    { id: "cap", name: "Captain America", video: "/videos/marvel/captain.mp4", heroImage: "/images/heroes/captain.jpg", rank: "Peak Human / Tactical Leader", powers: "Enhanced agility, vibranium shield, indomitable will", weaknesses: "Mortal durability, susceptible to magic/energy", villains: ["Red Skull", "Crossbones", "Winter Soldier (past)", "Zemo"] },
+    { id: "wolverine", name: "Wolverine", video: "/videos/marvel/wolverine-marvel-rivals.3840x2160.mp4", heroImage: "/images/heroes/wolverine.jpg", rank: "Omega Level Mutant", powers: "Adamantium skeleton, healing factor, retractable claws", weaknesses: "Adamantium poisoning, drowning, magneto", villains: ["Sabretooth", "Lady Deathstrike", "Omega Red", "Silver Samurai"] },
+    { id: "ironman", name: "Iron Man", video: "/videos/marvel/iron-man-marvel-rivals.1920x1080.mp4", heroImage: "/images/heroes/ironman.jpg", rank: "Genius / Armored Avenger", powers: "Repulsors, flight, advanced AI", weaknesses: "Power drainage, arrogance", villains: ["Iron Monger", "Ultron", "Ghost", "Kang"] },
+    { id: "spiderman", name: "Spider-Man", video: "/videos/marvel/spider-man-marvel-rivals.1920x1080.mp4", heroImage: "/images/heroes/spiderman.jpg", rank: "Superhuman / Wall-crawler", powers: "Spidey sense, super strength, web shooters", weaknesses: "Responsibility guilt, venom sound", villains: ["Venom", "Mysterio", "Vulture", "Green Goblin"] },
+  ];
+  const allVillainsList = ["Red Hulk","Kang","Crossbones","The Leader","Galactus","The High Evolutionary","Ulysses Klaue","Ultron","Namor","Dormammu","Red Skull","Mysterio","Ego","Yellowjacket","Killmonger","Abomination","Corvus Glaive","Ronan","Iron Monger","Malekith","Thanos","Proxima Midnight","Taskmaster","Ghost","Cull Obsidian","Vulture","Gorr","Ebony Maw"];
+  
+  let currentMarvelHero = marvelHeroes[0];
+  const marvelVideoElem = document.getElementById('marvelBgVideo');
+  function updateMarvelUI(hero) {
+    document.getElementById('marvelHeroName').innerText = hero.name;
+    document.getElementById('marvelHeroRank').innerHTML = `Rank: ${hero.rank}`;
+    document.getElementById('marvelPowers').innerText = hero.powers;
+    document.getElementById('marvelWeaknesses').innerText = hero.weaknesses;
+    document.getElementById('marvelHeroImage').src = hero.heroImage || "https://placehold.co/400x500?text="+hero.name;
+    if(marvelVideoElem) {
+      marvelVideoElem.pause();
+      marvelVideoElem.src = hero.video;
+      marvelVideoElem.load();
+      marvelVideoElem.play().catch(e=>console.log);
     }
-    
-    // Function to read database
-    function readDatabase($file) {
-        $content = file_get_contents($file);
-        return json_decode($content, true);
+    // update villain thumbnails based on hero's specific villains + some extra
+    let displayVillains = hero.villains ? hero.villains.slice() : [];
+    if(displayVillains.length < 5) displayVillains.push(...allVillainsList.slice(0,3));
+    const container = document.getElementById('villainThumbList');
+    container.innerHTML = displayVillains.map(v => `<div class="villain-thumb"><img src="/images/villains/${v.toLowerCase().replace(/ /g,'')}.jpg" onerror="this.src='https://placehold.co/100x100?text=${v}'"><span>${v}</span></div>`).join('');
+  }
+  function setMarvelHero(index) { currentMarvelHero = marvelHeroes[index]; updateMarvelUI(currentMarvelHero); }
+  // hero carousel for marvel (quick selector)
+  const marvelHeroSelector = document.createElement('div');
+  marvelHeroSelector.style.position = 'fixed';
+  marvelHeroSelector.style.bottom = '20px';
+  marvelHeroSelector.style.right = '20px';
+  marvelHeroSelector.style.zIndex = '999';
+  marvelHeroSelector.style.background = 'rgba(0,0,0,0.7)';
+  marvelHeroSelector.style.borderRadius = '40px';
+  marvelHeroSelector.style.padding = '8px 12px';
+  marvelHeroSelector.style.display = 'flex';
+  marvelHeroSelector.style.gap = '10px';
+  marvelHeroSelector.innerHTML = marvelHeroes.map((h,i) => `<button class="hero-selector-btn" data-idx="${i}">${h.name}</button>`).join('');
+  document.getElementById('marvelPage').appendChild(marvelHeroSelector);
+  document.querySelectorAll('.hero-selector-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => { setMarvelHero(parseInt(btn.dataset.idx)); });
+  });
+  updateMarvelUI(currentMarvelHero);
+
+  // ------------------------- DC DATA
+  const dcHeroes = [
+    { id: "superman", name: "Superman", videoBg: "/videos/dc/superman-radiant-rise.1920x1080.mp4", villains: ["Lex Luthor","Darkseid","Doomsday","Brainiac","Zod","Metallo","Parasite","Mxyzptlk"] },
+    { id: "batman", name: "Batman", videoBg: "/videos/dc/batman.mp4", villains: ["Joker","Riddler","Bane","Scarecrow","Two-Face","Penguin","Ra's al Ghul"] },
+    { id: "wonderwoman", name: "Wonder Woman", videoBg: "/videos/dc/wonderwoman.mp4", villains: ["Cheetah","Ares","Circe","Medusa","Giganta"] },
+    { id: "flash", name: "The Flash", videoBg: "/videos/dc/flash.mp4", villains: ["Reverse-Flash","Captain Cold","Gorilla Grodd","Zoom","Trickster"] }
+  ];
+  let currentDCHero = dcHeroes[0];
+  const dcBgVideoElem = document.getElementById('dcBgVideo');
+  function updateDCUI(hero) {
+    currentDCHero = hero;
+    if(dcBgVideoElem && hero.videoBg) {
+      dcBgVideoElem.src = hero.videoBg;
+      dcBgVideoElem.load();
+      dcBgVideoElem.play().catch(e=>console);
     }
-    
-    // Function to write to database
-    function writeDatabase($file, $data) {
-        file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT));
-    }
-    
-    // Function to hash password (simulates secure storage)
-    function hashPassword($password) {
-        return password_hash($password, PASSWORD_DEFAULT);
-    }
-    
-    // Check if this is a POST or GET request
-    $requestMethod = $_SERVER['REQUEST_METHOD'];
-    $responseMessage = '';
-    $responseType = '';
-    
-    if ($requestMethod === 'POST') {
-        // Handle POST request - data comes from form body (hidden)
-        $firstName = isset($_POST['first_name']) ? trim($_POST['first_name']) : '';
-        $lastName = isset($_POST['last_name']) ? trim($_POST['last_name']) : '';
-        $email = isset($_POST['email']) ? trim($_POST['email']) : '';
-        $password = isset($_POST['password']) ? $_POST['password'] : '0000';
-        
-        // Validate
-        if (empty($firstName) || empty($lastName) || empty($email)) {
-            $responseMessage = 'Please fill in all fields';
-            $responseType = 'error';
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $responseMessage = 'Invalid email format';
-            $responseType = 'error';
-        } else {
-            // Save to dummy database
-            $db = readDatabase($dbFile);
-            $db['counter']++;
-            $newUser = [
-                'id' => $db['counter'],
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'email' => $email,
-                'password_hash' => hashPassword($password),
-                'method' => 'POST',
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            array_unshift($db['users'], $newUser); // Add to beginning
-            writeDatabase($dbFile, $db);
-            
-            $responseMessage = "✅ POST Registration successful! Welcome $firstName $lastName. Data saved to database.";
-            $responseType = 'success';
-        }
-        
-        // Return JSON response for AJAX
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            echo json_encode(['type' => $responseType, 'message' => $responseMessage]);
-            exit;
-        }
-    }
-    ?>
-    
-    <script>
-        // ============================================
-        // JAVASCRIPT - Handles UI and GET/POST switching
-        // ============================================
-        
-        const form = document.getElementById('registerForm');
-        const messageDiv = document.getElementById('message');
-        const postBtn = document.getElementById('postBtn');
-        const getBtn = document.getElementById('getBtn');
-        const dataDisplay = document.getElementById('dataDisplay');
-        
-        let currentMethod = 'POST';
-        
-        // Switch to POST method
-        postBtn.addEventListener('click', () => {
-            currentMethod = 'POST';
-            form.method = 'POST';
-            postBtn.classList.add('active');
-            getBtn.classList.remove('active');
-            showMessage('Switched to POST method - data will be hidden in request body', 'success');
-            setTimeout(() => {
-                messageDiv.className = 'message';
-            }, 2000);
-        });
-        
-        // Switch to GET method
-        getBtn.addEventListener('click', () => {
-            currentMethod = 'GET';
-            form.method = 'GET';
-            getBtn.classList.add('active');
-            postBtn.classList.remove('active');
-            showMessage('Switched to GET method - data will be visible in URL', 'success');
-            setTimeout(() => {
-                messageDiv.className = 'message';
-            }, 2000);
-        });
-        
-        // Handle form submission
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            
-            // Validation
-            if (!firstName || !lastName || !email || !password) {
-                showMessage('Please fill in all fields', 'error');
-                return;
-            }
-            
-            if (!email.includes('@') || !email.includes('.')) {
-                showMessage('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            if (currentMethod === 'POST') {
-                // POST: Send data via AJAX (hidden)
-                const formData = new URLSearchParams();
-                formData.append('first_name', firstName);
-                formData.append('last_name', lastName);
-                formData.append('email', email);
-                formData.append('password', password);
-                
-                try {
-                    const response = await fetch(window.location.href, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: formData.toString()
-                    });
-                    
-                    const result = await response.json();
-                    showMessage(result.message, result.type);
-                    
-                    if (result.type === 'success') {
-                        form.reset();
-                        document.getElementById('password').value = '0000';
-                        loadDatabaseData();
-                    }
-                } catch (error) {
-                    showMessage('Error connecting to server', 'error');
-                }
-            } else {
-                // GET: Submit form normally (data visible in URL)
-                // Build URL with query parameters
-                const params = new URLSearchParams({
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                    password: password
-                });
-                
-                // Show what the GET URL will look like
-                const getUrl = window.location.pathname + '?' + params.toString();
-                console.log('GET Request URL:', getUrl);
-                
-                // Submit the form with GET method
-                form.method = 'GET';
-                form.action = '?' + params.toString();
-                form.submit();
-            }
-        });
-        
-        // Load and display database contents
-        async function loadDatabaseData() {
-            try {
-                const response = await fetch('get_data.php');
-                const data = await response.json();
-                
-                if (data.users && data.users.length > 0) {
-                    let html = '<strong>📀 Recent Registrations:</strong><br><br>';
-                    data.users.slice(0, 5).forEach(user => {
-                        html += `• ${user.first_name} ${user.last_name} | ${user.email}<br>`;
-                        html += `  Method: ${user.method} | Time: ${user.created_at}<br><br>`;
-                    });
-                    html += `<em>Total users: ${data.users.length}</em>`;
-                    dataDisplay.innerHTML = html;
-                } else {
-                    dataDisplay.innerHTML = 'No users registered yet. Submit the form above!';
-                }
-            } catch (error) {
-                dataDisplay.innerHTML = 'Database ready. Submit a form to see data appear!';
-            }
-        }
-        
-        function showMessage(text, type) {
-            messageDiv.textContent = text;
-            messageDiv.className = `message ${type}`;
-            
-            setTimeout(() => {
-                messageDiv.className = 'message';
-            }, 4000);
-        }
-        
-        // Load database data on page load
-        loadDatabaseData();
-        
-        // Handle GET parameters on page load (if form was submitted via GET)
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('first_name')) {
-            // GET request was made - show the data
-            const firstName = urlParams.get('first_name');
-            const lastName = urlParams.get('last_name');
-            const email = urlParams.get('email');
-            const password = urlParams.get('password');
-            
-            // Save to database via PHP (AJAX call)
-            const formData = new URLSearchParams();
-            formData.append('first_name', firstName);
-            formData.append('last_name', lastName);
-            formData.append('email', email);
-            formData.append('password', password);
-            
-            fetch(window.location.href, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: formData.toString()
-            })
-            .then(res => res.json())
-            .then(result => {
-                showMessage(`GET Submission: ${result.message}`, result.type);
-                loadDatabaseData();
-                // Clear URL parameters without reloading
-                window.history.replaceState({}, document.title, window.location.pathname);
-            });
-        }
-    </script>
-    
-    <?php
-    // Handle GET request display and save
-    if ($requestMethod === 'GET' && isset($_GET['first_name'])) {
-        $firstName = isset($_GET['first_name']) ? trim($_GET['first_name']) : '';
-        $lastName = isset($_GET['last_name']) ? trim($_GET['last_name']) : '';
-        $email = isset($_GET['email']) ? trim($_GET['email']) : '';
-        $password = isset($_GET['password']) ? $_GET['password'] : '0000';
-        
-        if (!empty($firstName) && !empty($lastName) && !empty($email)) {
-            $db = readDatabase($dbFile);
-            $db['counter']++;
-            $newUser = [
-                'id' => $db['counter'],
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'email' => $email,
-                'password_hash' => hashPassword($password),
-                'method' => 'GET',
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            array_unshift($db['users'], $newUser);
-            writeDatabase($dbFile, $db);
-            
-            echo '<script>
-                showMessage("✅ GET Registration successful! Data saved to database.", "success");
-                loadDatabaseData();
-            </script>';
-        }
-    }
-    ?>
+    const leftContainer = document.getElementById('dcVillainsLeft');
+    const rightContainer = document.getElementById('dcVillainsRight');
+    const villains = hero.villains;
+    const mid = Math.ceil(villains.length/2);
+    const leftVils = villains.slice(0,mid);
+    const rightVils = villains.slice(mid);
+    leftContainer.innerHTML = leftVils.map(v => `<div class="villain-item" data-villain="${v}"><img src="/images/dc_villains/${v.toLowerCase().replace(/ /g,'')}.jpg" onerror="this.src='https://placehold.co/100x100?text=${v}'"><div><strong>${v}</strong></div></div>`).join('');
+    rightContainer.innerHTML = rightVils.map(v => `<div class="villain-item" data-villain="${v}"><img src="/images/dc_villains/${v.toLowerCase().replace(/ /g,'')}.jpg" onerror="this.src='https://placehold.co/100x100?text=${v}'"><div><strong>${v}</strong></div></div>`).join('');
+    attachVillainClick();
+  }
+  function attachVillainClick() {
+    document.querySelectorAll('.villain-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const vName = el.dataset.villain;
+        const villainData = getVillainDetails(vName, currentDCHero.name);
+        document.getElementById('selectedVillainName').innerHTML = `<i class="fas fa-dragon"></i> ${vName}`;
+        document.getElementById('villainStrengths').innerHTML = `<strong>💪 Strengths:</strong> ${villainData.strengths}`;
+        document.getElementById('villainWeaknesses').innerHTML = `<strong>⚠️ Weaknesses:</strong> ${villainData.weaknesses}`;
+        document.getElementById('villainBeef').innerHTML = `<strong>⚔️ Why they beef:</strong> ${villainData.beef}`;
+        document.getElementById('villainFights').innerHTML = `<strong>🏆 Notable fights:</strong> ${villainData.fights}`;
+      });
+    });
+  }
+  function getVillainDetails(villain, heroName) {
+    const data = {
+      "Joker": { strengths:"Chaos genius, toxin", weaknesses:"Batman's restraint, narcissism", beef:"Wants to break Batman's one rule", fights:"The Killing Joke, Death of the Family" },
+      "Lex Luthor": { strengths:"Super intelligence, power suit", weaknesses:"Arrogance", beef:"Hates Superman's alien godhood", fights:"Superman/Batman: Public Enemies" },
+      "Darkseid": { strengths:"Omega Beams, god tier", weaknesses:"Radion", beef:"Anti-Life Equation, conquer", fights:"Final Crisis, Justice League Unlimited" },
+      "Doomsday": { strengths:"Infinite adaptation", weaknesses:"Moral code none, but killed", beef:"Killed Superman", fights:"Death of Superman" }
+    };
+    const def = { strengths:"Immense power, strategic", weaknesses:"Overconfidence", beef:`Villain opposes ${heroName}`, fights:"Many epic clashes" };
+    return data[villain] || def;
+  }
+  // DC hero carousel
+  const carouselDiv = document.getElementById('dcHeroCarousel');
+  dcHeroes.forEach((hero, idx) => {
+    const btn = document.createElement('div');
+    btn.className = 'hero-card';
+    btn.innerText = hero.name;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.hero-card').forEach(c => c.classList.remove('active-dc-hero'));
+      btn.classList.add('active-dc-hero');
+      updateDCUI(hero);
+    });
+    carouselDiv.appendChild(btn);
+  });
+  updateDCUI(dcHeroes[0]);
+  document.querySelectorAll('.hero-card')[0].classList.add('active-dc-hero');
+
+  // PAGE SWITCHING
+  const pages = {
+    home: document.getElementById('homePage'),
+    marvel: document.getElementById('marvelPage'),
+    dc: document.getElementById('dcPage'),
+    marketplace: document.getElementById('marketplacePage'),
+    freevault: document.getElementById('freevaultPage')
+  };
+  function showPage(pageId) {
+    Object.values(pages).forEach(p => p.classList.remove('active-page'));
+    pages[pageId].classList.add('active-page');
+    if(pageId === 'marvel') { marvelVideoElem.play().catch(e=>{}); }
+    if(pageId === 'dc') { dcBgVideoElem.play().catch(e=>{}); }
+  }
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', () => showPage(el.dataset.page));
+  });
+  document.querySelectorAll('.world-icon').forEach(el => {
+    el.addEventListener('click', () => {
+      if(el.dataset.world === 'marvel') showPage('marvel');
+      else if(el.dataset.world === 'dc') showPage('dc');
+      else if(el.dataset.world === 'invincible') alert('Invincible world coming soon!');
+    });
+  });
+  // Auth modal
+  const modal = document.getElementById('authModal');
+  document.getElementById('openAuthBtn').onclick = () => modal.style.display = 'flex';
+  document.querySelector('.close-modal').onclick = () => modal.style.display = 'none';
+  document.getElementById('mockSignup').onclick = () => { alert('Demo account created! (simulated)'); modal.style.display = 'none'; };
+  document.getElementById('showUploadFormBtn').onclick = () => {
+    const formDiv = document.getElementById('uploadFormContainer');
+    formDiv.style.display = formDiv.style.display === 'none' ? 'block' : 'none';
+  };
+  document.getElementById('mockUpload').onclick = () => alert('Upload demo: your item would be listed after approval (simulated marketplace).');
+  
+  // BATTLE SIMULATOR simple update
+  setInterval(() => {
+    const heroesList = ["Spider-Man","Wolverine","Batman","Superman"];
+    const randHero = heroesList[Math.floor(Math.random()*heroesList.length)];
+    const randVill = allVillainsList[Math.floor(Math.random()*allVillainsList.length)];
+    document.getElementById('battleDemo').innerText = `${randHero} vs ${randVill}`;
+  }, 15000);
+</script>
 </body>
 </html>
