@@ -54,35 +54,6 @@
       flex-wrap: wrap;
     }
 
-    /* Modern Logo with spinning ring */
-    .planet-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: 'Orbitron', monospace;
-      font-weight: 900;
-      font-size: 2rem;
-      letter-spacing: 3px;
-      background: linear-gradient(135deg, #fff, #ffaa44, #ff4b2b);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 0 8px rgba(255,75,43,0.5);
-    }
-    .planet-logo::after {
-      content: "🪐";
-      font-size: 2rem;
-      background: none;
-      color: #ffaa66;
-      margin-left: 8px;
-      animation: spinRing 4s infinite linear;
-      display: inline-block;
-    }
-    @keyframes spinRing {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
     .nav-links {
       display: flex;
       gap: 1rem;
@@ -106,30 +77,6 @@
       background: #ff4b2b;
       transform: translateY(-2px);
       box-shadow: 0 0 15px rgba(255,75,43,0.6);
-    }
-    .world-icons {
-      display: flex;
-      gap: 0.8rem;
-    }
-    .world-icon {
-      width: 44px;
-      height: 44px;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(8px);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: 0.2s;
-      border: 1px solid rgba(255,75,43,0.6);
-    }
-    .world-icon:hover {
-      background: #ff4b2b;
-      transform: scale(1.08);
-      box-shadow: 0 0 12px #ff4b2b;
     }
 
     /* Pages */
@@ -159,16 +106,166 @@
       position: relative;
       z-index: 2;
       text-align: center;
-      padding-top: 25vh;
+      padding-top: 20vh;
     }
-    .home-hero h1 {
-      font-size: 5rem;
+    /* rotating planet O */
+    .worlds-title {
       font-family: 'Orbitron', monospace;
+      font-size: 6rem;
+      font-weight: 900;
+      letter-spacing: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       background: linear-gradient(135deg, #fff, #ffaa44, #ff4b2b);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      animation: fadeInUp 1s ease;
+    }
+    .rotating-o {
+      display: inline-block;
+      animation: spinPlanet 4s infinite linear;
+      font-size: 6rem;
+      margin: 0 4px;
+    }
+    @keyframes spinPlanet {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .universe-icons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 3rem;
+    }
+    .universe-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 2px solid rgba(255,75,43,0.6);
+      font-weight: bold;
+      gap: 5px;
+    }
+    .universe-icon i {
+      font-size: 2rem;
+    }
+    .universe-icon span {
+      font-size: 0.7rem;
+    }
+    .universe-icon:hover {
+      transform: scale(1.1);
+      background: #ff4b2b;
+      box-shadow: 0 0 20px #ff4b2b;
+    }
+
+    /* Universe Page (generic) */
+    .universe-container {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+    }
+    .bg-video {
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .universe-overlay {
+      display: flex;
+      min-height: 100vh;
+      backdrop-filter: brightness(0.85);
+    }
+    .left-fade {
+      width: 38%;
+      background: linear-gradient(90deg, #03030f 0%, rgba(3,3,15,0.85) 60%, transparent 100%);
+      padding: 7rem 2rem 3rem 2.5rem;
+    }
+    .hero-portrait img {
+      width: 100%;
+      max-width: 280px;
+      border-radius: 32px;
+      border: 2px solid #ff4b2b;
+      box-shadow: 0 0 20px rgba(255,75,43,0.5);
+    }
+    .villains-scroll {
+      margin-top: 2rem;
+    }
+    .scroll-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .scroll-container {
+      overflow-x: auto;
+      display: flex;
+      gap: 16px;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+    .scroll-container::-webkit-scrollbar { display: none; }
+    .scroll-btn {
+      background: rgba(255,75,43,0.7);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .middle-area {
+      flex: 1;
+      padding: 7rem 2rem 3rem;
+      background: rgba(0,0,0,0.3);
+    }
+    .hero-stats {
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(16px);
+      border-radius: 32px;
+      padding: 2rem;
+      border-left: 6px solid #ff4b2b;
+    }
+
+    /* Creator's Bazaar */
+    .bazaar-categories {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+    }
+    .bazaar-cat {
+      background: rgba(30,30,50,0.8);
+      backdrop-filter: blur(12px);
+      border-radius: 48px;
+      padding: 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid rgba(255,75,43,0.3);
+    }
+    .bazaar-cat i { font-size: 2rem; }
+    .bazaar-cat:hover { transform: translateY(-5px); background: #ff4b2b; }
+    .upload-form {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: rgba(0,0,0,0.7);
+      border-radius: 32px;
+      padding: 2rem;
+      display: none;
     }
 
     /* Battle Page */
@@ -179,98 +276,67 @@
     }
     .battle-arena {
       display: flex;
-      align-items: stretch;
-      gap: 20px;
-      flex-wrap: wrap;
+      align-items: center;
       justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
     }
-    .fighter-col {
-      flex: 1;
-      min-width: 260px;
-      background: rgba(20,20,40,0.6);
+    .fighter-panel {
+      background: rgba(20,20,40,0.7);
       backdrop-filter: blur(16px);
-      border-radius: 32px;
-      padding: 1rem;
-      border: 1px solid rgba(255,75,43,0.3);
-      transition: 0.3s;
+      border-radius: 48px;
+      padding: 1.5rem;
+      width: 320px;
+      text-align: center;
     }
-    .fighter-col:hover {
-      border-color: #ff4b2b;
-      box-shadow: 0 0 20px rgba(255,75,43,0.2);
-    }
-    .character-list {
-      max-height: 500px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding-right: 6px;
-    }
-    .character-card {
-      background: rgba(30,30,50,0.8);
-      border-radius: 24px;
-      padding: 12px;
+    .fighter-avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 0 auto;
+      background: #222;
       display: flex;
       align-items: center;
-      gap: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-      border: 1px solid transparent;
+      justify-content: center;
+      font-size: 4rem;
+      border: 3px solid #ff4b2b;
     }
-    .character-card.selected {
-      border: 2px solid #ff4b2b;
-      background: rgba(255,75,43,0.2);
-      box-shadow: 0 0 12px #ff4b2b;
+    .fighter-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 1rem 0;
     }
-    .character-card img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #222;
+    .scroll-controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
     }
-    .vs-button {
+    .lock-btn {
+      background: #ffaa44;
+      margin-top: 10px;
+    }
+    .locked {
+      background: #4caf50;
+    }
+    .vs-middle {
+      text-align: center;
+    }
+    .fight-btn {
       background: linear-gradient(135deg, #ff4b2b, #ff2a0a);
-      border: none;
-      font-size: 2.5rem;
-      font-weight: 900;
-      font-family: 'Orbitron', monospace;
-      padding: 20px 30px;
-      border-radius: 80px;
-      cursor: pointer;
-      box-shadow: 0 0 20px rgba(255,75,43,0.8);
-      transition: 0.2s;
+      font-size: 2rem;
+      padding: 15px 30px;
+      border-radius: 60px;
     }
     .battle-log {
       margin-top: 40px;
       background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(16px);
       border-radius: 32px;
       padding: 1.5rem;
-      max-height: 450px;
+      max-height: 400px;
       overflow-y: auto;
-      font-family: monospace;
     }
-    .log-entry {
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      gap: 12px;
-      animation: fadeSlide 0.3s ease;
-    }
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateX(-10px);}
-      to { opacity: 1; transform: translateX(0);}
-    }
-    .creator-card, .free-card {
-      background: rgba(30,30,46,0.8);
-      backdrop-filter: blur(12px);
-      border-radius: 32px;
-      padding: 1.5rem;
-      border: 1px solid rgba(255,75,43,0.3);
-      transition: 0.2s;
-    }
-    .creator-card:hover { transform: translateY(-5px); border-color: #ff4b2b; }
+
     button {
       background: #ff4b2b;
       border: none;
@@ -278,26 +344,7 @@
       border-radius: 40px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.2s;
       color: white;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      background: rgba(0,0,0,0.95);
-      backdrop-filter: blur(12px);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #111;
-      border-radius: 32px;
-      padding: 2rem;
-      width: 90%;
-      max-width: 500px;
     }
     footer {
       text-align: center;
@@ -305,394 +352,330 @@
       background: #03030f;
       border-top: 1px solid rgba(255,75,43,0.3);
     }
-    @media (max-width: 800px) { .battle-arena { flex-direction: column; } .vs-center { order: 2; margin: 20px 0; } }
-    .typing-cursor {
-      display: inline-block;
-      width: 8px;
-      height: 1.2em;
-      background-color: #ffaa44;
-      vertical-align: middle;
-      margin-left: 4px;
-      animation: blink 1s step-end infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
+    @media (max-width: 800px) {
+      .left-fade { width: 100%; }
+      .universe-overlay { flex-direction: column; }
+      .fighter-panel { width: 260px; }
     }
   </style>
 </head>
 <body>
 
 <nav class="navbar">
-  <div class="planet-logo">WORLDS</div>
   <div class="nav-links">
     <div class="nav-item" data-page="home"><i class="fas fa-globe"></i> Home</div>
-    <div class="world-icons">
-      <div class="world-icon" data-world="marvel">M</div>
-      <div class="world-icon" data-world="dc">DC</div>
-      <div class="world-icon" data-world="invincible">I</div>
-    </div>
     <div class="nav-item" data-page="bazaar"><i class="fas fa-store"></i> Creator's Bazaar</div>
-    <div class="nav-item" data-page="freevault"><i class="fas fa-download"></i> Free Vault</div>
     <div class="nav-item" data-page="battle"><i class="fas fa-fist-raised"></i> Battle</div>
     <div class="nav-item" id="openAuthBtn"><i class="fas fa-user-astronaut"></i> Join</div>
   </div>
 </nav>
 
-<!-- HOME -->
+<!-- HOME PAGE -->
 <div id="homePage" class="page active-page">
   <div class="home-hero">
-    <h1>WELCOME TO WORLDS</h1>
-    <p>Multiverse hub · Epic Battles · Creator's Bazaar · Infinite Sagas</p>
-    <div style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
-      <button class="world-icon" data-world="marvel" style="width:auto; padding:12px 32px;">MARVEL</button>
-      <button class="world-icon" data-world="dc" style="width:auto; padding:12px 32px;">DC</button>
-      <button class="world-icon" data-world="invincible" style="width:auto; padding:12px 32px;">INVINCIBLE</button>
+    <div class="worlds-title">
+      W<span class="rotating-o">🪐</span>RLDS
+    </div>
+    <p style="font-size:1.2rem; margin-top:1rem;">The multiverse at your fingertips</p>
+    <div class="universe-icons" id="universeIcons">
+      <!-- dynamic from JS -->
     </div>
   </div>
 </div>
 
-<!-- MARVEL PAGE (encyclopedia - simplified but functional) -->
-<div id="marvelPage" class="page">
-  <div class="marvel-container">
-    <video id="marvelBgVideo" class="bg-video" autoplay muted loop playsinline style="position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-2;"></video>
-    <div style="display:flex; min-height:100vh;">
-      <div style="width:38%; background:linear-gradient(90deg,#03030f,transparent); padding:7rem 2rem 3rem 2.5rem;">
-        <div><img id="marvelHeroImage" src="https://placehold.co/400x500?text=Hero" style="width:100%; border-radius:32px;"></div>
-        <div style="margin-top:20px;"><h3>Villains</h3><div id="villainThumbList" style="display:flex; gap:12px; overflow-x:auto;"></div></div>
-      </div>
-      <div style="flex:1; padding:7rem 2rem;">
-        <div style="background:rgba(0,0,0,0.7); border-radius:32px; padding:2rem;">
-          <div class="hero-name" id="marvelHeroName">Captain America</div>
-          <div class="hero-rank">Rank: Super Soldier</div>
-          <div><strong>Powers:</strong> <span id="marvelPowers"></span></div>
-          <div><strong>Weaknesses:</strong> <span id="marvelWeaknesses"></span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div style="position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.7); border-radius:48px; padding:8px 16px; display:flex; gap:10px; z-index:99;" id="marvelHeroSelector"></div>
-</div>
+<!-- DYNAMIC UNIVERSE PAGES (will be created by JS) -->
+<div id="universePagesContainer"></div>
 
-<!-- DC PAGE (simplified) -->
-<div id="dcPage" class="page">
-  <div class="dc-container">
-    <video id="dcBgVideo" autoplay muted loop playsinline style="position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-2;"></video>
-    <div style="padding-top:100px;">
-      <div id="dcHeroCarousel" style="display:flex; gap:20px; justify-content:center;"></div>
-      <div style="display:flex; gap:20px; margin:20px;">
-        <div style="flex:1; background:rgba(0,0,0,0.6); border-radius:28px; padding:1rem;"><div id="dcVillainsLeft"></div></div>
-        <div style="flex:1; background:rgba(0,0,0,0.6); border-radius:28px; padding:1rem;"><div id="dcVillainsRight"></div></div>
-      </div>
-      <div id="dcVillainDetail" style="background:rgba(0,0,0,0.7); margin:20px; padding:1.5rem; border-radius:28px;"></div>
-    </div>
-  </div>
-</div>
-
-<!-- CREATOR'S BAZAAR (Upload & Sell) -->
+<!-- CREATOR'S BAZAAR PAGE -->
 <div id="bazaarPage" class="page">
-  <div style="padding:100px 2rem 2rem;">
-    <h2 style="font-size:2.5rem; text-align:center;"><i class="fas fa-palette"></i> Creator's Bazaar</h2>
-    <p style="text-align:center; margin-bottom:2rem;">Original comics · Video edits · 3D assets · Artworks · Cosplay designs</p>
-    <div id="bazaarGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:2rem;">
-      <div class="creator-card"><i class="fas fa-book-open"></i> <strong>“Dark Tomorrow”</strong> – indie comic by PixelForge<br>$3.99 <button>Buy</button></div>
-      <div class="creator-card"><i class="fas fa-video"></i> <strong>“Rivals: Final Cut”</strong> – fan edit by CosmicLens<br>$1.99 <button>Buy</button></div>
-      <div class="creator-card"><i class="fas fa-cube"></i> <strong>3D Spider-Man Icon Pack</strong> – by RenderMasters<br>$5.00 <button>Buy</button></div>
+  <div style="padding:100px 2rem 2rem; text-align:center;">
+    <h2 style="font-size:2.5rem;"><i class="fas fa-palette"></i> Creator's Bazaar</h2>
+    <p>Sell your original superhero creations</p>
+    <div class="bazaar-categories" id="bazaarCategories">
+      <div class="bazaar-cat" data-type="comic"><i class="fas fa-book-open"></i><span>Comic</span></div>
+      <div class="bazaar-cat" data-type="video"><i class="fas fa-video"></i><span>Video Edit</span></div>
+      <div class="bazaar-cat" data-type="3d"><i class="fas fa-cube"></i><span>3D Model</span></div>
+      <div class="bazaar-cat" data-type="art"><i class="fas fa-paintbrush"></i><span>Artwork</span></div>
+      <div class="bazaar-cat" data-type="cosplay"><i class="fas fa-mask"></i><span>Cosplay</span></div>
     </div>
-    <div style="text-align:center; margin-top:2rem;"><button id="showUploadBtn"><i class="fas fa-cloud-upload-alt"></i> Become a Creator – Upload Work</button></div>
-    <div id="uploadPanel" style="display:none; margin-top:2rem; background:rgba(0,0,0,0.7); border-radius:32px; padding:1.5rem; max-width:600px; margin-left:auto; margin-right:auto;">
-      <h3>Submit to Bazaar</h3>
-      <input type="text" placeholder="Title" id="uploadTitle" style="width:100%; padding:10px; margin:10px 0; border-radius:40px;"><br>
-      <select id="uploadCat" style="width:100%; padding:10px; border-radius:40px;"><option>Comic</option><option>Video Edit</option><option>3D Model/Icon</option><option>Artwork</option><option>Cosplay</option></select>
-      <input type="number" placeholder="Price (USD)" id="uploadPrice" style="width:100%; padding:10px; margin:10px 0; border-radius:40px;">
-      <textarea placeholder="Description" rows="2" style="width:100%; border-radius:20px;"></textarea>
-      <button id="mockPublish">Publish (demo)</button>
+    <div id="uploadFormContainer" class="upload-form">
+      <h3>Upload your work</h3>
+      <input type="text" placeholder="Title" id="uploadTitle" style="width:100%; margin:10px 0; padding:10px; border-radius:40px;">
+      <input type="number" placeholder="Price (USD)" id="uploadPrice" style="width:100%; margin:10px 0; padding:10px; border-radius:40px;">
+      <textarea placeholder="Description" rows="3" id="uploadDesc" style="width:100%; border-radius:20px;"></textarea>
+      <button id="publishBtn">Publish to Bazaar</button>
     </div>
+    <div id="bazaarListings" style="margin-top: 2rem; display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:1.5rem;"></div>
   </div>
 </div>
 
-<!-- FREE VAULT -->
-<div id="freevaultPage" class="page">
-  <div style="padding:100px 2rem 2rem;">
-    <h2>Free Vault</h2>
-    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:2rem;">
-      <div class="creator-card">Superman: Birthright Preview <a href="#">Download</a></div>
-      <div class="creator-card">Invincible #1 Fan Color <a href="#">Download</a></div>
-    </div>
-  </div>
-</div>
-
-<!-- BATTLE PAGE (with AI fight generation that types out the battle) -->
+<!-- BATTLE PAGE -->
 <div id="battlePage" class="page">
   <div class="battle-container">
-    <h2 style="text-align:center; margin-bottom:1rem;"><i class="fas fa-fist-raised"></i> BATTLE ARENA <i class="fas fa-fist-raised"></i></h2>
+    <h2 style="text-align:center;">BATTLE ARENA</h2>
     <div class="battle-arena">
-      <div class="fighter-col"><h3><i class="fas fa-user-astronaut"></i> FIGHTER 1</h3><div class="character-list" id="fighter1-list"></div></div>
-      <div class="vs-center"><button id="vsFightBtn" class="vs-button">VS</button><div style="margin-top:20px;"><button id="randomBtn" style="background:#333;"><i class="fas fa-random"></i> Random</button></div></div>
-      <div class="fighter-col"><h3><i class="fas fa-user-ninja"></i> FIGHTER 2</h3><div class="character-list" id="fighter2-list"></div></div>
+      <div class="fighter-panel">
+        <div class="fighter-avatar" id="fighter1Avatar">⚔️</div>
+        <div class="fighter-name" id="fighter1Name">Select</div>
+        <div class="scroll-controls">
+          <button id="fighter1Prev"><i class="fas fa-chevron-left"></i></button>
+          <button id="fighter1Next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <button id="lock1Btn" class="lock-btn">🔒 Lock</button>
+      </div>
+      <div class="vs-middle">
+        <button id="startFightBtn" class="fight-btn">VS</button>
+      </div>
+      <div class="fighter-panel">
+        <div class="fighter-avatar" id="fighter2Avatar">⚔️</div>
+        <div class="fighter-name" id="fighter2Name">Select</div>
+        <div class="scroll-controls">
+          <button id="fighter2Prev"><i class="fas fa-chevron-left"></i></button>
+          <button id="fighter2Next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <button id="lock2Btn" class="lock-btn">🔒 Lock</button>
+      </div>
     </div>
-    <div class="battle-log" id="battleLog"><div class="log-entry">⚔️ Select two fighters and press VS or use AI Fight Generator!</div></div>
-    <div style="display:flex; gap:20px; justify-content:center; margin-top:20px;">
-      <button id="aiFightSimBtn" style="background:#6c5ce7;"><i class="fas fa-robot"></i> 🤖 AI Fight Generator (Simulated)</button>
-      <button id="downloadComicBtn" style="background:#4caf50; display:none;"><i class="fas fa-download"></i> Download Comic</button>
-    </div>
-    <div id="hallOfFame" style="background:rgba(0,0,0,0.6); border-radius:28px; padding:1rem; margin-top:2rem; text-align:center;">
-      <h3><i class="fas fa-trophy"></i> Hall of Fame</h3>
-      <p id="hallMessage">No battles yet. Be the first!</p>
-      <button id="likeBattleBtn" style="background:#ffaa44;">❤️ Like Last Battle</button>
+    <div class="battle-log" id="battleLog">
+      <div class="log-entry">⚔️ Select two fighters, lock them, then press VS!</div>
     </div>
   </div>
 </div>
 
-<!-- AUTH MODAL -->
-<div id="authModal" class="modal"><div class="modal-content"><span class="close-modal" style="float:right; cursor:pointer;">&times;</span><h3>Join WORLDS</h3><input placeholder="Username"><br><input placeholder="Email"><br><input placeholder="Password"><br><button id="mockSignup">Sign Up / Login</button></div></div>
+<!-- AUTH MODAL (simple) -->
+<div id="authModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); backdrop-filter:blur(12px); z-index:2000; justify-content:center; align-items:center;">
+  <div style="background:#111; border-radius:32px; padding:2rem; width:90%; max-width:400px;">
+    <span id="closeModal" style="float:right; cursor:pointer;">&times;</span>
+    <h3>Join WORLDS</h3>
+    <input placeholder="Username" style="width:100%; margin:10px 0; padding:10px;"><br>
+    <input placeholder="Email" style="width:100%; margin:10px 0; padding:10px;"><br>
+    <input placeholder="Password" type="password" style="width:100%; margin:10px 0; padding:10px;"><br>
+    <button id="mockSignup">Sign Up / Login</button>
+  </div>
+</div>
 
-<footer><span>⚡ Community Hub · Share your comic · Vote for best battle</span></footer>
+<footer>⚡ WORLDS — Where every universe collides</footer>
 
 <script>
-  // ---------------------------- EXPANDED CHARACTER DATABASE ----------------------------
-  const allCharacters = [
-    // Marvel
-    { name: "Captain America", universe: "Marvel", power: 85, speed: 70, endurance: 80, image: "/images/heroes/captain.jpg", weakness: "Mortal body, no magic resistance", style: "shield basher", location: "New York streets" },
-    { name: "Wolverine", universe: "Marvel", power: 88, speed: 75, endurance: 95, image: "/images/heroes/wolverine.jpg", weakness: "Adamantium poisoning, drowning", style: "berserker claws", location: "Weapon X facility" },
-    { name: "Iron Man", universe: "Marvel", power: 92, speed: 85, endurance: 85, image: "/images/heroes/ironman.jpg", weakness: "Power drainage, arrogance", style: "repulsor blasts", location: "Stark Tower rooftop" },
-    { name: "Spider-Man", universe: "Marvel", power: 80, speed: 90, endurance: 75, image: "/images/heroes/spiderman.jpg", weakness: "Guilt complex, family at risk", style: "agile web-slinger", location: "Queens bridge" },
-    { name: "Thor", universe: "Marvel", power: 98, speed: 70, endurance: 95, image: "/images/heroes/thor.jpg", weakness: "Without Mjolnir, vulnerable to magic", style: "lightning strikes", location: "Asgardian ruins" },
-    { name: "Thanos", universe: "Marvel", power: 99, speed: 75, endurance: 98, image: "/images/villains/thanos.jpg", weakness: "Overconfidence, cosmic balance", style: "cosmic fist", location: "The Garden" },
-    // DC
-    { name: "Superman", universe: "DC", power: 100, speed: 95, endurance: 99, image: "/images/dc_heroes/superman.jpg", weakness: "Kryptonite, magic", style: "heat vision & strength", location: "Metropolis skyline" },
-    { name: "Batman", universe: "DC", power: 75, speed: 70, endurance: 80, image: "/images/dc_heroes/batman.jpg", weakness: "No superpowers, mortal", style: "gadgets & martial arts", location: "Gotham alley" },
-    { name: "Wonder Woman", universe: "DC", power: 95, speed: 88, endurance: 92, image: "/images/dc_heroes/wonderwoman.jpg", weakness: "Piercing weapons, bondage", style: "lasso & sword", location: "Themyscira beach" },
-    { name: "The Flash", universe: "DC", power: 82, speed: 100, endurance: 70, image: "/images/dc_heroes/flash.jpg", weakness: "Speed force instability, cold", style: "infinite mass punch", location: "Central City highway" },
-    { name: "Darkseid", universe: "DC", power: 99, speed: 80, endurance: 98, image: "/images/dc_villains/darkseid.jpg", weakness: "Radion, true form", style: "omega beams", location: "Apokolips throne" },
-    // Invincible
-    { name: "Invincible (Mark)", universe: "Invincible", power: 94, speed: 88, endurance: 90, image: "/images/invincible/invincible.jpg", weakness: "Emotional attachment, limited durability", style: "viltrumite punches", location: "Chicago ruins" },
-    { name: "Omni-Man", universe: "Invincible", power: 98, speed: 92, endurance: 96, image: "/images/invincible/omniman.jpg", weakness: "Viltrumite hearing, pride", style: "brutal flying tackles", location: "Mount Everest" },
-    // The Boys
-    { name: "Homelander", universe: "The Boys", power: 96, speed: 85, endurance: 94, image: "/images/theboys/homelander.jpg", weakness: "Lack of real combat, psychological instability", style: "laser vision & flight", location: "Vought tower" },
-    { name: "Billy Butcher", universe: "The Boys", power: 78, speed: 65, endurance: 70, image: "/images/theboys/butcher.jpg", weakness: "Human limits, rage", style: "crowbar & tactics", location: "London warehouse" },
-    // Anime
-    { name: "Goku (Ultra Instinct)", universe: "Anime", power: 100, speed: 98, endurance: 97, image: "/images/anime/goku.jpg", weakness: "Stamina drain, heart virus", style: "instant transmission & kamehameha", location: "Tournament of Power arena" },
-    { name: "Naruto (Six Paths)", universe: "Anime", power: 93, speed: 90, endurance: 92, image: "/images/anime/naruto.jpg", weakness: "Chakra exhaustion", style: "rasengan & shadow clones", location: "Valley of the End" },
-    { name: "Saitama", universe: "Anime", power: 105, speed: 100, endurance: 100, image: "/images/anime/saitama.jpg", weakness: "Boredom, missed sales", style: "serious punch", location: "Abandoned city Z" },
-    { name: "Eren Yeager (Titan)", universe: "Anime", power: 88, speed: 70, endurance: 85, image: "/images/anime/eren.jpg", weakness: "Nape weakness, emotional", style: "hardening & roar", location: "Shiganshina district" }
+  // ---------------------------- UNIVERSE DATA ----------------------------
+  const universes = [
+    { id: "marvel", name: "Marvel", icon: "fab fa-marvel", color: "#e23636", videoBg: "/videos/marvel/placeholder.mp4", characters: [
+      { name: "Captain America", rank: "Super Soldier", powers: "Peak human, shield", weaknesses: "Mortal", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=CaptainAmerica", villains: ["Red Skull","Crossbones"] },
+      { name: "Wolverine", rank: "Omega Mutant", powers: "Healing, claws", weaknesses: "Adamantium poisoning", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Wolverine", villains: ["Sabretooth","Lady Deathstrike"] },
+      { name: "Iron Man", rank: "Genius", powers: "Repulsors, flight", weaknesses: "Power drainage", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=IronMan", villains: ["Iron Monger","Ultron"] }
+    ] },
+    { id: "dc", name: "DC", icon: "fab fa-dc", color: "#2c6e9e", videoBg: "/videos/dc/placeholder.mp4", characters: [
+      { name: "Superman", rank: "Kryptonian", powers: "Heat vision, strength", weaknesses: "Kryptonite", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Superman", villains: ["Lex Luthor","Doomsday"] },
+      { name: "Batman", rank: "Dark Knight", powers: "Intellect, gadgets", weaknesses: "Mortal", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Batman", villains: ["Joker","Bane"] }
+    ] },
+    { id: "invincible", name: "Invincible", icon: "fas fa-fist-raised", color: "#f5a623", videoBg: "", characters: [
+      { name: "Invincible", rank: "Viltrumite", powers: "Flight, strength", weaknesses: "Emotional", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Invincible", villains: ["Omni-Man","Angstrom Levy"] }
+    ] },
+    { id: "theboys", name: "The Boys", icon: "fas fa-skull", color: "#8b0000", videoBg: "", characters: [
+      { name: "Homelander", rank: "Supe", powers: "Laser vision, flight", weaknesses: "Psychological", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Homelander", villains: ["Butcher","Black Noir"] }
+    ] },
+    { id: "anime", name: "Anime", icon: "fas fa-dragon", color: "#ff69b4", videoBg: "", characters: [
+      { name: "Goku", rank: "Saiyan", powers: "Kamehameha, Ultra Instinct", weaknesses: "Stamina", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Goku", villains: ["Frieza","Jiren"] },
+      { name: "Naruto", rank: "Hokage", powers: "Rasengan, Shadow Clones", weaknesses: "Chakra", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Naruto", villains: ["Sasuke","Pain"] }
+    ] }
   ];
 
-  function getCharImage(c) { return c.image || `https://placehold.co/100x100?text=${c.name[0]}`; }
-
-  let selected1 = null, selected2 = null;
-  let lastFightLogs = [], lastWinner = null, lastFighterA = null, lastFighterB = null;
-  let likeCount = 0;
-
-  // Render character lists
-  function renderLists() {
-    const cont1 = document.getElementById('fighter1-list'), cont2 = document.getElementById('fighter2-list');
-    cont1.innerHTML = ''; cont2.innerHTML = '';
-    allCharacters.forEach(char => {
-      const card = document.createElement('div'); card.className = 'character-card';
-      card.innerHTML = `<img src="${getCharImage(char)}" onerror="this.src='https://placehold.co/100x100'"><div><div class="char-name">${char.name}</div><div class="char-universe">${char.universe}</div></div>`;
-      card.onclick = () => {
-        if (selected1 === char) selected1 = null;
-        else if (selected2 === char) selected2 = null;
-        else if (!selected1) selected1 = char;
-        else if (!selected2) selected2 = char;
-        else selected1 = char;
-        updateSelectionUI();
-      };
-      cont1.appendChild(card.cloneNode(true));
-      cont2.appendChild(card.cloneNode(true));
+  // Store all characters for battle
+  let allBattleCharacters = [];
+  universes.forEach(u => {
+    u.characters.forEach(c => {
+      allBattleCharacters.push({ ...c, universe: u.name, universeId: u.id });
     });
-    updateSelectionUI();
+  });
+
+  // Build home universe icons
+  const universeIconsDiv = document.getElementById('universeIcons');
+  const pagesContainer = document.getElementById('universePagesContainer');
+  let activeUniversePage = null;
+
+  universes.forEach((universe, idx) => {
+    const iconDiv = document.createElement('div');
+    iconDiv.className = 'universe-icon';
+    iconDiv.innerHTML = `<i class="${universe.icon}"></i><span>${universe.name}</span>`;
+    iconDiv.onclick = () => showUniversePage(universe);
+    universeIconsDiv.appendChild(iconDiv);
+
+    // Create universe page dynamically
+    const pageDiv = document.createElement('div');
+    pageDiv.id = `universe-${universe.id}`;
+    pageDiv.className = 'page';
+    pageDiv.innerHTML = `
+      <div class="universe-container">
+        <video class="bg-video" autoplay muted loop playsinline><source src="${universe.videoBg}" type="video/mp4"></video>
+        <div class="universe-overlay">
+          <div class="left-fade">
+            <div class="hero-portrait"><img id="heroImg-${universe.id}" src=""></div>
+            <div class="villains-scroll">
+              <h3>Villains</h3>
+              <div class="scroll-wrapper">
+                <button class="scroll-btn left-scroll"><i class="fas fa-chevron-left"></i></button>
+                <div id="villainList-${universe.id}" class="scroll-container"></div>
+                <button class="scroll-btn right-scroll"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="middle-area">
+            <div class="hero-stats">
+              <div class="hero-name" id="heroName-${universe.id}"></div>
+              <div class="hero-rank" id="heroRank-${universe.id}"></div>
+              <div><strong>💪 Powers:</strong> <span id="heroPowers-${universe.id}"></span></div>
+              <div style="margin-top:12px"><strong>⚠️ Weaknesses:</strong> <span id="heroWeaknesses-${universe.id}"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.7); border-radius:48px; padding:8px 16px; display:flex; gap:10px; z-index:99;" id="heroSelector-${universe.id}"></div>
+    `;
+    pagesContainer.appendChild(pageDiv);
+    // populate heroes
+    const selectorDiv = pageDiv.querySelector(`#heroSelector-${universe.id}`);
+    universe.characters.forEach((hero, hidx) => {
+      const btn = document.createElement('button');
+      btn.innerText = hero.name;
+      btn.onclick = () => updateUniverseHero(universe.id, hidx);
+      selectorDiv.appendChild(btn);
+    });
+    function updateUniverseHero(univId, heroIdx) {
+      const hero = universes.find(u => u.id === univId).characters[heroIdx];
+      document.getElementById(`heroName-${univId}`).innerText = hero.name;
+      document.getElementById(`heroRank-${univId}`).innerHTML = `Rank: ${hero.rank}`;
+      document.getElementById(`heroPowers-${univId}`).innerText = hero.powers;
+      document.getElementById(`heroWeaknesses-${univId}`).innerText = hero.weaknesses;
+      document.getElementById(`heroImg-${univId}`).src = hero.image;
+      // update villains
+      const villainContainer = document.getElementById(`villainList-${univId}`);
+      villainContainer.innerHTML = hero.villains.map(v => `<div style="min-width:80px; text-align:center;"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${v}" style="width:70px; height:70px; border-radius:50%;"><span>${v}</span></div>`).join('');
+    }
+    if (universe.characters.length) updateUniverseHero(universe.id, 0);
+    // attach scroll buttons
+    const leftBtn = pageDiv.querySelector('.left-scroll');
+    const rightBtn = pageDiv.querySelector('.right-scroll');
+    const scrollDiv = pageDiv.querySelector('.scroll-container');
+    if (leftBtn && rightBtn) {
+      leftBtn.onclick = () => scrollDiv.scrollBy({ left: -150, behavior: 'smooth' });
+      rightBtn.onclick = () => scrollDiv.scrollBy({ left: 150, behavior: 'smooth' });
+    }
+  });
+
+  function showUniversePage(universe) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    const target = document.getElementById(`universe-${universe.id}`);
+    target.classList.add('active-page');
+    // pause videos in other pages if any
   }
 
-  function updateSelectionUI() {
-    document.querySelectorAll('#fighter1-list .character-card').forEach((card, idx) => {
-      if (allCharacters[idx] === selected1) card.classList.add('selected'); else card.classList.remove('selected');
-    });
-    document.querySelectorAll('#fighter2-list .character-card').forEach((card, idx) => {
-      if (allCharacters[idx] === selected2) card.classList.add('selected'); else card.classList.remove('selected');
-    });
+  // ---------------------------- BATTLE PAGE ----------------------------
+  let battleCharacters = [...allBattleCharacters];
+  let fighter1Index = 0, fighter2Index = 1;
+  let fighter1Locked = false, fighter2Locked = false;
+
+  function updateFighterUI() {
+    const f1 = battleCharacters[fighter1Index];
+    const f2 = battleCharacters[fighter2Index];
+    document.getElementById('fighter1Name').innerText = f1.name;
+    document.getElementById('fighter1Avatar').innerHTML = `<img src="${f1.image}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    document.getElementById('fighter2Name').innerText = f2.name;
+    document.getElementById('fighter2Avatar').innerHTML = `<img src="${f2.image}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    document.getElementById('lock1Btn').innerText = fighter1Locked ? "🔒 Locked" : "🔓 Unlocked";
+    document.getElementById('lock2Btn').innerText = fighter2Locked ? "🔒 Locked" : "🔓 Unlocked";
   }
 
-  // Normal VS battle (stat-based)
-  function simulateFight(fighterA, fighterB) {
+  document.getElementById('fighter1Prev').onclick = () => { if (!fighter1Locked) { fighter1Index = (fighter1Index - 1 + battleCharacters.length) % battleCharacters.length; updateFighterUI(); } };
+  document.getElementById('fighter1Next').onclick = () => { if (!fighter1Locked) { fighter1Index = (fighter1Index + 1) % battleCharacters.length; updateFighterUI(); } };
+  document.getElementById('fighter2Prev').onclick = () => { if (!fighter2Locked) { fighter2Index = (fighter2Index - 1 + battleCharacters.length) % battleCharacters.length; updateFighterUI(); } };
+  document.getElementById('fighter2Next').onclick = () => { if (!fighter2Locked) { fighter2Index = (fighter2Index + 1) % battleCharacters.length; updateFighterUI(); } };
+  document.getElementById('lock1Btn').onclick = () => { fighter1Locked = !fighter1Locked; updateFighterUI(); };
+  document.getElementById('lock2Btn').onclick = () => { fighter2Locked = !fighter2Locked; updateFighterUI(); };
+
+  // Realistic battle texts (canon + dynamic)
+  const canonFights = {
+    "Superman vs Doomsday": "In 'The Death of Superman', Doomsday and Superman trade devastating blows across Metropolis. Doomsday's bone spikes pierce Superman's skin, but Superman's final punch kills them both.",
+    "Batman vs Joker": "In 'The Killing Joke', Joker shoots Barbara Gordon, then fights Batman in a grim carnival. Batman eventually offers help, but Joker refuses, laughing.",
+    "Goku vs Frieza": "On Namek, Goku transforms into Super Saiyan for the first time, delivering a legendary beatdown that splits the planet."
+  };
+  function getFightDescription(c1, c2) {
+    const key = `${c1.name} vs ${c2.name}`;
+    if (canonFights[key]) return canonFights[key];
+    // dynamic realistic
+    return `The battle takes place in the shattered ruins of ${c1.universe === 'Marvel' ? 'New York' : 'Metropolis'}. ${c1.name} uses ${c1.powers.split(',')[0]} while ${c2.name} counters with ${c2.powers.split(',')[0]}. ${c2.weaknesses} becomes a critical factor as ${c1.name} exploits it, landing a decisive blow. After a brutal exchange, ${Math.random() > 0.5 ? c1.name : c2.name} emerges victorious.`;
+  }
+
+  document.getElementById('startFightBtn').onclick = () => {
+    const f1 = battleCharacters[fighter1Index];
+    const f2 = battleCharacters[fighter2Index];
     const logDiv = document.getElementById('battleLog');
     logDiv.innerHTML = '';
-    lastFightLogs = [];
-    lastFighterA = fighterA; lastFighterB = fighterB;
-    const arena = fighterA.location || "unknown arena";
-    function addLog(msg, isWinner = false) {
-      const entry = document.createElement('div'); entry.className = 'log-entry';
-      entry.innerHTML = `<span>⚡</span><span>${msg}${isWinner ? ' 🏆' : ''}</span>`;
-      logDiv.appendChild(entry);
-      lastFightLogs.push(msg);
-      entry.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-    addLog(`🌍 THE BATTLE BEGINS IN: ${arena}`);
-    addLog(`${fighterA.name} (${fighterA.universe}) vs ${fighterB.name} (${fighterB.universe})!`);
-    let hpA = 100, hpB = 100;
-    let turn = 0;
-    const interval = setInterval(() => {
-      if (hpA <= 0 || hpB <= 0) {
-        clearInterval(interval);
-        lastWinner = hpA <= 0 ? fighterB : fighterA;
-        addLog(`🔥🔥 ${lastWinner.name} WINS! 🔥🔥`, true);
-        addLog(`Final health: ${fighterA.name} ${Math.max(0,hpA)}% | ${fighterB.name} ${Math.max(0,hpB)}%`);
-        document.getElementById('downloadComicBtn').style.display = 'inline-block';
-        return;
-      }
-      turn++;
-      let attacker, defender, damage;
-      if (turn % 2 === 1) { attacker = fighterA; defender = fighterB; }
-      else { attacker = fighterB; defender = fighterA; }
-      let rawDamage = (attacker.power * 0.6 + attacker.speed * 0.4) - (defender.endurance * 0.5);
-      rawDamage = Math.max(8, Math.min(45, rawDamage + Math.floor(Math.random() * 20)));
-      damage = Math.floor(rawDamage);
-      if (turn % 2 === 1) hpB -= damage; else hpA -= damage;
-      const weaknessText = defender.weakness ? ` (exploiting ${defender.name}'s weakness: ${defender.weakness})` : '';
-      addLog(`${attacker.name} uses ${attacker.style} dealing ${damage} damage to ${defender.name}!${weaknessText}`);
-    }, 800);
-  }
-
-  // ---- AI FIGHT GENERATOR (simulated, with typing effect) ----
-  async function generateAIFight(fighterA, fighterB) {
-    const logDiv = document.getElementById('battleLog');
-    logDiv.innerHTML = '';
-    lastFightLogs = [];
-    lastFighterA = fighterA; lastFighterB = fighterB;
-    // Build a creative fight script dynamically based on characters
-    const locations = [fighterA.location, fighterB.location, "The Multiverse Colosseum", "A shattered dimension", "The Edge of Reality"];
-    const arena = locations[Math.floor(Math.random() * locations.length)];
-    const openingLines = [
-      `The battle begins in ${arena}. The air crackles with tension.`,
-      `From opposite ends of the multiverse, ${fighterA.name} and ${fighterB.name} lock eyes.`,
-      `A thunderous roar echoes as ${fighterA.name} charges at ${fighterB.name}!`
-    ];
-    const actions = [
-      `${fighterA.name} unleashes ${fighterA.style}, but ${fighterB.name} counters with ${fighterB.style}.`,
-      `${fighterB.name} tries to exploit ${fighterA.weakness}, yet ${fighterA.name} turns the tables!`,
-      `A massive shockwave erupts as their powers collide.`,
-      `${fighterA.name} dodges and delivers a devastating blow to ${fighterB.name}'s ribs.`,
-      `${fighterB.name} uses ${fighterB.weakness} against ${fighterA.name}, creating an opening!`
-    ];
-    const finales = [
-      `After a grueling exchange, ${fighterA.name} lands the final hit.`,
-      `${fighterB.name} overcomes the odds and defeats ${fighterA.name}.`,
-      `In a blinding flash, one fighter stands tall...`
-    ];
-    // Determine winner based on power comparison (with randomness)
-    const powerDiff = fighterA.power - fighterB.power;
-    let winner = null;
-    if (Math.random() < 0.6) winner = powerDiff > 0 ? fighterA : fighterB;
-    else winner = powerDiff > 0 ? fighterB : fighterA;
-    const fightScript = [
-      `🌍 LOCATION: ${arena}`,
-      `${openingLines[Math.floor(Math.random() * openingLines.length)]}`,
-      `${actions[Math.floor(Math.random() * actions.length)]}`,
-      `${actions[Math.floor(Math.random() * actions.length)]}`,
-      `${actions[Math.floor(Math.random() * actions.length)]}`,
-      `${finales[Math.floor(Math.random() * finales.length)]} ${winner.name} is victorious!`,
-      `🔥 FINAL WINNER: ${winner.name} 🔥`
-    ];
-    // Typing effect
-    for (let line of fightScript) {
-      await typeLine(line);
-      await delay(600);
-    }
-    lastWinner = winner;
-    lastFightLogs = fightScript;
-    document.getElementById('downloadComicBtn').style.display = 'inline-block';
-  }
-
-  function typeLine(line) {
-    return new Promise(resolve => {
-      const logDiv = document.getElementById('battleLog');
+    function addLog(msg) {
       const entry = document.createElement('div');
       entry.className = 'log-entry';
-      const span = document.createElement('span');
-      span.innerHTML = '⚡ ';
-      entry.appendChild(span);
-      const textSpan = document.createElement('span');
-      textSpan.className = 'typing-text';
-      entry.appendChild(textSpan);
+      entry.innerHTML = `<span>⚡</span><span>${msg}</span>`;
       logDiv.appendChild(entry);
-      let i = 0;
-      function typeChar() {
-        if (i < line.length) {
-          textSpan.innerHTML += line.charAt(i);
-          i++;
-          setTimeout(typeChar, 30);
-        } else {
-          resolve();
-        }
-      }
-      typeChar();
-    });
-  }
+      entry.scrollIntoView({ behavior: 'smooth' });
+    }
+    addLog(`🌍 LOCATION: ${f1.universe} universe, ${f2.universe} crossover zone`);
+    addLog(`FIGHT: ${f1.name} vs ${f2.name}`);
+    addLog(getFightDescription(f1, f2));
+    addLog(`🔥 WINNER: ${Math.random() > 0.5 ? f1.name : f2.name} 🔥`);
+  };
 
-  function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+  updateFighterUI();
 
-  // Event listeners
-  document.getElementById('vsFightBtn').addEventListener('click', () => {
-    if (!selected1 || !selected2) { alert("Select two fighters!"); return; }
-    simulateFight(selected1, selected2);
+  // ---------------------------- CREATOR'S BAZAAR ----------------------------
+  const categories = document.querySelectorAll('.bazaar-cat');
+  const uploadForm = document.getElementById('uploadFormContainer');
+  let currentType = '';
+  categories.forEach(cat => {
+    cat.onclick = () => {
+      currentType = cat.dataset.type;
+      uploadForm.style.display = 'block';
+      document.getElementById('uploadTitle').placeholder = `Enter your ${currentType} title`;
+    };
   });
-  document.getElementById('randomBtn').addEventListener('click', () => {
-    let r1 = allCharacters[Math.floor(Math.random() * allCharacters.length)];
-    let r2 = allCharacters[Math.floor(Math.random() * allCharacters.length)];
-    while (r1 === r2) r2 = allCharacters[Math.floor(Math.random() * allCharacters.length)];
-    selected1 = r1; selected2 = r2;
-    updateSelectionUI();
-    simulateFight(selected1, selected2);
-  });
-  document.getElementById('aiFightSimBtn').addEventListener('click', () => {
-    if (!selected1 || !selected2) { alert("Select two fighters first!"); return; }
-    generateAIFight(selected1, selected2);
-  });
-  document.getElementById('downloadComicBtn').addEventListener('click', () => {
-    if (!lastFighterA || !lastWinner) { alert("No battle to export."); return; }
-    const comicHtml = `<!DOCTYPE html>
-    <html><head><meta charset="UTF-8"><title>WORLDS COMIC: ${lastFighterA.name} vs ${lastFighterB.name}</title>
-    <style>body { font-family: Arial; background: #0a0a1a; color: #eee; padding: 2rem; } .panel { background: #1e1e2e; margin: 1rem; padding: 1rem; border-radius: 16px; }</style></head>
-    <body><h1>BATTLE COMIC</h1><div>${lastFightLogs.map(log => `<div class="panel">${log}</div>`).join('')}<div class="panel">WINNER: ${lastWinner.name}</div></div></body></html>`;
-    const blob = new Blob([comicHtml], { type: 'text/html' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `comic_${lastFighterA.name}_vs_${lastFighterB.name}.html`;
-    a.click(); URL.revokeObjectURL(a.href);
-  });
-  // Hall of Fame
-  let likeCounts = 0;
-  document.getElementById('likeBattleBtn').addEventListener('click', () => {
-    if (!lastWinner) { alert("No battle to like!"); return; }
-    likeCounts++;
-    document.getElementById('hallMessage').innerHTML = `🔥 Most liked battle: ${lastWinner.name} with ${likeCounts} likes!`;
-  });
+  document.getElementById('publishBtn').onclick = () => {
+    const title = document.getElementById('uploadTitle').value;
+    const price = document.getElementById('uploadPrice').value;
+    const desc = document.getElementById('uploadDesc').value;
+    if (!title) return;
+    const listingDiv = document.getElementById('bazaarListings');
+    const newCard = document.createElement('div');
+    newCard.className = 'bazaar-cat';
+    newCard.style.width = 'auto';
+    newCard.innerHTML = `<i class="fas fa-${currentType === 'comic' ? 'book-open' : currentType === 'video' ? 'video' : currentType === '3d' ? 'cube' : currentType === 'art' ? 'paintbrush' : 'mask'}"></i><strong>${title}</strong><br>$${price}<br><small>${desc.substring(0,50)}</small><br><button>Buy</button>`;
+    listingDiv.prepend(newCard);
+    uploadForm.style.display = 'none';
+    document.getElementById('uploadTitle').value = '';
+    document.getElementById('uploadPrice').value = '';
+    document.getElementById('uploadDesc').value = '';
+  };
 
-  renderLists();
+  // Auth modal
+  const modal = document.getElementById('authModal');
+  document.getElementById('openAuthBtn').onclick = () => modal.style.display = 'flex';
+  document.getElementById('closeModal').onclick = () => modal.style.display = 'none';
+  document.getElementById('mockSignup').onclick = () => { alert('Demo account created!'); modal.style.display = 'none'; };
 
-  // -------------------- PAGE SWITCHING & OTHER UI (Marvel/DC minimal) --------------------
+  // Page switching
   const pages = {
     home: document.getElementById('homePage'),
-    marvel: document.getElementById('marvelPage'),
-    dc: document.getElementById('dcPage'),
     bazaar: document.getElementById('bazaarPage'),
-    freevault: document.getElementById('freevaultPage'),
     battle: document.getElementById('battlePage')
   };
-  function showPage(id) { Object.values(pages).forEach(p => p?.classList.remove('active-page')); if(pages[id]) pages[id].classList.add('active-page'); }
-  document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', () => showPage(el.dataset.page)));
-  document.querySelectorAll('.world-icon').forEach(el => {
-    el.addEventListener('click', () => { if(el.dataset.world === 'marvel') showPage('marvel'); else if(el.dataset.world === 'dc') showPage('dc'); else alert('Invincible world coming soon!'); });
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', () => {
+      Object.values(pages).forEach(p => p.classList.remove('active-page'));
+      pages[el.dataset.page].classList.add('active-page');
+    });
   });
-  // Marvel minimal data
-  const marvelHeroesData = [{ name:"Captain America", video:"/videos/marvel/captain.mp4", img:"/images/heroes/captain.jpg", rank:"Super Soldier", powers:"Peak human", weaknesses:"Mortal" },
-                            { name:"Wolverine", video:"/videos/marvel/wolverine-marvel-rivals.3840x2160.mp4", img:"/images/heroes/wolverine.jpg", rank:"Omega Mutant", powers:"Healing", weaknesses:"Drowning" }];
-  let currentMarvelIdx = 0; const marvelVideoElem = document.getElementById('marvelBgVideo');
-  function updateMarvelUI(idx) { const h = marvelHeroesData[idx]; document.getElementById('marvelHeroName').innerText = h.name; document.getElementById('marvelHeroRank').innerHTML = `Rank: ${h.rank}`; document.getElementById('marvelPowers').innerText = h.powers; document.getElementById('marvelWeaknesses').innerText = h.weaknesses; document.getElementById('marvelHeroImage').src = h.img; if(marvelVideoElem) { marvelVideoElem.src = h.video; marvelVideoElem.load(); marvelVideoElem.play().catch(e=>{}); } }
-  const heroSelectorDiv = document.getElementById('marvelHeroSelector'); marvelHeroesData.forEach((h,i)=>{ const btn = document.createElement('button'); btn.innerText = h.name; btn.onclick = () => { currentMarvelIdx = i; updateMarvelUI(i); }; heroSelectorDiv.appendChild(btn); }); updateMarvelUI(0);
-  const dcHeroesArr = [{ name:"Superman", video:"/videos/dc/superman-radiant-rise.1920x1080.mp4", villains:["Lex","Darkseid"] }];
-  const dcBgVideoElem = document.getElementById('dcBgVideo'); function updateDCUI() { if(dcBgVideoElem) { dcBgVideoElem.src = dcHeroesArr[0].video; dcBgVideoElem.load(); dcBgVideoElem.play().catch(e=>{}); } } updateDCUI();
-  const modal = document.getElementById('authModal'); document.getElementById('openAuthBtn').onclick = () => modal.style.display = 'flex'; document.querySelector('.close-modal').onclick = () => modal.style.display = 'none'; document.getElementById('mockSignup').onclick = () => { alert('Demo account created!'); modal.style.display = 'none'; };
-  document.getElementById('showUploadBtn').onclick = () => { document.getElementById('uploadPanel').style.display = 'block'; }; document.getElementById('mockPublish').onclick = () => alert('Upload demo (simulated)');
+  // also close universe pages when home clicked
+  document.querySelector('[data-page="home"]').addEventListener('click', () => {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    pages.home.classList.add('active-page');
+  });
 </script>
 </body>
 </html>
