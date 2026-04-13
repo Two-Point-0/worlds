@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>WORLDS — Ultimate Multiverse Hub</title>
-  <!-- Three.js -->
   <script type="importmap">
     {
       "imports": {
@@ -35,7 +34,6 @@
       overflow-x: hidden;
       min-height: 100vh;
     }
-    /* noise overlay */
     body::before {
       content: '';
       position: fixed;
@@ -49,7 +47,6 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 99px; }
 
-    /* navbar */
     .navbar {
       position: fixed;
       top: 0;
@@ -108,7 +105,6 @@
       box-shadow: 0 0 20px var(--red-glow);
     }
 
-    /* pages */
     .page {
       display: none;
       min-height: 100vh;
@@ -128,9 +124,7 @@
       justify-content: flex-start;
       padding: 80px 2rem 2rem;
     }
-    #homePage.active-page {
-      display: flex;
-    }
+    #homePage.active-page { display: flex; }
     .globe-container {
       position: relative;
       width: 100%;
@@ -139,8 +133,8 @@
       overflow: hidden;
       border: 1px solid var(--border);
       background: #000;
-      margin-bottom: 2rem;
-      transition: background-image 0.5s ease;
+      margin-bottom: 1rem;
+      transition: background 0.5s ease;
     }
     #globeCanvas {
       width: 100%;
@@ -187,6 +181,17 @@
       border-radius: 40px;
       color: white;
       cursor: pointer;
+    }
+    .ad-container {
+      width: 100%;
+      margin: 1rem 0;
+      padding: 12px;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+      border: 1px solid var(--amber);
     }
     .universe-scroll-wrapper {
       position: relative;
@@ -248,9 +253,7 @@
       grid-template-columns: 300px 1fr 300px;
       gap: 1.5rem;
     }
-    @media (max-width: 1000px) {
-      .universe-detail { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 1000px) { .universe-detail { grid-template-columns: 1fr; } }
     .char-column {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -276,9 +279,7 @@
       transition: 0.2s;
       margin-bottom: 8px;
     }
-    .char-item:hover {
-      background: rgba(255,42,0,0.1);
-    }
+    .char-item:hover { background: rgba(255,42,0,0.1); }
     .char-item img {
       width: 50px;
       height: 50px;
@@ -406,6 +407,23 @@
       color: white;
       cursor: pointer;
     }
+    .betting-container {
+      margin-top: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--amber);
+      border-radius: 20px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .betting-container select, .betting-container button {
+      margin: 0 5px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+    }
 
     /* market */
     .market-container {
@@ -531,7 +549,7 @@
   </div>
 </nav>
 
-<!-- HOME with interactive globe -->
+<!-- HOME with interactive globe + flight simulator -->
 <div id="homePage" class="page active-page">
   <div class="globe-container">
     <canvas id="globeCanvas"></canvas>
@@ -541,6 +559,7 @@
     </div>
     <div class="planet-bg" id="planetNameDisplay">🌍 Earth</div>
   </div>
+  <div id="flightAd" class="ad-container" style="display: none;">✈️ <span id="flightText"></span></div>
   <div class="universe-scroll-wrapper">
     <button class="scroll-univ-btn" id="scrollUnivLeft"><i class="fas fa-chevron-left"></i></button>
     <div class="universes-grid" id="universeGrid"></div>
@@ -589,6 +608,15 @@
       <div class="log-line">Select fighters, lock them, then press FIGHT.</div>
     </div>
     <div id="comicArea" style="text-align:center; margin-top:1rem;"></div>
+    <div class="betting-container">
+      <strong>⚡ BETTING ZONE ⚡</strong><br>
+      <select id="betSelect">
+        <option id="betOption1">Fighter 1 wins</option>
+        <option id="betOption2">Fighter 2 wins</option>
+      </select>
+      <button id="placeBetBtn">Place Bet (Demo)</button>
+      <span id="betResult"></span>
+    </div>
   </div>
 </div>
 
@@ -671,22 +699,23 @@
   directionalLight.position.set(5, 10, 7);
   scene.add(directionalLight);
 
-  // Locations with exact lat/lon and planet backgrounds
+  // Locations data with lat/lon, planet, airline, duration
   const locations = [
-    { name: "Avengers Tower", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
-    { name: "Metropolis", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
-    { name: "Gotham", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
-    { name: "Wakanda", lat: 1.2864, lon: 36.8172, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
-    { name: "Asgard", lat: 60.0, lon: 10.0, planet: "Asgard", bg: "radial-gradient(circle, #ffd700, #b8860b)" },
-    { name: "Krypton", lat: -30.0, lon: 150.0, planet: "Krypton", bg: "radial-gradient(circle, #4a4a5a, #1a1a2a)" },
-    { name: "Themyscira", lat: 35.0, lon: 25.0, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
-    { name: "Malibu", lat: 34.0259, lon: -118.7798, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)" },
-    { name: "Rivendell", lat: 45.0, lon: -5.0, planet: "Middle-earth", bg: "url('https://images.pexels.com/photos/733174/pexels-photo-733174.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') center/cover" },
-    { name: "Minas Tirith", lat: 42.0, lon: -3.0, planet: "Middle-earth", bg: "url('https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') center/cover" },
-    { name: "Tatooine", lat: 20.0, lon: 20.0, planet: "Star Wars", bg: "radial-gradient(circle, #f4a460, #8b4513)" },
-    { name: "Death Star", lat: 0.0, lon: 0.0, planet: "Star Wars", bg: "radial-gradient(circle, #2f4f4f, #1a1a1a)" }
+    { name: "Avengers Tower", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "Delta Airlines", flightNo: "DL172", duration: "2h 15m", price: "$349" },
+    { name: "Metropolis", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "United Airlines", flightNo: "UA7", duration: "2h 30m", price: "$299" },
+    { name: "Gotham", lat: 40.7128, lon: -74.0060, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "American Airlines", flightNo: "AA404", duration: "2h 45m", price: "$279" },
+    { name: "Wakanda", lat: 1.2864, lon: 36.8172, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "Ethiopian Airlines", flightNo: "ET808", duration: "8h 20m", price: "$899" },
+    { name: "Asgard", lat: 60.0, lon: 10.0, planet: "Asgard", bg: "radial-gradient(circle, #ffd700, #b8860b)", airline: "Scandinavian Airlines", flightNo: "SK903", duration: "1h 45m", price: "$399" },
+    { name: "Krypton", lat: -30.0, lon: 150.0, planet: "Krypton", bg: "radial-gradient(circle, #4a4a5a, #1a1a2a)", airline: "SpaceX", flightNo: "SX-1", duration: "3d 12h", price: "$12,000" },
+    { name: "Themyscira", lat: 35.0, lon: 25.0, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "Aegean Airlines", flightNo: "A3 888", duration: "3h 10m", price: "$429" },
+    { name: "Malibu", lat: 34.0259, lon: -118.7798, planet: "Earth", bg: "linear-gradient(135deg, #1a472a, #0a2f1f)", airline: "Southwest Airlines", flightNo: "WN 168", duration: "1h 20m", price: "$149" },
+    { name: "Rivendell", lat: 45.0, lon: -5.0, planet: "Middle-earth", bg: "url('https://images.pexels.com/photos/733174/pexels-photo-733174.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') center/cover", airline: "Icelandair", flightNo: "FI 450", duration: "4h 05m", price: "$559" },
+    { name: "Minas Tirith", lat: 42.0, lon: -3.0, planet: "Middle-earth", bg: "url('https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') center/cover", airline: "Air France", flightNo: "AF 789", duration: "3h 40m", price: "$489" },
+    { name: "Tatooine", lat: 20.0, lon: 20.0, planet: "Star Wars", bg: "radial-gradient(circle, #f4a460, #8b4513)", airline: "Virgin Galactic", flightNo: "VGA 1", duration: "2d 4h", price: "$25,000" },
+    { name: "Death Star", lat: 0.0, lon: 0.0, planet: "Star Wars", bg: "radial-gradient(circle, #2f4f4f, #1a1a1a)", airline: "SpaceX", flightNo: "DS-88", duration: "1d 8h", price: "$18,000" }
   ];
 
+  // Helper: convert lat/lon to 3D vector
   function latLonToVector(lat, lon, radius) {
     const phi = (90 - lat) * Math.PI / 180;
     const theta = lon * Math.PI / 180;
@@ -696,77 +725,125 @@
     return new THREE.Vector3(x, y, z);
   }
 
-  const markers = [];
+  // Store current camera position and target for flight simulation
+  let currentFlight = null;
+  let activeFlightSphere = null;
+
+  // Draw a great-circle arc between two lat/lon points
+  function addFlightPath(fromLat, fromLon, toLat, toLon, color = 0xffaa44, durationMs = 3000) {
+    // Remove previous path and sphere
+    if (currentFlight) {
+      scene.remove(currentFlight.line);
+      if (activeFlightSphere) scene.remove(activeFlightSphere);
+    }
+    const points = [];
+    const segments = 100;
+    for (let i = 0; i <= segments; i++) {
+      const t = i / segments;
+      // Interpolate latitude and longitude linearly (good enough for visualization)
+      const lat = fromLat * (1 - t) + toLat * t;
+      const lon = fromLon * (1 - t) + toLon * t;
+      const vec = latLonToVector(lat, lon, 1.03);
+      points.push(vec);
+    }
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({ color });
+    const line = new THREE.Line(geometry, material);
+    scene.add(line);
+    
+    // Animate a sphere along the path
+    const sphereGeo = new THREE.SphereGeometry(0.02, 16, 16);
+    const sphereMat = new THREE.MeshStandardMaterial({ color: 0xffaa44, emissive: 0x442200 });
+    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+    scene.add(sphere);
+    activeFlightSphere = sphere;
+    const startTime = performance.now();
+    function animateSphere(now) {
+      const elapsed = now - startTime;
+      let t = Math.min(1, elapsed / durationMs);
+      const idx = Math.floor(t * segments);
+      const pos = points[idx] || points[points.length-1];
+      sphere.position.copy(pos);
+      if (t < 1) {
+        requestAnimationFrame(animateSphere);
+      } else {
+        scene.remove(sphere);
+        activeFlightSphere = null;
+      }
+    }
+    requestAnimationFrame(animateSphere);
+    currentFlight = { line, sphere };
+    // Remove line after 5 seconds
+    setTimeout(() => {
+      if (currentFlight && currentFlight.line === line) {
+        scene.remove(line);
+        if (activeFlightSphere) scene.remove(activeFlightSphere);
+        currentFlight = null;
+        activeFlightSphere = null;
+      }
+    }, durationMs + 2000);
+  }
+
+  // Fly to a location: move camera, draw path, show ad
+  function flyToLocation(loc) {
+    // Update background and display
+    document.getElementById('planetNameDisplay').innerHTML = `🌍 ${loc.planet}`;
+    canvas.parentNode.style.background = loc.bg;
+    // Show airline ad
+    const adDiv = document.getElementById('flightAd');
+    adDiv.style.display = 'block';
+    adDiv.innerHTML = `✈️ <strong>${loc.airline}</strong> Flight ${loc.flightNo} from current location → ${loc.name} | Duration: ${loc.duration} | Price: ${loc.price} <button id="bookDemoBtn" style="background:var(--red); border:none; padding:4px 12px; border-radius:99px; margin-left:10px; cursor:pointer;">Book Now (Demo)</button>`;
+    const bookBtn = document.getElementById('bookDemoBtn');
+    if (bookBtn) bookBtn.onclick = () => alert(`Demo booking: ${loc.airline} flight ${loc.flightNo} to ${loc.name} for ${loc.price}`);
+    // Get current camera lat/lon (approximate from camera position)
+    // We'll use a fixed origin (Avengers Tower) for demo, but could compute from camera.
+    // For simplicity, use origin = (40.7128, -74.0060) "Current Hub"
+    const fromLat = 40.7128, fromLon = -74.0060;
+    const toLat = loc.lat, toLon = loc.lon;
+    // Draw flight path
+    addFlightPath(fromLat, fromLon, toLat, toLon, 0xffaa44, 3000);
+    // Animate camera movement
+    const targetPos = latLonToVector(toLat, toLon, 2.2);
+    const startPos = camera.position.clone();
+    const startTime = performance.now();
+    function animateCamera(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / 2000);
+      camera.position.lerpVectors(startPos, targetPos, t);
+      camera.lookAt(0, 0, 0);
+      if (t < 1) requestAnimationFrame(animateCamera);
+    }
+    requestAnimationFrame(animateCamera);
+  }
+
+  // Add markers to globe
   locations.forEach(loc => {
     const pos = latLonToVector(loc.lat, loc.lon, 1.02);
     const div = document.createElement('div');
     div.textContent = loc.name;
-    div.style.color = '#ffaa44';
-    div.style.fontSize = '12px';
-    div.style.fontWeight = 'bold';
-    div.style.textShadow = '0 0 5px black';
-    div.style.background = 'rgba(0,0,0,0.6)';
-    div.style.padding = '2px 6px';
-    div.style.borderRadius = '20px';
-    div.style.border = '1px solid var(--red)';
-    div.style.cursor = 'pointer';
-    div.style.whiteSpace = 'nowrap';
-    div.addEventListener('click', () => {
-      document.getElementById('planetNameDisplay').innerHTML = `🌍 ${loc.planet}`;
-      canvas.parentNode.style.background = loc.bg;
-      // Fly to location (simple camera look)
-      const targetPos = latLonToVector(loc.lat, loc.lon, 2.2);
-      // Smooth camera movement
-      const startPos = camera.position.clone();
-      const duration = 1000;
-      const startTime = performance.now();
-      function animateCamera(now) {
-        const elapsed = now - startTime;
-        const t = Math.min(1, elapsed / duration);
-        camera.position.lerpVectors(startPos, targetPos, t);
-        camera.lookAt(0, 0, 0);
-        if (t < 1) requestAnimationFrame(animateCamera);
-      }
-      requestAnimationFrame(animateCamera);
-    });
+    div.style.cssText = 'color:#ffaa44; font-size:12px; font-weight:bold; text-shadow:0 0 5px black; background:rgba(0,0,0,0.6); padding:2px 6px; border-radius:20px; border:1px solid var(--red); cursor:pointer; white-space:nowrap;';
+    div.addEventListener('click', () => flyToLocation(loc));
     const label = new CSS2DObject(div);
     label.position.copy(pos);
     scene.add(label);
-    markers.push(label);
   });
 
-  // Search functionality
+  // Search button
   document.getElementById('searchBtn').onclick = () => {
     const query = document.getElementById('locationSearch').value.toLowerCase();
     const loc = locations.find(l => l.name.toLowerCase().includes(query));
-    if (loc) {
-      const targetPos = latLonToVector(loc.lat, loc.lon, 2.2);
-      const startPos = camera.position.clone();
-      const duration = 1000;
-      const startTime = performance.now();
-      function animateCamera(now) {
-        const elapsed = now - startTime;
-        const t = Math.min(1, elapsed / duration);
-        camera.position.lerpVectors(startPos, targetPos, t);
-        camera.lookAt(0, 0, 0);
-        if (t < 1) requestAnimationFrame(animateCamera);
-      }
-      requestAnimationFrame(animateCamera);
-      document.getElementById('planetNameDisplay').innerHTML = `🌍 ${loc.planet}`;
-      canvas.parentNode.style.background = loc.bg;
-    } else {
-      alert("Location not found. Try: Metropolis, Wakanda, Asgard, Rivendell, Tatooine");
-    }
+    if (loc) flyToLocation(loc);
+    else alert("Location not found. Try: Metropolis, Wakanda, Asgard, Rivendell, Tatooine");
   };
 
-  function animate() {
-    requestAnimationFrame(animate);
+  function animateGlobe() {
+    requestAnimationFrame(animateGlobe);
     earth.rotation.y += 0.0015;
     clouds.rotation.y += 0.0017;
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
   }
-  animate();
+  animateGlobe();
   window.addEventListener('resize', () => {
     const width = canvas.clientWidth, height = canvas.clientHeight;
     camera.aspect = width / height;
@@ -777,7 +854,7 @@
 </script>
 
 <script>
-  // ----------------------------- 50+ UNIVERSES DATA -----------------------------
+  // ----------------------------- 50+ UNIVERSES DATA (same as before) -----------------------------
   const universeNames = [
     "Marvel", "DC", "Invincible", "The Boys", "Dragon Ball", "Naruto", "One Punch Man", "Attack on Titan",
     "My Hero Academia", "Jujutsu Kaisen", "Demon Slayer", "One Piece", "Bleach", "Hunter x Hunter", "Fairy Tail",
@@ -837,7 +914,7 @@
     return { id: `univ_${idx}`, name, icon: iconMap[name] || "fas fa-globe", color: "#ffaa44", story: getStory(name), heroes, villains };
   });
 
-  // Build home universe pills
+  // Build universe pills
   const universeGrid = document.getElementById('universeGrid');
   universes.forEach(u => {
     const pill = document.createElement('div');
@@ -890,7 +967,7 @@
     window.scrollTo(0,0);
   }
 
-  // BATTLE LOGIC (all characters from all universes)
+  // BATTLE LOGIC (same as before)
   let allBattleChars = [];
   universes.forEach(u => {
     [...u.heroes, ...u.villains].forEach(c => {
@@ -914,6 +991,8 @@
     document.getElementById('lock1Btn').innerHTML = f1locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
     document.getElementById('lock2Btn').className = 'lock-btn' + (f2locked ? ' locked' : '');
     document.getElementById('lock2Btn').innerHTML = f2locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
+    document.getElementById('betOption1').innerText = `${f1.name} wins`;
+    document.getElementById('betOption2').innerText = `${f2.name} wins`;
   }
   document.getElementById('f1Prev').onclick = () => { if(!f1locked) { f1i = (f1i-1+allBattleChars.length)%allBattleChars.length; updateBattleUI(); } };
   document.getElementById('f1Next').onclick = () => { if(!f1locked) { f1i = (f1i+1)%allBattleChars.length; updateBattleUI(); } };
@@ -924,18 +1003,22 @@
   const actionPhrases = {
     "Spider-Man": "swings in and shoots webs!", "Iron Man": "suit flies to him piece by piece!", "Superman": "flies into the sky, heat vision blazing!", "Batman": "throws a smoke pellet and vanishes!", "Goku": "powers up to Super Saiyan!", "Thanos": "clenches the Infinity Gauntlet!"
   };
+  const energyDrinks = ["Red Bull", "Monster", "Rockstar", "Bang", "NOS"];
   document.getElementById('fightBtn').onclick = () => {
     const f1 = allBattleChars[f1i], f2 = allBattleChars[f2i];
     const logDiv = document.getElementById('battleLog');
     logDiv.innerHTML = '';
     const logs = [];
     const winner = Math.random() > 0.5 ? f1.name : f2.name;
+    const drink = energyDrinks[Math.floor(Math.random() * energyDrinks.length)];
     logs.push(`📍 Location: ${f1.universe} / ${f2.universe} crossover`);
     logs.push(`⚔️ ${f1.name} vs ${f2.name}`);
     logs.push(`✨ ${f1.name}: ${actionPhrases[f1.name] || "takes a fighting stance"}`);
     logs.push(`✨ ${f2.name}: ${actionPhrases[f2.name] || "prepares to strike"}`);
     logs.push(`💥 ${f1.name} attacks with ${f1.powers.split(',')[0]}!`);
     logs.push(`💥 ${f2.name} counters using ${f2.weaknesses.split(',')[0]}!`);
+    logs.push(`🥤 ${f1.name} drinks ${drink} – gains +5 energy!`);
+    logs.push(`🥤 ${f2.name} drinks ${drink} – powers up!`);
     logs.push(`🔥 WINNER: ${winner} 🔥`);
     logs.forEach((log, idx) => setTimeout(() => { const d = document.createElement('div'); d.className = 'log-line' + (log.includes('WINNER') ? ' winner' : ''); d.textContent = log; logDiv.appendChild(d); logDiv.scrollTop = logDiv.scrollHeight; }, idx * 500));
     const comicArea = document.getElementById('comicArea');
@@ -948,7 +1031,21 @@
   };
   updateBattleUI();
 
-  // MARKET
+  // Betting
+  document.getElementById('placeBetBtn').onclick = () => {
+    const betOn = document.getElementById('betSelect').value;
+    const f1 = allBattleChars[f1i], f2 = allBattleChars[f2i];
+    const winner = Math.random() > 0.5 ? f1.name : f2.name;
+    const result = document.getElementById('betResult');
+    if ((betOn === "Fighter 1 wins" && winner === f1.name) || (betOn === "Fighter 2 wins" && winner === f2.name)) {
+      result.innerHTML = "🎉 You won the bet! (Demo) 🎉";
+    } else {
+      result.innerHTML = "😢 You lost. Better luck next time! (Demo)";
+    }
+    setTimeout(() => result.innerHTML = "", 3000);
+  };
+
+  // MARKET (Creator's Market)
   let currentType = '';
   const uploadPanel = document.getElementById('uploadPanel');
   document.querySelectorAll('.cat-tab').forEach(tab => {
