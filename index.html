@@ -4,11 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>WORLDS — Ultimate Multiverse Hub</title>
+  <!-- Three.js -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+      }
+    }
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     :root {
       --red: #ff2a00;
       --red-glow: rgba(255,42,0,0.35);
@@ -20,7 +28,6 @@
       --muted: rgba(240,237,232,0.45);
       --radius: 16px;
     }
-
     body {
       font-family: 'Space Grotesk', sans-serif;
       background: var(--bg);
@@ -28,7 +35,7 @@
       overflow-x: hidden;
       min-height: 100vh;
     }
-
+    /* noise overlay */
     body::before {
       content: '';
       position: fixed;
@@ -38,23 +45,23 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
       opacity: 0.4;
     }
-
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 99px; }
 
+    /* navbar */
     .navbar {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      z-index: 900;
+      z-index: 1000;
       padding: 0 2rem;
       height: 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(5,5,8,0.72);
+      background: rgba(5,5,8,0.85);
       backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border);
     }
@@ -101,6 +108,7 @@
       box-shadow: 0 0 20px var(--red-glow);
     }
 
+    /* pages */
     .page {
       display: none;
       min-height: 100vh;
@@ -112,98 +120,49 @@
       display: block;
     }
 
-    /* home */
+    /* home with 3D globe */
     #homePage {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 80px 2rem 4rem;
+      justify-content: flex-start;
+      padding: 80px 2rem 2rem;
     }
-    #homePage.active-page { display: flex; }
-    .home-bg {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,42,0,0.12), transparent 60%),
-                  radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,170,0,0.06), transparent 50%),
-                  var(--bg);
-    }
-    .worlds-container {
-      position: relative;
-      display: inline-block;
-      margin-bottom: 1rem;
-    }
-    .worlds-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(5rem, 14vw, 10rem);
-      line-height: 0.9;
-      letter-spacing: 0.12em;
+    #homePage.active-page {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.05em;
     }
-    .red-o {
-      color: #ff2a00;
-      text-shadow: 0 0 15px #ff2a00;
-      display: inline-block;
+    .globe-container {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+      margin-bottom: 2rem;
     }
-    .moon-orbit {
+    #globeCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .planet-bg {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 200%;
-      height: 200%;
-      transform: translate(-50%, -50%);
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.7);
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 0.8rem;
       pointer-events: none;
-    }
-    .moon {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      background: radial-gradient(circle, #ddd, #aaa);
-      border-radius: 50%;
-      top: 50%;
-      left: 50%;
-      margin: -12px 0 0 -12px;
-      animation: orbitMoon 10s linear infinite;
-      box-shadow: 0 0 8px rgba(255,255,200,0.8);
-    }
-    .moon:nth-child(2) {
-      width: 16px;
-      height: 16px;
-      margin: -8px 0 0 -8px;
-      animation: orbitMoon 14s linear infinite reverse;
-      background: radial-gradient(circle, #f0e68c, #b8860b);
-    }
-    .moon:nth-child(3) {
-      width: 20px;
-      height: 20px;
-      margin: -10px 0 0 -10px;
-      animation: orbitMoon 18s linear infinite;
-      background: radial-gradient(circle, #c0c0c0, #696969);
-    }
-    @keyframes orbitMoon {
-      0% { transform: rotate(0deg) translateX(110px) rotate(0deg); }
-      100% { transform: rotate(360deg) translateX(110px) rotate(-360deg); }
-    }
-    @media (max-width: 700px) {
-      @keyframes orbitMoon {
-        0% { transform: rotate(0deg) translateX(70px) rotate(0deg); }
-        100% { transform: rotate(360deg) translateX(70px) rotate(-360deg); }
-      }
-    }
-    .home-sub {
-      margin-top: 1rem;
-      color: var(--muted);
-      max-width: 500px;
+      z-index: 10;
+      backdrop-filter: blur(8px);
     }
     .universe-scroll-wrapper {
       position: relative;
-      max-width: 90vw;
-      margin: 2rem auto 0;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -228,12 +187,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: 0.2s;
       flex-shrink: 0;
-    }
-    .scroll-univ-btn:hover {
-      border-color: var(--red);
-      color: var(--red);
     }
     .universe-pill {
       cursor: pointer;
@@ -300,7 +254,6 @@
       height: 50px;
       border-radius: 50%;
       object-fit: cover;
-      border: 1px solid var(--border);
     }
     .center-bio {
       background: var(--surface);
@@ -310,10 +263,9 @@
       text-align: center;
     }
     .center-bio img {
-      width: 180px;
-      height: 180px;
+      width: 160px;
+      height: 160px;
       border-radius: 50%;
-      object-fit: cover;
       margin: 0 auto 1rem;
       border: 2px solid var(--red);
     }
@@ -323,7 +275,6 @@
       padding: 1rem;
       margin-bottom: 1rem;
       font-size: 0.9rem;
-      line-height: 1.5;
     }
 
     /* battle page */
@@ -331,10 +282,6 @@
       max-width: 1100px;
       margin: 0 auto;
       padding: 2rem;
-    }
-    .battle-header {
-      text-align: center;
-      margin-bottom: 2rem;
     }
     .battle-arena {
       display: flex;
@@ -350,10 +297,7 @@
       padding: 1.5rem;
       width: 280px;
     }
-    .fighter-card.locked {
-      border-color: var(--red);
-      box-shadow: 0 0 15px var(--red-glow);
-    }
+    .fighter-card.locked { border-color: var(--red); }
     .fighter-avatar {
       width: 120px;
       height: 120px;
@@ -364,26 +308,9 @@
       height: 100%;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid var(--border);
     }
-    .fighter-name {
-      text-align: center;
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-top: 0.8rem;
-    }
-    .fighter-universe {
-      text-align: center;
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .fighter-nav {
-      display: flex;
-      justify-content: space-between;
-      margin: 1rem 0;
-    }
+    .fighter-name { text-align: center; font-size: 1.2rem; font-weight: 700; margin: 0.8rem 0; }
+    .fighter-nav { display: flex; justify-content: space-between; margin: 1rem 0; }
     .nav-arrow {
       width: 36px;
       height: 36px;
@@ -401,24 +328,13 @@
       border: 1px solid var(--border);
       background: var(--surface);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
     }
     .lock-btn.locked {
       background: rgba(255,42,0,0.12);
       border-color: var(--red);
       color: var(--red);
     }
-    .vs-column {
-      text-align: center;
-    }
-    .vs-badge {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.5rem;
-      color: var(--muted);
-    }
+    .vs-badge { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--muted); }
     .fight-btn {
       background: var(--red);
       border: none;
@@ -445,10 +361,7 @@
       margin-bottom: 8px;
       font-size: 0.85rem;
     }
-    .log-line.winner {
-      border-left-color: var(--red);
-      background: rgba(255,42,0,0.05);
-    }
+    .log-line.winner { border-left-color: var(--red); background: rgba(255,42,0,0.05); }
     .comic-btn {
       background: #4caf50;
       margin-top: 1rem;
@@ -459,7 +372,7 @@
       cursor: pointer;
     }
 
-    /* market page */
+    /* market */
     .market-container {
       max-width: 1100px;
       margin: 0 auto;
@@ -511,7 +424,6 @@
       color: var(--text);
       padding: 10px;
       border-radius: 10px;
-      font-family: inherit;
     }
     .publish-btn {
       background: var(--red);
@@ -532,28 +444,11 @@
       border-radius: var(--radius);
       padding: 1rem;
     }
-    .listing-icon {
-      font-size: 1.8rem;
-      color: var(--red);
-      margin-bottom: 0.5rem;
-    }
-    .listing-title {
-      font-weight: bold;
-    }
-    .listing-desc {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin: 0.5rem 0;
-    }
-    .listing-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .listing-price {
-      color: var(--amber);
-      font-weight: bold;
-    }
+    .listing-icon { font-size: 1.8rem; color: var(--red); margin-bottom: 0.5rem; }
+    .listing-title { font-weight: bold; }
+    .listing-desc { font-size: 0.75rem; color: var(--muted); margin: 0.5rem 0; }
+    .listing-footer { display: flex; justify-content: space-between; align-items: center; }
+    .listing-price { color: var(--amber); font-weight: bold; }
     .buy-btn {
       background: transparent;
       border: 1px solid var(--red);
@@ -562,8 +457,6 @@
       border-radius: 99px;
       cursor: pointer;
     }
-
-    /* modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -574,9 +467,7 @@
       align-items: center;
       justify-content: center;
     }
-    .modal-overlay.open {
-      display: flex;
-    }
+    .modal-overlay.open { display: flex; }
     .modal-box {
       background: #111;
       border: 1px solid var(--border);
@@ -595,8 +486,6 @@
   </style>
 </head>
 <body>
-<div class="home-bg"></div>
-
 <nav class="navbar">
   <div class="nav-logo" data-page="home">W<span>O</span>RLDS</div>
   <div class="nav-links">
@@ -607,19 +496,12 @@
   </div>
 </nav>
 
-<!-- HOME -->
+<!-- HOME with interactive globe -->
 <div id="homePage" class="page active-page">
-  <div class="worlds-container">
-    <div class="worlds-title">
-      <span>W</span><span class="red-o">O</span><span>RLDS</span>
-    </div>
-    <div class="moon-orbit">
-      <div class="moon"></div>
-      <div class="moon"></div>
-      <div class="moon"></div>
-    </div>
+  <div class="globe-container">
+    <canvas id="globeCanvas"></canvas>
+    <div class="planet-bg" id="planetNameDisplay">🌍 Earth</div>
   </div>
-  <p class="home-sub">Every universe. Every hero. One place.</p>
   <div class="universe-scroll-wrapper">
     <button class="scroll-univ-btn" id="scrollUnivLeft"><i class="fas fa-chevron-left"></i></button>
     <div class="universes-grid" id="universeGrid"></div>
@@ -627,47 +509,30 @@
   </div>
 </div>
 
-<!-- container for dynamic universe pages -->
 <div id="universePagesContainer"></div>
 
 <!-- BATTLE PAGE -->
 <div id="battlePage" class="page">
   <div class="battle-container">
-    <div class="battle-header">
-      <h2 style="font-family:'Bebas Neue'; font-size:3rem;">BATTLE ARENA</h2>
-      <p>Select two fighters, lock them, and simulate the clash.</p>
-    </div>
+    <div style="text-align:center; margin-bottom:2rem;"><h2 style="font-family:'Bebas Neue'; font-size:3rem;">BATTLE ARENA</h2><p>Select fighters, lock, then FIGHT</p></div>
     <div class="battle-arena">
       <div class="fighter-card" id="fighter1Card">
         <div class="fighter-avatar"><img id="fighter1Img" src=""></div>
         <div class="fighter-name" id="fighter1Name">—</div>
-        <div class="fighter-universe" id="fighter1Uni">—</div>
-        <div class="fighter-nav">
-          <div class="nav-arrow" id="f1Prev"><i class="fas fa-chevron-left"></i></div>
-          <span id="f1Idx">1/1</span>
-          <div class="nav-arrow" id="f1Next"><i class="fas fa-chevron-right"></i></div>
-        </div>
+        <div class="fighter-universe" id="fighter1Uni" style="text-align:center; font-size:0.7rem;">—</div>
+        <div class="fighter-nav"><div class="nav-arrow" id="f1Prev"><i class="fas fa-chevron-left"></i></div><span id="f1Idx">1/1</span><div class="nav-arrow" id="f1Next"><i class="fas fa-chevron-right"></i></div></div>
         <button class="lock-btn" id="lock1Btn"><i class="fas fa-lock-open"></i> Lock</button>
       </div>
-      <div class="vs-column">
-        <div class="vs-badge">VS</div>
-        <button class="fight-btn" id="fightBtn">FIGHT</button>
-      </div>
+      <div class="vs-column"><div class="vs-badge">VS</div><button class="fight-btn" id="fightBtn">FIGHT</button></div>
       <div class="fighter-card" id="fighter2Card">
         <div class="fighter-avatar"><img id="fighter2Img" src=""></div>
         <div class="fighter-name" id="fighter2Name">—</div>
-        <div class="fighter-universe" id="fighter2Uni">—</div>
-        <div class="fighter-nav">
-          <div class="nav-arrow" id="f2Prev"><i class="fas fa-chevron-left"></i></div>
-          <span id="f2Idx">1/1</span>
-          <div class="nav-arrow" id="f2Next"><i class="fas fa-chevron-right"></i></div>
-        </div>
+        <div class="fighter-universe" id="fighter2Uni" style="text-align:center; font-size:0.7rem;">—</div>
+        <div class="fighter-nav"><div class="nav-arrow" id="f2Prev"><i class="fas fa-chevron-left"></i></div><span id="f2Idx">1/1</span><div class="nav-arrow" id="f2Next"><i class="fas fa-chevron-right"></i></div></div>
         <button class="lock-btn" id="lock2Btn"><i class="fas fa-lock-open"></i> Lock</button>
       </div>
     </div>
-    <div class="battle-log" id="battleLog">
-      <div class="log-line">Select fighters, lock them, then press FIGHT.</div>
-    </div>
+    <div class="battle-log" id="battleLog"><div class="log-line">Select fighters, lock, then press FIGHT.</div></div>
     <div id="comicArea" style="text-align:center; margin-top:1rem;"></div>
   </div>
 </div>
@@ -675,10 +540,7 @@
 <!-- CREATOR'S MARKET -->
 <div id="marketPage" class="page">
   <div class="market-container">
-    <div style="text-align:center; margin-bottom:2rem;">
-      <h2 style="font-family:'Bebas Neue'; font-size:3rem;">Creator's Market</h2>
-      <p>Sell your original superhero creations – comics, video edits, 3D models, art, cosplay</p>
-    </div>
+    <div style="text-align:center; margin-bottom:2rem;"><h2 style="font-family:'Bebas Neue'; font-size:3rem;">Creator's Market</h2><p>Sell your original superhero creations</p></div>
     <div class="category-tabs" id="categoryTabs">
       <div class="cat-tab" data-type="comic"><i class="fas fa-book-open"></i> Comic</div>
       <div class="cat-tab" data-type="video"><i class="fas fa-video"></i> Video Edit</div>
@@ -690,13 +552,12 @@
       <h3>Upload your work</h3>
       <div class="form-group"><label>Title</label><input id="uploadTitle" placeholder="Name your creation"></div>
       <div class="form-group"><label>Price (USD)</label><input id="uploadPrice" type="number" placeholder="0.00"></div>
-      <div class="form-group"><label>Description</label><textarea id="uploadDesc" rows="2" placeholder="Describe your work..."></textarea></div>
-      <div class="form-group"><label>Preview File (image/video/PDF)</label><input type="file" id="uploadFile" accept="image/*,video/*,application/pdf"></div>
-      <button class="publish-btn" id="publishBtn">Publish to Market</button>
+      <div class="form-group"><label>Description</label><textarea id="uploadDesc" rows="2" placeholder="Describe..."></textarea></div>
+      <div class="form-group"><label>Preview File</label><input type="file" id="uploadFile" accept="image/*,video/*,application/pdf"></div>
+      <button class="publish-btn" id="publishBtn">Publish</button>
     </div>
     <div class="listings-grid" id="marketListings">
-      <div class="listing-card"><div class="listing-icon"><i class="fas fa-book-open"></i></div><div class="listing-title">Dark Tomorrow</div><div class="listing-desc">A gritty indie comic about a fallen hero.</div><div class="listing-footer"><span class="listing-price">$4.99</span><button class="buy-btn">Buy</button></div></div>
-      <div class="listing-card"><div class="listing-icon"><i class="fas fa-video"></i></div><div class="listing-title">Rivals Tribute</div><div class="listing-desc">Fan-made cinematic edit.</div><div class="listing-footer"><span class="listing-price">$1.99</span><button class="buy-btn">Buy</button></div></div>
+      <div class="listing-card"><div class="listing-icon"><i class="fas fa-book-open"></i></div><div class="listing-title">Dark Tomorrow</div><div class="listing-desc">Indie comic about a fallen hero.</div><div class="listing-footer"><span class="listing-price">$4.99</span><button class="buy-btn">Buy</button></div></div>
     </div>
   </div>
 </div>
@@ -711,392 +572,323 @@
     <button class="publish-btn" id="mockSignup" style="width:100%;">Create Account</button>
   </div>
 </div>
+<footer>⚡ <span style="color:var(--red);">WORLDS</span> — Explore the multiverse</footer>
 
-<footer>⚡ <span style="color:var(--red);">WORLDS</span> — Where every universe collides</footer>
+<script type="module">
+  import * as THREE from 'three';
+  import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+  // --- Globe Setup ---
+  const canvas = document.getElementById('globeCanvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+  camera.position.set(0, 0, 2.5);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: false });
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setClearColor(0x050508);
+  const labelRenderer = new CSS2DRenderer();
+  labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  labelRenderer.domElement.style.position = 'absolute';
+  labelRenderer.domElement.style.top = '0px';
+  labelRenderer.domElement.style.left = '0px';
+  labelRenderer.domElement.style.pointerEvents = 'none';
+  canvas.parentNode.appendChild(labelRenderer.domElement);
+
+  // Earth texture
+  const textureLoader = new THREE.TextureLoader();
+  const earthMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+  const earthSpecularMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
+  const earthNormalMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
+  const cloudMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
+  const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
+  const earthMaterial = new THREE.MeshPhongMaterial({ map: earthMap, specularMap: earthSpecularMap, specular: new THREE.Color('grey'), shininess: 5 });
+  const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+  scene.add(earth);
+  const cloudGeometry = new THREE.SphereGeometry(1.01, 64, 64);
+  const cloudMaterial = new THREE.MeshPhongMaterial({ map: cloudMap, transparent: true, opacity: 0.15 });
+  const clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
+  scene.add(clouds);
+  const ambientLight = new THREE.AmbientLight(0x333333);
+  scene.add(ambientLight);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  directionalLight.position.set(5, 10, 7);
+  scene.add(directionalLight);
+
+  // Locations: name, lat, lon, planetBG
+  const locations = [
+    { name: "Avengers Tower", lat: 40.7128, lon: -74.0060, planet: "Earth", desc: "Captain America in Queens, Iron Man in Manhattan" },
+    { name: "Metropolis", lat: 40.7128, lon: -74.0060, planet: "Earth", desc: "Superman's city" },
+    { name: "Gotham", lat: 40.7128, lon: -74.0060, planet: "Earth", desc: "Batman's city" },
+    { name: "Wakanda", lat: 1.2864, lon: 36.8172, planet: "Earth", desc: "Black Panther's nation" },
+    { name: "Asgard", lat: 60.0, lon: 10.0, planet: "Asgard", desc: "Thor's realm" },
+    { name: "Krypton", lat: -30.0, lon: 150.0, planet: "Krypton", desc: "Superman's homeworld" },
+    { name: "Themyscira", lat: 35.0, lon: 25.0, planet: "Earth", desc: "Wonder Woman's island" },
+    { name: "Malibu", lat: 34.0259, lon: -118.7798, planet: "Earth", desc: "Iron Man's mansion" }
+  ];
+  function latLonToVector(lat, lon, radius) {
+    const phi = (90 - lat) * Math.PI / 180;
+    const theta = lon * Math.PI / 180;
+    const x = radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.cos(phi);
+    const z = radius * Math.sin(phi) * Math.sin(theta);
+    return new THREE.Vector3(x, y, z);
+  }
+  const markers = [];
+  locations.forEach(loc => {
+    const pos = latLonToVector(loc.lat, loc.lon, 1.02);
+    const div = document.createElement('div');
+    div.textContent = loc.name;
+    div.style.color = '#ffaa44';
+    div.style.fontSize = '12px';
+    div.style.fontWeight = 'bold';
+    div.style.textShadow = '0 0 5px black';
+    div.style.background = 'rgba(0,0,0,0.6)';
+    div.style.padding = '2px 6px';
+    div.style.borderRadius = '20px';
+    div.style.border = '1px solid var(--red)';
+    div.style.cursor = 'pointer';
+    div.style.whiteSpace = 'nowrap';
+    div.addEventListener('click', () => {
+      document.getElementById('planetNameDisplay').innerHTML = `🌍 ${loc.planet}`;
+      // Change background of globe container to planet image (simulated)
+      const bgMap = { Earth: 'linear-gradient(135deg, #1a472a, #0a2f1f)', Asgard: 'radial-gradient(circle, gold, orange)', Krypton: 'radial-gradient(circle, #4a4a5a, #1a1a2a)' };
+      canvas.parentNode.style.background = bgMap[loc.planet] || '#050508';
+    });
+    const label = new CSS2DObject(div);
+    label.position.copy(pos);
+    scene.add(label);
+    markers.push(label);
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    earth.rotation.y += 0.002;
+    clouds.rotation.y += 0.0023;
+    renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
+  }
+  animate();
+  window.addEventListener('resize', () => {
+    const width = canvas.clientWidth, height = canvas.clientHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+    labelRenderer.setSize(width, height);
+  });
+</script>
 
 <script>
-// ----------------------------- 50+ UNIVERSES -----------------------------
-const universeNames = [
-  "Marvel", "DC", "Invincible", "The Boys", "Dragon Ball", "Naruto", "One Punch Man", "Attack on Titan",
-  "My Hero Academia", "Jujutsu Kaisen", "Demon Slayer", "One Piece", "Bleach", "Hunter x Hunter", "Fairy Tail",
-  "Sword Art Online", "Fullmetal Alchemist", "Death Note", "Tokyo Ghoul", "Chainsaw Man", "Mob Psycho 100",
-  "Black Clover", "Fire Force", "Boruto", "Sailor Moon", "Pokémon", "Digimon", "Yu-Gi-Oh!", "Avatar: TLA",
-  "Star Wars", "Lord of the Rings", "Harry Potter", "The Witcher", "Cyberpunk", "Warhammer 40k", "Halo",
-  "Mass Effect", "Elder Scrolls", "Dark Souls", "Castlevania", "Devil May Cry", "Street Fighter", "Mortal Kombat",
-  "Tekken", "Overwatch", "Valorant", "League of Legends", "Arcane", "The Legend of Zelda", "Metroid"
-];
-const iconMap = {
-  "Marvel":"fab fa-marvel", "DC":"fas fa-bolt", "Invincible":"fas fa-fist-raised", "The Boys":"fas fa-skull",
-  "Dragon Ball":"fas fa-dragon", "Naruto":"fas fa-paw", "One Punch Man":"fas fa-fist-raised", "Attack on Titan":"fas fa-mountain",
-  "My Hero Academia":"fas fa-mask", "Jujutsu Kaisen":"fas fa-ghost", "Demon Slayer":"fas fa-water", "One Piece":"fas fa-ship",
-  "Bleach":"fas fa-water", "Hunter x Hunter":"fas fa-paw", "Fairy Tail":"fas fa-dragon", "Sword Art Online":"fas fa-gamepad",
-  "Fullmetal Alchemist":"fas fa-cogs", "Death Note":"fas fa-book", "Tokyo Ghoul":"fas fa-eye", "Chainsaw Man":"fas fa-saw",
-  "Mob Psycho 100":"fas fa-brain", "Black Clover":"fas fa-leaf", "Fire Force":"fas fa-fire", "Boruto":"fas fa-paw",
-  "Sailor Moon":"fas fa-moon", "Pokémon":"fas fa-paw", "Digimon":"fas fa-paw", "Yu-Gi-Oh!":"fas fa-dragon",
-  "Avatar: TLA":"fas fa-water", "Star Wars":"fab fa-galactic-republic", "Lord of the Rings":"fas fa-ring",
-  "Harry Potter":"fas fa-hat-wizard", "The Witcher":"fas fa-wolf", "Cyberpunk":"fas fa-microchip", "Warhammer 40k":"fas fa-helmet-battle",
-  "Halo":"fas fa-helmet-battle", "Mass Effect":"fas fa-rocket", "Elder Scrolls":"fas fa-dragon", "Dark Souls":"fas fa-skull",
-  "Castlevania":"fas fa-church", "Devil May Cry":"fas fa-devil", "Street Fighter":"fas fa-fist-raised", "Mortal Kombat":"fas fa-dragon",
-  "Tekken":"fas fa-fist-raised", "Overwatch":"fas fa-crosshairs", "Valorant":"fas fa-crosshairs", "League of Legends":"fas fa-crown",
-  "Arcane":"fas fa-magic", "The Legend of Zelda":"fas fa-trash-alt", "Metroid":"fas fa-bug"
-};
-
-function getStory(universe) {
-  const stories = {
-    "Marvel": "The Marvel Universe is a vast reality where superhumans, gods, aliens, and mutants coexist. From the Avengers to the X-Men, heroes battle villains like Thanos and Doctor Doom to protect Earth and the cosmos.",
-    "DC": "DC's multiverse is home to iconic heroes like Superman, Batman, and Wonder Woman. They defend truth and justice against forces like Darkseid, the Joker, and Lex Luthor.",
-    "Invincible": "Invincible follows Mark Grayson, a teenager who inherits Viltrumite powers from his father Omni-Man. He learns that being a hero comes with brutal sacrifices.",
-    "The Boys": "A gritty world where corrupt superheroes are controlled by a massive corporation. A vigilante team called 'The Boys' fights to expose their crimes.",
-    "Dragon Ball": "Goku and his friends defend Earth from intergalactic warriors, androids, and gods. Martial arts, transformations, and energy blasts define this universe.",
-    "Naruto": "Ninjas with elemental techniques and hidden abilities strive for peace in a world of warring villages. The story follows Naruto Uzumaki's journey to become Hokage.",
-    "One Punch Man": "Saitama can defeat any opponent with a single punch. Bored by his own power, he seeks a worthy foe while dealing with a hero association and monstrous threats.",
-    "Attack on Titan": "Humanity lives within walled cities to escape giant humanoid Titans. The truth about the Titans and the world beyond the walls is dark and complex."
+  // ----------------------------- 50+ UNIVERSES DATA -----------------------------
+  const universeNames = [
+    "Marvel", "DC", "Invincible", "The Boys", "Dragon Ball", "Naruto", "One Punch Man", "Attack on Titan",
+    "My Hero Academia", "Jujutsu Kaisen", "Demon Slayer", "One Piece", "Bleach", "Hunter x Hunter", "Fairy Tail",
+    "Sword Art Online", "Fullmetal Alchemist", "Death Note", "Tokyo Ghoul", "Chainsaw Man", "Mob Psycho 100",
+    "Black Clover", "Fire Force", "Boruto", "Sailor Moon", "Pokémon", "Digimon", "Yu-Gi-Oh!", "Avatar: TLA",
+    "Star Wars", "Lord of the Rings", "Harry Potter", "The Witcher", "Cyberpunk", "Warhammer 40k", "Halo",
+    "Mass Effect", "Elder Scrolls", "Dark Souls", "Castlevania", "Devil May Cry", "Street Fighter", "Mortal Kombat",
+    "Tekken", "Overwatch", "Valorant", "League of Legends", "Arcane", "Zelda", "Metroid"
+  ];
+  const iconMap = {
+    "Marvel":"fab fa-marvel", "DC":"fas fa-bolt", "Invincible":"fas fa-fist-raised", "The Boys":"fas fa-skull",
+    "Dragon Ball":"fas fa-dragon", "Naruto":"fas fa-paw", "One Punch Man":"fas fa-fist-raised", "Attack on Titan":"fas fa-mountain",
+    "My Hero Academia":"fas fa-mask", "Jujutsu Kaisen":"fas fa-ghost", "Demon Slayer":"fas fa-water", "One Piece":"fas fa-ship",
+    "Bleach":"fas fa-water", "Hunter x Hunter":"fas fa-paw", "Fairy Tail":"fas fa-dragon", "Sword Art Online":"fas fa-gamepad",
+    "Fullmetal Alchemist":"fas fa-cogs", "Death Note":"fas fa-book", "Tokyo Ghoul":"fas fa-eye", "Chainsaw Man":"fas fa-saw",
+    "Mob Psycho 100":"fas fa-brain", "Black Clover":"fas fa-leaf", "Fire Force":"fas fa-fire", "Boruto":"fas fa-paw",
+    "Sailor Moon":"fas fa-moon", "Pokémon":"fas fa-paw", "Digimon":"fas fa-paw", "Yu-Gi-Oh!":"fas fa-dragon",
+    "Avatar: TLA":"fas fa-water", "Star Wars":"fab fa-galactic-republic", "Lord of the Rings":"fas fa-ring",
+    "Harry Potter":"fas fa-hat-wizard", "The Witcher":"fas fa-wolf", "Cyberpunk":"fas fa-microchip", "Warhammer 40k":"fas fa-helmet-battle",
+    "Halo":"fas fa-helmet-battle", "Mass Effect":"fas fa-rocket", "Elder Scrolls":"fas fa-dragon", "Dark Souls":"fas fa-skull",
+    "Castlevania":"fas fa-church", "Devil May Cry":"fas fa-devil", "Street Fighter":"fas fa-fist-raised", "Mortal Kombat":"fas fa-dragon",
+    "Tekken":"fas fa-fist-raised", "Overwatch":"fas fa-crosshairs", "Valorant":"fas fa-crosshairs", "League of Legends":"fas fa-crown",
+    "Arcane":"fas fa-magic", "Zelda":"fas fa-trash-alt", "Metroid":"fas fa-bug"
   };
-  return stories[universe] || `${universe} is a rich universe filled with unique heroes, villains, and epic conflicts. Explore its characters and stories.`;
-}
-
-function getHeroesAndVillains(universe) {
-  // Generate 4 heroes and 4 villains per universe (some known ones for popular)
-  let heroes = [], villains = [];
-  if (universe === "Marvel") {
-    heroes = [
-      { name: "Spider-Man", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=SpiderMan", powers: "Wall-crawling, spider-sense, super strength", weaknesses: "Guilt, family at risk", bio: "Peter Parker balances life as a teenager and a hero." },
-      { name: "Iron Man", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=IronMan", powers: "Powered armor, repulsors, flight", weaknesses: "Power drainage, arrogance", bio: "Genius billionaire inventor Tony Stark." },
-      { name: "Captain America", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=CaptainAmerica", powers: "Peak human, vibranium shield", weaknesses: "Mortal", bio: "The first Avenger, symbol of freedom." },
-      { name: "Thor", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Thor", powers: "Lightning, Mjolnir, godly strength", weaknesses: "Without Mjolnir, vulnerable", bio: "God of Thunder, prince of Asgard." }
-    ];
-    villains = [
-      { name: "Thanos", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Thanos", powers: "Superhuman strength, cosmic powers", weaknesses: "Overconfidence", bio: "The Mad Titan seeks to balance the universe." },
-      { name: "Loki", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Loki", powers: "Illusion, magic, shapeshifting", weaknesses: "Arrogance", bio: "God of Mischief, Thor's adopted brother." },
-      { name: "Ultron", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Ultron", powers: "Super intelligence, robotic army", weaknesses: "Emotional instability", bio: "AI created by Tony Stark that went rogue." },
-      { name: "Red Skull", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=RedSkull", powers: "Super soldier, strategic genius", weaknesses: "Obsession", bio: "Leader of HYDRA, archenemy of Captain America." }
-    ];
-  } else if (universe === "DC") {
-    heroes = [
-      { name: "Superman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Superman", powers: "Heat vision, flight, invulnerability", weaknesses: "Kryptonite", bio: "The last son of Krypton, protector of Earth." },
-      { name: "Batman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Batman", powers: "Intellect, martial arts, gadgets", weaknesses: "Mortal", bio: "Dark Knight of Gotham." },
-      { name: "Wonder Woman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=WonderWoman", powers: "Super strength, lasso of truth", weaknesses: "Piercing weapons", bio: "Amazon princess and warrior." },
-      { name: "The Flash", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Flash", powers: "Super speed, time travel", weaknesses: "Speed force instability", bio: "Fastest man alive." }
-    ];
-    villains = [
-      { name: "Joker", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Joker", powers: "Chaos genius, toxins", weaknesses: "Batman's refusal to kill", bio: "Agent of chaos." },
-      { name: "Lex Luthor", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=LexLuthor", powers: "Genius intellect, power suit", weaknesses: "Arrogance", bio: "Billionaire rival of Superman." },
-      { name: "Darkseid", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Darkseid", powers: "Omega beams, godly strength", weaknesses: "Radion", bio: "Tyrant of Apokolips." },
-      { name: "Doomsday", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Doomsday", powers: "Infinite adaptation, super strength", weaknesses: "No strategy", bio: "The beast that killed Superman." }
-    ];
-  } else {
-    for (let i = 1; i <= 4; i++) {
-      heroes.push({
-        name: `${universe} Hero ${i}`,
-        image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${universe}Hero${i}`,
-        powers: "Super strength, energy projection",
-        weaknesses: "Magic, specific artifact",
-        bio: `A legendary hero from the ${universe} universe.`
-      });
-      villains.push({
-        name: `${universe} Villain ${i}`,
-        image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${universe}Villain${i}`,
-        powers: "Dark magic, immense strength",
-        weaknesses: "Overconfidence",
-        bio: `A notorious foe from the ${universe} universe.`
-      });
-    }
+  function getStory(univ) {
+    const stories = {
+      "Marvel": "The Marvel Universe is a vast reality where superhumans, gods, aliens, and mutants coexist. From the Avengers to the X-Men, heroes battle villains like Thanos and Doctor Doom.",
+      "DC": "DC's multiverse is home to iconic heroes like Superman, Batman, and Wonder Woman. They defend truth and justice against forces like Darkseid and the Joker.",
+      "Tekken": "The King of Iron Fist Tournament brings together martial artists from around the world, each with their own dark past and fighting style.",
+      "Street Fighter": "World warriors compete in martial arts tournaments, facing rivals like M. Bison and Akuma.",
+      "Mortal Kombat": "A brutal tournament decides the fate of Earthrealm, featuring warriors like Liu Kang, Scorpion, and Sub-Zero."
+    };
+    return stories[univ] || `${univ} is a rich universe filled with unique heroes, villains, and epic conflicts. Explore its characters and stories.`;
   }
-  return { heroes, villains };
-}
-
-// Build universes array
-const universes = universeNames.map((name, idx) => {
-  const { heroes, villains } = getHeroesAndVillains(name);
-  return {
-    id: `univ_${idx}`,
-    name: name,
-    icon: iconMap[name] || "fas fa-globe",
-    color: "#ffaa44",
-    story: getStory(name),
-    heroes: heroes,
-    villains: villains
-  };
-});
-
-// Populate universe pills with horizontal scroll
-const universeGridDiv = document.getElementById('universeGrid');
-universes.forEach(u => {
-  const pill = document.createElement('div');
-  pill.className = 'universe-pill';
-  pill.innerHTML = `<i class="${u.icon}" style="color:${u.color}"></i> ${u.name}`;
-  pill.onclick = () => showUniversePage(u);
-  universeGridDiv.appendChild(pill);
-});
-document.getElementById('scrollUnivLeft').onclick = () => {
-  universeGridDiv.scrollBy({ left: -200, behavior: 'smooth' });
-};
-document.getElementById('scrollUnivRight').onclick = () => {
-  universeGridDiv.scrollBy({ left: 200, behavior: 'smooth' });
-};
-
-// Container for universe pages
-const universePagesContainer = document.getElementById('universePagesContainer');
-
-function showUniversePage(univ) {
-  // Remove existing page for this universe if any
-  const existing = document.getElementById(`univ-${univ.id}`);
-  if (existing) existing.remove();
-
-  const pageDiv = document.createElement('div');
-  pageDiv.id = `univ-${univ.id}`;
-  pageDiv.className = 'page';
-  pageDiv.innerHTML = `
-    <div class="universe-detail">
-      <div class="char-column" id="villainsCol">
-        <h3><i class="fas fa-skull"></i> Villains</h3>
-        <div id="villainsList"></div>
-      </div>
-      <div class="center-bio" id="centerBio">
-        <div class="universe-story">${univ.story}</div>
-        <div id="charBioContent">
-          <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Placeholder">
-          <h3>Select a hero or villain</h3>
-          <p>Click on any character to see their bio, powers, and weaknesses.</p>
-        </div>
-      </div>
-      <div class="char-column" id="heroesCol">
-        <h3><i class="fas fa-shield-alt"></i> Heroes</h3>
-        <div id="heroesList"></div>
-      </div>
-    </div>
-  `;
-  universePagesContainer.appendChild(pageDiv);
-
-  // Populate heroes
-  const heroesContainer = pageDiv.querySelector('#heroesList');
-  univ.heroes.forEach(hero => {
-    const item = document.createElement('div');
-    item.className = 'char-item';
-    item.innerHTML = `<img src="${hero.image}" alt=""><div class="char-name">${hero.name}</div>`;
-    item.onclick = () => {
-      const centerBio = pageDiv.querySelector('#centerBio');
-      centerBio.innerHTML = `
-        <div class="universe-story">${univ.story}</div>
-        <div id="charBioContent">
-          <img src="${hero.image}" style="width:180px; height:180px; border-radius:50%;">
-          <h3>${hero.name}</h3>
-          <p><strong>Powers:</strong> ${hero.powers}</p>
-          <p><strong>Weaknesses:</strong> ${hero.weaknesses}</p>
-          <p><strong>Bio:</strong> ${hero.bio}</p>
-        </div>
-      `;
-    };
-    heroesContainer.appendChild(item);
+  function getHeroesVillains(univ) {
+    const heroes = [], villains = [];
+    for (let i = 1; i <= 3; i++) {
+      heroes.push({ name: `${univ} Hero ${i}`, image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${univ}Hero${i}`, powers: "Super strength, agility", weaknesses: "Overconfidence", bio: `A champion of ${univ}.` });
+      villains.push({ name: `${univ} Villain ${i}`, image: `https://api.dicebear.com/9.x/avataaars/svg?seed=${univ}Villain${i}`, powers: "Dark magic", weaknesses: "Arrogance", bio: `A notorious foe in ${univ}.` });
+    }
+    if (univ === "Marvel") {
+      heroes[0] = { name: "Spider-Man", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=SpiderMan", powers: "Wall-crawling, spider-sense", weaknesses: "Guilt", bio: "Peter Parker balances life as a teenager and hero." };
+      villains[0] = { name: "Thanos", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Thanos", powers: "Infinity Gauntlet", weaknesses: "Overconfidence", bio: "The Mad Titan." };
+    } else if (univ === "DC") {
+      heroes[0] = { name: "Superman", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Superman", powers: "Heat vision, flight", weaknesses: "Kryptonite", bio: "Last son of Krypton." };
+      villains[0] = { name: "Joker", image: "https://api.dicebear.com/9.x/avataaars/svg?seed=Joker", powers: "Chaos", weaknesses: "Batman", bio: "Agent of chaos." };
+    }
+    return { heroes, villains };
+  }
+  const universes = universeNames.map((name, idx) => {
+    const { heroes, villains } = getHeroesVillains(name);
+    return { id: `univ_${idx}`, name, icon: iconMap[name] || "fas fa-globe", color: "#ffaa44", story: getStory(name), heroes, villains };
   });
 
-  // Populate villains
-  const villainsContainer = pageDiv.querySelector('#villainsList');
-  univ.villains.forEach(villain => {
-    const item = document.createElement('div');
-    item.className = 'char-item';
-    item.innerHTML = `<img src="${villain.image}" alt=""><div class="char-name">${villain.name}</div>`;
-    item.onclick = () => {
-      const centerBio = pageDiv.querySelector('#centerBio');
-      centerBio.innerHTML = `
-        <div class="universe-story">${univ.story}</div>
-        <div id="charBioContent">
-          <img src="${villain.image}" style="width:180px; height:180px; border-radius:50%;">
-          <h3>${villain.name}</h3>
-          <p><strong>Powers:</strong> ${villain.powers}</p>
-          <p><strong>Weaknesses:</strong> ${villain.weaknesses}</p>
-          <p><strong>Bio:</strong> ${villain.bio}</p>
-        </div>
-      `;
-    };
-    villainsContainer.appendChild(item);
+  // Build home universe pills
+  const universeGrid = document.getElementById('universeGrid');
+  universes.forEach(u => {
+    const pill = document.createElement('div');
+    pill.className = 'universe-pill';
+    pill.innerHTML = `<i class="${u.icon}" style="color:${u.color}"></i> ${u.name}`;
+    pill.onclick = () => showUniversePage(u);
+    universeGrid.appendChild(pill);
   });
+  document.getElementById('scrollUnivLeft').onclick = () => universeGrid.scrollBy({ left: -200, behavior: 'smooth' });
+  document.getElementById('scrollUnivRight').onclick = () => universeGrid.scrollBy({ left: 200, behavior: 'smooth' });
 
-  // Show this page and hide others
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-  pageDiv.classList.add('active-page');
-  window.scrollTo(0, 0);
-}
+  const pagesContainer = document.getElementById('universePagesContainer');
+  function showUniversePage(univ) {
+    const existing = document.getElementById(`univ-${univ.id}`);
+    if (existing) existing.remove();
+    const pageDiv = document.createElement('div');
+    pageDiv.id = `univ-${univ.id}`;
+    pageDiv.className = 'page';
+    pageDiv.innerHTML = `
+      <div class="universe-detail">
+        <div class="char-column"><h3><i class="fas fa-skull"></i> Villains</h3><div id="villainsList-${univ.id}"></div></div>
+        <div class="center-bio" id="centerBio-${univ.id}">
+          <div class="universe-story">${univ.story}</div>
+          <div id="charBioContent"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Placeholder"><h3>Select a character</h3><p>Click on any hero or villain to see details.</p></div>
+        </div>
+        <div class="char-column"><h3><i class="fas fa-shield-alt"></i> Heroes</h3><div id="heroesList-${univ.id}"></div></div>
+      </div>
+    `;
+    pagesContainer.appendChild(pageDiv);
+    const heroesDiv = pageDiv.querySelector(`#heroesList-${univ.id}`);
+    const villainsDiv = pageDiv.querySelector(`#villainsList-${univ.id}`);
+    univ.heroes.forEach(h => {
+      const item = document.createElement('div'); item.className = 'char-item';
+      item.innerHTML = `<img src="${h.image}"><div class="char-name">${h.name}</div>`;
+      item.onclick = () => {
+        document.getElementById(`centerBio-${univ.id}`).innerHTML = `<div class="universe-story">${univ.story}</div><div id="charBioContent"><img src="${h.image}" style="width:160px;border-radius:50%;"><h3>${h.name}</h3><p><strong>Powers:</strong> ${h.powers}</p><p><strong>Weaknesses:</strong> ${h.weaknesses}</p><p><strong>Bio:</strong> ${h.bio}</p></div>`;
+      };
+      heroesDiv.appendChild(item);
+    });
+    univ.villains.forEach(v => {
+      const item = document.createElement('div'); item.className = 'char-item';
+      item.innerHTML = `<img src="${v.image}"><div class="char-name">${v.name}</div>`;
+      item.onclick = () => {
+        document.getElementById(`centerBio-${univ.id}`).innerHTML = `<div class="universe-story">${univ.story}</div><div id="charBioContent"><img src="${v.image}" style="width:160px;border-radius:50%;"><h3>${v.name}</h3><p><strong>Powers:</strong> ${v.powers}</p><p><strong>Weaknesses:</strong> ${v.weaknesses}</p><p><strong>Bio:</strong> ${v.bio}</p></div>`;
+      };
+      villainsDiv.appendChild(item);
+    });
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    pageDiv.classList.add('active-page');
+    window.scrollTo(0,0);
+  }
 
-// ----------------------------- BATTLE PAGE -----------------------------
-// Build all characters from all universes for battle
-let allBattleChars = [];
-universes.forEach(u => {
-  [...u.heroes, ...u.villains].forEach(c => {
-    allBattleChars.push({
-      name: c.name,
-      universe: u.name,
-      image: c.image,
-      powers: c.powers,
-      weaknesses: c.weaknesses
+  // BATTLE LOGIC (all characters from all universes)
+  let allBattleChars = [];
+  universes.forEach(u => {
+    [...u.heroes, ...u.villains].forEach(c => {
+      allBattleChars.push({ name: c.name, universe: u.name, image: c.image, powers: c.powers, weaknesses: c.weaknesses });
     });
   });
-});
-
-let fighter1Index = 0, fighter2Index = 1;
-let fighter1Locked = false, fighter2Locked = false;
-let lastLogs = [], lastWinner = null, lastF1 = null, lastF2 = null;
-
-function updateBattleUI() {
-  const f1 = allBattleChars[fighter1Index];
-  const f2 = allBattleChars[fighter2Index];
-  document.getElementById('fighter1Img').src = f1.image;
-  document.getElementById('fighter1Name').innerText = f1.name;
-  document.getElementById('fighter1Uni').innerText = f1.universe;
-  document.getElementById('f1Idx').innerText = `${fighter1Index+1}/${allBattleChars.length}`;
-  document.getElementById('fighter2Img').src = f2.image;
-  document.getElementById('fighter2Name').innerText = f2.name;
-  document.getElementById('fighter2Uni').innerText = f2.universe;
-  document.getElementById('f2Idx').innerText = `${fighter2Index+1}/${allBattleChars.length}`;
-  document.getElementById('fighter1Card').classList.toggle('locked', fighter1Locked);
-  document.getElementById('fighter2Card').classList.toggle('locked', fighter2Locked);
-  const l1 = document.getElementById('lock1Btn');
-  const l2 = document.getElementById('lock2Btn');
-  l1.className = 'lock-btn' + (fighter1Locked ? ' locked' : '');
-  l1.innerHTML = fighter1Locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
-  l2.className = 'lock-btn' + (fighter2Locked ? ' locked' : '');
-  l2.innerHTML = fighter2Locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
-}
-
-document.getElementById('f1Prev').onclick = () => { if (!fighter1Locked) { fighter1Index = (fighter1Index - 1 + allBattleChars.length) % allBattleChars.length; updateBattleUI(); } };
-document.getElementById('f1Next').onclick = () => { if (!fighter1Locked) { fighter1Index = (fighter1Index + 1) % allBattleChars.length; updateBattleUI(); } };
-document.getElementById('f2Prev').onclick = () => { if (!fighter2Locked) { fighter2Index = (fighter2Index - 1 + allBattleChars.length) % allBattleChars.length; updateBattleUI(); } };
-document.getElementById('f2Next').onclick = () => { if (!fighter2Locked) { fighter2Index = (fighter2Index + 1) % allBattleChars.length; updateBattleUI(); } };
-document.getElementById('lock1Btn').onclick = () => { fighter1Locked = !fighter1Locked; updateBattleUI(); };
-document.getElementById('lock2Btn').onclick = () => { fighter2Locked = !fighter2Locked; updateBattleUI(); };
-
-const actionPhrases = {
-  "Spider-Man": "swings in and shoots webs at his opponent!",
-  "Iron Man": "suit flies to him piece by piece, repulsors charging!",
-  "Superman": "flies into the sky, heat vision blazing!",
-  "Batman": "throws a smoke pellet and vanishes into the shadows!",
-  "Goku": "powers up to Super Saiyan, golden aura exploding!",
-  "Naruto": "creates a thousand shadow clones!",
-  "Saitama": "yawns and says 'Ok.'",
-  "Thanos": "clenches the Infinity Gauntlet, reality warping!",
-  "Joker": "laughs maniacally and releases laughing gas!"
-};
-
-function simulateFight() {
-  const f1 = allBattleChars[fighter1Index];
-  const f2 = allBattleChars[fighter2Index];
-  lastF1 = f1; lastF2 = f2;
-  const logDiv = document.getElementById('battleLog');
-  logDiv.innerHTML = '';
-  const logs = [];
-  const winner = Math.random() > 0.5 ? f1.name : f2.name;
-  lastWinner = winner;
-  logs.push(`📍 Location: ${f1.universe} / ${f2.universe} crossover dimension`);
-  logs.push(`⚔️ ${f1.name} vs ${f2.name}`);
-  const action1 = actionPhrases[f1.name] || `${f1.name} takes a fighting stance`;
-  const action2 = actionPhrases[f2.name] || `${f2.name} prepares to strike`;
-  logs.push(`✨ ${f1.name}: ${action1}`);
-  logs.push(`✨ ${f2.name}: ${action2}`);
-  logs.push(`💥 ${f1.name} attacks with ${f1.powers.split(',')[0]}!`);
-  logs.push(`💥 ${f2.name} counters using ${f2.weaknesses.split(',')[0]} against ${f1.name}!`);
-  logs.push(`🔥 After a brutal exchange, ${winner} emerges victorious! 🔥`);
-  lastLogs = logs;
-  logs.forEach((log, idx) => {
-    setTimeout(() => {
-      const div = document.createElement('div');
-      div.className = 'log-line' + (log.includes('victorious') ? ' winner' : '');
-      div.textContent = log;
-      logDiv.appendChild(div);
-      logDiv.scrollTop = logDiv.scrollHeight;
-    }, idx * 500);
-  });
-  const comicArea = document.getElementById('comicArea');
-  comicArea.innerHTML = '';
-  const comicBtn = document.createElement('button');
-  comicBtn.className = 'comic-btn';
-  comicBtn.innerHTML = '<i class="fas fa-download"></i> Download as Comic (HTML)';
-  comicBtn.onclick = () => {
-    const comicHtml = `<!DOCTYPE html>
-    <html><head><meta charset="UTF-8"><title>WORLDS COMIC: ${f1.name} vs ${f2.name}</title>
-    <style>body{background:#0a0a1a;color:#eee;font-family:monospace;padding:2rem;} .panel{background:#1e1e2e;margin:1rem;padding:1rem;border-radius:16px;}</style></head>
-    <body><h1>BATTLE COMIC</h1><div>${logs.map(l => `<div class="panel">${l}</div>`).join('')}<div class="panel">WINNER: ${winner}</div></div></body></html>`;
-    const blob = new Blob([comicHtml], {type: 'text/html'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `comic_${f1.name}_vs_${f2.name}.html`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+  let f1i = 0, f2i = Math.min(1, allBattleChars.length-1), f1locked = false, f2locked = false;
+  let lastLogs = [], lastWinner = null, lastF1 = null, lastF2 = null;
+  function updateBattleUI() {
+    const f1 = allBattleChars[f1i], f2 = allBattleChars[f2i];
+    document.getElementById('fighter1Img').src = f1.image;
+    document.getElementById('fighter1Name').innerText = f1.name;
+    document.getElementById('fighter1Uni').innerText = f1.universe;
+    document.getElementById('f1Idx').innerText = `${f1i+1}/${allBattleChars.length}`;
+    document.getElementById('fighter2Img').src = f2.image;
+    document.getElementById('fighter2Name').innerText = f2.name;
+    document.getElementById('fighter2Uni').innerText = f2.universe;
+    document.getElementById('f2Idx').innerText = `${f2i+1}/${allBattleChars.length}`;
+    document.getElementById('fighter1Card').classList.toggle('locked', f1locked);
+    document.getElementById('fighter2Card').classList.toggle('locked', f2locked);
+    document.getElementById('lock1Btn').className = 'lock-btn' + (f1locked ? ' locked' : '');
+    document.getElementById('lock1Btn').innerHTML = f1locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
+    document.getElementById('lock2Btn').className = 'lock-btn' + (f2locked ? ' locked' : '');
+    document.getElementById('lock2Btn').innerHTML = f2locked ? '<i class="fas fa-lock"></i> Locked' : '<i class="fas fa-lock-open"></i> Lock';
+  }
+  document.getElementById('f1Prev').onclick = () => { if(!f1locked) { f1i = (f1i-1+allBattleChars.length)%allBattleChars.length; updateBattleUI(); } };
+  document.getElementById('f1Next').onclick = () => { if(!f1locked) { f1i = (f1i+1)%allBattleChars.length; updateBattleUI(); } };
+  document.getElementById('f2Prev').onclick = () => { if(!f2locked) { f2i = (f2i-1+allBattleChars.length)%allBattleChars.length; updateBattleUI(); } };
+  document.getElementById('f2Next').onclick = () => { if(!f2locked) { f2i = (f2i+1)%allBattleChars.length; updateBattleUI(); } };
+  document.getElementById('lock1Btn').onclick = () => { f1locked = !f1locked; updateBattleUI(); };
+  document.getElementById('lock2Btn').onclick = () => { f2locked = !f2locked; updateBattleUI(); };
+  const actionPhrases = {
+    "Spider-Man": "swings in and shoots webs!", "Iron Man": "suit flies to him piece by piece!", "Superman": "flies into the sky, heat vision blazing!", "Batman": "throws a smoke pellet and vanishes!"
   };
-  comicArea.appendChild(comicBtn);
-}
-
-document.getElementById('fightBtn').onclick = simulateFight;
-updateBattleUI();
-
-// ----------------------------- CREATOR'S MARKET -----------------------------
-let currentType = '';
-const uploadPanel = document.getElementById('uploadPanel');
-const catTabs = document.querySelectorAll('.cat-tab');
-catTabs.forEach(tab => {
-  tab.onclick = () => {
-    catTabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentType = tab.dataset.type;
-    uploadPanel.style.display = 'block';
+  document.getElementById('fightBtn').onclick = () => {
+    const f1 = allBattleChars[f1i], f2 = allBattleChars[f2i];
+    lastF1 = f1; lastF2 = f2;
+    const logDiv = document.getElementById('battleLog');
+    logDiv.innerHTML = '';
+    const logs = [];
+    const winner = Math.random() > 0.5 ? f1.name : f2.name;
+    lastWinner = winner;
+    logs.push(`📍 Location: ${f1.universe} / ${f2.universe} crossover`);
+    logs.push(`⚔️ ${f1.name} vs ${f2.name}`);
+    logs.push(`✨ ${f1.name}: ${actionPhrases[f1.name] || "takes a fighting stance"}`);
+    logs.push(`✨ ${f2.name}: ${actionPhrases[f2.name] || "prepares to strike"}`);
+    logs.push(`💥 ${f1.name} attacks with ${f1.powers.split(',')[0]}!`);
+    logs.push(`💥 ${f2.name} counters using ${f2.weaknesses.split(',')[0]}!`);
+    logs.push(`🔥 WINNER: ${winner} 🔥`);
+    lastLogs = logs;
+    logs.forEach((log, idx) => setTimeout(() => { const d = document.createElement('div'); d.className = 'log-line' + (log.includes('WINNER') ? ' winner' : ''); d.textContent = log; logDiv.appendChild(d); logDiv.scrollTop = logDiv.scrollHeight; }, idx * 500));
+    const comicArea = document.getElementById('comicArea');
+    comicArea.innerHTML = '';
+    const btn = document.createElement('button'); btn.className = 'comic-btn'; btn.innerHTML = 'Download as Comic'; btn.onclick = () => {
+      const comicHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Comic</title><style>body{background:#0a0a1a;color:#eee;padding:2rem;}</style></head><body><h1>BATTLE</h1><div>${logs.map(l => `<div style="background:#1e1e2e;margin:1rem;padding:1rem;">${l}</div>`).join('')}</div></body></html>`;
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([comicHtml], {type:'text/html'})); a.download = `comic_${f1.name}_vs_${f2.name}.html`; a.click();
+    };
+    comicArea.appendChild(btn);
   };
-});
-document.getElementById('publishBtn').onclick = () => {
-  const title = document.getElementById('uploadTitle').value.trim();
-  const price = document.getElementById('uploadPrice').value;
-  const desc = document.getElementById('uploadDesc').value.trim();
-  if (!title) return;
-  const iconMapCat = { comic:'fa-book-open', video:'fa-video', '3d':'fa-cube', art:'fa-paintbrush', cosplay:'fa-mask' };
-  const icon = iconMapCat[currentType] || 'fa-star';
-  const listing = document.createElement('div');
-  listing.className = 'listing-card';
-  listing.innerHTML = `
-    <div class="listing-icon"><i class="fas ${icon}"></i></div>
-    <div class="listing-title">${escapeHtml(title)}</div>
-    <div class="listing-desc">${escapeHtml(desc.substring(0,100))}</div>
-    <div class="listing-footer"><span class="listing-price">${price ? '$'+parseFloat(price).toFixed(2) : 'Free'}</span><button class="buy-btn">Buy</button></div>
-  `;
-  document.getElementById('marketListings').prepend(listing);
-  document.getElementById('uploadTitle').value = '';
-  document.getElementById('uploadPrice').value = '';
-  document.getElementById('uploadDesc').value = '';
-  document.getElementById('uploadFile').value = '';
-  uploadPanel.style.display = 'none';
-  catTabs.forEach(t => t.classList.remove('active'));
-};
-function escapeHtml(str) {
-  return str.replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
-}
+  updateBattleUI();
 
-// ----------------------------- PAGE SWITCHING -----------------------------
-function switchToPage(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-  const target = document.getElementById(pageId);
-  if (target) target.classList.add('active-page');
-  window.scrollTo(0, 0);
-}
-document.querySelectorAll('[data-page]').forEach(el => {
-  el.addEventListener('click', () => {
-    const pageId = el.dataset.page;
-    if (pageId === 'home') switchToPage('homePage');
-    else if (pageId === 'market') switchToPage('marketPage');
-    else if (pageId === 'battle') switchToPage('battlePage');
+  // MARKET
+  let currentType = '';
+  const uploadPanel = document.getElementById('uploadPanel');
+  document.querySelectorAll('.cat-tab').forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentType = tab.dataset.type;
+      uploadPanel.style.display = 'block';
+    };
   });
-});
+  document.getElementById('publishBtn').onclick = () => {
+    const title = document.getElementById('uploadTitle').value.trim();
+    const price = document.getElementById('uploadPrice').value;
+    const desc = document.getElementById('uploadDesc').value.trim();
+    if (!title) return;
+    const icons = { comic:'fa-book-open', video:'fa-video', '3d':'fa-cube', art:'fa-paintbrush', cosplay:'fa-mask' };
+    const listing = document.createElement('div'); listing.className = 'listing-card';
+    listing.innerHTML = `<div class="listing-icon"><i class="fas ${icons[currentType] || 'fa-star'}"></i></div><div class="listing-title">${escapeHtml(title)}</div><div class="listing-desc">${escapeHtml(desc.substring(0,100))}</div><div class="listing-footer"><span class="listing-price">${price ? '$'+parseFloat(price).toFixed(2) : 'Free'}</span><button class="buy-btn">Buy</button></div>`;
+    document.getElementById('marketListings').prepend(listing);
+    document.getElementById('uploadTitle').value = ''; document.getElementById('uploadPrice').value = ''; document.getElementById('uploadDesc').value = ''; document.getElementById('uploadFile').value = '';
+    uploadPanel.style.display = 'none';
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  };
+  function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-// Auth modal
-const authModal = document.getElementById('authModal');
-document.getElementById('openAuthBtn').onclick = () => authModal.classList.add('open');
-document.getElementById('closeModal').onclick = () => authModal.classList.remove('open');
-authModal.onclick = e => { if (e.target === authModal) authModal.classList.remove('open'); };
-document.getElementById('mockSignup').onclick = () => {
-  authModal.classList.remove('open');
-  alert('Welcome to WORLDS! (Demo account created)');
-};
+  // PAGE SWITCHING
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active-page');
+    window.scrollTo(0,0);
+  }
+  document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', () => showPage(el.dataset.page)));
+
+  // AUTH MODAL
+  const modal = document.getElementById('authModal');
+  document.getElementById('openAuthBtn').onclick = () => modal.classList.add('open');
+  document.getElementById('closeModal').onclick = () => modal.classList.remove('open');
+  modal.onclick = e => { if(e.target === modal) modal.classList.remove('open'); };
+  document.getElementById('mockSignup').onclick = () => { modal.classList.remove('open'); alert('Demo account created!'); };
 </script>
 </body>
 </html>
