@@ -2,661 +2,1434 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>WORLDS — Ultimate Multiverse Hub</title>
-<script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
-    }
-  }
-</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WORLDS — Multiverse Hub</title>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.128.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.128.0/examples/jsm/"}}</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:opsz,wght@9..40,300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --red: #ff2800;
-    --amber: #ffb300;
-    --green: #00e676;
-    --bg: #07070c;
-    --glass: rgba(255,255,255,0.04);
-    --glass2: rgba(255,255,255,0.08);
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.14);
-    --text: #ede9e2;
-    --muted: rgba(237,233,226,0.42);
-    --muted2: rgba(237,233,226,0.65);
-    --r: 14px;
-  }
-  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
-  ::-webkit-scrollbar{width:4px;height:4px;}
-  ::-webkit-scrollbar-track{background:transparent;}
-  ::-webkit-scrollbar-thumb{background:var(--red);border-radius:99px;}
-  body::after{content:'';position:fixed;inset:0;z-index:9000;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");}
+:root{
+  --red:#ff2800;--amber:#ffb300;--green:#00e676;--blue:#448aff;
+  --bg:#07070c;--bg2:#0d0d16;
+  --glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.08);
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+  --text:#ede9e2;--muted:rgba(237,233,226,0.42);--muted2:rgba(237,233,226,0.65);
+  --r:14px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--red);border-radius:99px;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(255,40,0,0.07),transparent);}
 
-  /* NAV */
-  .nav{position:fixed;top:0;left:0;right:0;z-index:800;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(7,7,12,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
-  .nav-brand{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;user-select:none;display:flex;align-items:center;gap:3px;}
-  .nav-brand .o{color:var(--red);display:inline-block;animation:spinO 10s linear infinite;}
-  @keyframes spinO{to{transform:rotate(360deg);}}
-  .nav-right{display:flex;gap:4px;align-items:center;}
-  .nb{cursor:pointer;font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;padding:6px 14px;border-radius:99px;border:1px solid transparent;color:var(--muted);transition:all 0.18s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
-  .nb:hover,.nb.on{color:var(--text);border-color:var(--border2);background:var(--glass2);}
-  .nb.cta{border-color:rgba(255,40,0,0.5);color:var(--red);}
-  .nb.cta:hover{background:var(--red);color:#fff;box-shadow:0 0 18px rgba(255,40,0,0.45);}
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,7,12,0.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.brand{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:900;letter-spacing:.2em;cursor:pointer;display:flex;align-items:center;}
+.brand .o{color:var(--red);animation:spin 12s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.nav-links{display:flex;gap:4px;align-items:center;}
+.nl{cursor:pointer;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:99px;border:1px solid transparent;color:var(--muted);transition:.18s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.nl:hover,.nl.active{color:var(--text);border-color:var(--border2);background:var(--glass2);}
+.nl.join{border-color:rgba(255,40,0,.45);color:var(--red);}
+.nl.join:hover{background:var(--red);color:#fff;box-shadow:0 0 20px rgba(255,40,0,.4);}
+@media(max-width:500px){.nl span{display:none;}.nl{padding:6px 10px;}}
 
-  /* PAGES */
-  .page{display:none;min-height:100vh;position:relative;z-index:1;padding-top:56px;}
-  .page.on{display:block;}
-  #homePage{display:flex;flex-direction:column;align-items:center;}
-  #homePage.on{display:flex;}
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;padding-top:56px;position:relative;z-index:1;}
+.page.active{display:block;}
+/* home is flex */
+#pg-home.active{display:flex;flex-direction:column;align-items:center;}
 
-  /* GLOBE */
-  .globe-wrap{position:relative;width:100%;height:min(55vw,520px);min-height:320px;border-bottom:1px solid var(--border);overflow:hidden;background:#000;}
-  #globeCanvas{width:100%;height:100%;display:block;}
-  .globe-vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(7,7,12,0.25) 0%,transparent 25%,transparent 72%,rgba(7,7,12,0.92) 100%);}
-  .globe-search{position:absolute;top:16px;left:16px;z-index:20;display:flex;gap:8px;align-items:center;background:rgba(7,7,12,0.72);backdrop-filter:blur(12px);border:1px solid var(--border2);border-radius:99px;padding:6px 6px 6px 16px;}
-  .globe-search input{background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.82rem;width:190px;outline:none;}
-  .globe-search input::placeholder{color:var(--muted);}
-  .g-btn{background:var(--red);border:none;padding:6px 14px;border-radius:99px;color:#fff;font-size:0.74rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:0.15s;white-space:nowrap;}
-  .g-btn:hover{box-shadow:0 0 14px rgba(255,40,0,0.55);}
-  .planet-tag{position:absolute;bottom:16px;right:16px;z-index:20;background:rgba(7,7,12,0.8);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:99px;padding:5px 14px;font-size:0.74rem;font-weight:600;color:var(--muted2);}
+/* ── SECTION TITLES ── */
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+.sec-sub{color:var(--muted);font-size:.85rem;margin-top:5px;}
 
-  /* FLIGHT INFO BANNER */
-  .flight-banner{width:100%;display:none;background:linear-gradient(135deg,rgba(255,179,0,0.06) 0%,rgba(255,40,0,0.04) 100%);border-bottom:1px solid rgba(255,179,0,0.18);}
-  .flight-banner.show{display:block;}
-  .fb-inner{max-width:1200px;margin:0 auto;padding:1rem 1.5rem;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;}
-  .fb-left{display:flex;flex-direction:column;gap:6px;}
-  .fb-route{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .fb-city{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:0.05em;}
-  .fb-arrow{color:var(--amber);font-size:1rem;}
-  .fb-airline-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-  .fb-badge{background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:99px;padding:3px 10px;font-size:0.72rem;font-weight:600;color:var(--muted2);}
-  .fb-badge.amber{border-color:rgba(255,179,0,0.35);color:var(--amber);}
-  .fb-badge.red{border-color:rgba(255,40,0,0.35);color:var(--red);}
-  .fb-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
-  .fb-price{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;color:var(--amber);line-height:1;}
-  .fb-price-sub{font-size:0.68rem;color:var(--muted);text-align:right;}
-  .fb-book-btn{background:var(--amber);border:none;padding:8px 20px;border-radius:99px;font-weight:700;font-size:0.8rem;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;transition:0.18s;white-space:nowrap;}
-  .fb-book-btn:hover{box-shadow:0 0 16px rgba(255,179,0,0.5);transform:scale(1.03);}
-  @media(max-width:600px){.fb-inner{grid-template-columns:1fr;}.fb-right{align-items:flex-start;}}
+/* ═══════════════════ HOME / GLOBE ═══════════════════ */
+.globe-wrap{position:relative;width:100%;height:min(56vw,520px);min-height:300px;overflow:hidden;background:#000;border-bottom:1px solid var(--border);}
+#gc{width:100%;height:100%;display:block;}
+.globe-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(7,7,12,.2) 0%,transparent 22%,transparent 68%,rgba(7,7,12,.96) 100%);}
+.globe-ui{position:absolute;top:14px;left:14px;z-index:20;display:flex;gap:8px;align-items:center;background:rgba(7,7,12,.75);backdrop-filter:blur(12px);border:1px solid var(--border2);border-radius:99px;padding:6px 8px 6px 16px;}
+.globe-ui input{background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.8rem;width:180px;outline:none;}
+.globe-ui input::placeholder{color:var(--muted);}
+.gbtn{background:var(--red);border:none;padding:6px 14px;border-radius:99px;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;}
+.gbtn:hover{box-shadow:0 0 14px rgba(255,40,0,.5);}
+.globe-planet{position:absolute;bottom:14px;right:14px;z-index:20;background:rgba(7,7,12,.8);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:99px;padding:5px 14px;font-size:.74rem;font-weight:600;color:var(--muted2);}
 
-  /* UNIVERSE PILLS */
-  .univ-row{width:100%;max-width:1300px;padding:1rem 1.5rem;display:flex;align-items:center;gap:10px;}
-  .univ-scroll{display:flex;gap:8px;overflow-x:auto;flex:1;scroll-behavior:smooth;scrollbar-width:none;padding:4px 2px;}
-  .univ-scroll::-webkit-scrollbar{display:none;}
-  .univ-arrow{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--glass);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem;transition:0.15s;}
-  .univ-arrow:hover{border-color:var(--red);color:var(--red);}
-  .upill{cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:99px;background:var(--glass);border:1px solid var(--border);font-size:0.8rem;font-weight:600;transition:all 0.18s;}
-  .upill:hover{border-color:rgba(255,40,0,0.5);background:rgba(255,40,0,0.07);transform:translateY(-1px);}
+/* ── UBER-STYLE FLIGHT PANEL ── */
+.uber-panel{width:100%;background:var(--bg2);border-bottom:2px solid rgba(255,179,0,.18);display:none;}
+.uber-panel.show{display:block;}
+.uber-inner{max-width:1200px;margin:0 auto;padding:1.2rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;}
+@media(max-width:700px){.uber-inner{grid-template-columns:1fr;}}
 
-  /* UNIVERSE DETAIL */
-  .upage-grid{max-width:1400px;margin:0 auto;padding:1.5rem;display:grid;grid-template-columns:240px 1fr 240px;gap:1.2rem;}
-  @media(max-width:1000px){.upage-grid{grid-template-columns:1fr;}}
-  .char-col{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
-  .char-col-head{padding:.9rem 1.2rem;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
-  .char-col-body{padding:.5rem;max-height:calc(100vh - 180px);overflow-y:auto;}
-  .char-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:0.15s;margin-bottom:4px;}
-  .char-item:hover{background:rgba(255,40,0,0.08);}
-  .char-item img{width:42px;height:42px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;}
-  .char-item-name{font-size:0.82rem;font-weight:600;}
-  .char-item-sub{font-size:0.68rem;color:var(--muted);}
-  .bio-center{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;display:flex;flex-direction:column;gap:1rem;}
-  .bio-story{background:rgba(255,255,255,0.025);border-radius:10px;padding:1rem;font-size:0.82rem;line-height:1.65;color:var(--muted2);border-left:2px solid rgba(255,40,0,0.35);}
-  .bio-char{display:flex;flex-direction:column;align-items:center;gap:.8rem;}
-  .bio-char img{width:110px;height:110px;border-radius:50%;border:2px solid var(--red);box-shadow:0 0 20px rgba(255,40,0,0.25);}
-  .bio-char-name{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;}
-  .bio-stat{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;width:100%;}
-  .bio-stat-label{font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
-  .bio-stat-val{font-size:0.83rem;line-height:1.5;}
+/* Left: route info like Uber */
+.uber-route{display:flex;flex-direction:column;gap:10px;}
+.uber-point{display:flex;align-items:center;gap:12px;}
+.uber-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.uber-dot.from{background:var(--green);}
+.uber-dot.to{background:var(--red);}
+.uber-line-connector{width:2px;height:24px;background:var(--border2);margin-left:5px;}
+.uber-loc-name{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;letter-spacing:.03em;}
+.uber-loc-sub{font-size:.7rem;color:var(--muted);}
+.uber-meta{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;}
+.uber-chip{font-size:.65rem;font-weight:600;padding:3px 9px;border-radius:99px;border:1px solid var(--border2);color:var(--muted2);}
 
-  /* BATTLE PAGE */
-  .battle-page-inner{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;}
-  .section-head{text-align:center;margin-bottom:2rem;}
-  .section-head h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:900;letter-spacing:0.09em;text-transform:uppercase;}
-  .section-head p{color:var(--muted);font-size:0.85rem;margin-top:6px;}
-  .fighters-row{display:grid;grid-template-columns:1fr 100px 1fr;gap:1rem;align-items:start;}
-  @media(max-width:660px){.fighters-row{grid-template-columns:1fr;}}
-  .fcard{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:1.4rem;display:flex;flex-direction:column;gap:.9rem;transition:border-color .2s;}
-  .fcard.locked{border-color:var(--red);box-shadow:0 0 18px rgba(255,40,0,0.15);}
-  .fcard-top{display:flex;flex-direction:column;align-items:center;gap:.7rem;}
-  .fav{width:96px;height:96px;border-radius:50%;overflow:hidden;border:2px solid var(--border2);transition:.2s;}
-  .fav img{width:100%;height:100%;object-fit:cover;}
-  .fcard.locked .fav{border-color:var(--red);}
-  .fname-big{font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;text-align:center;}
-  .funi-tag{font-size:0.65rem;color:var(--muted);font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;}
-  .fcard-city{font-size:0.7rem;color:var(--amber);font-weight:600;text-align:center;margin-top:-4px;}
-  .fnav-row{display:flex;align-items:center;justify-content:space-between;gap:6px;}
-  .farr{width:30px;height:30px;border-radius:50%;background:var(--glass);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.72rem;transition:.15s;}
-  .farr:hover{border-color:var(--red);color:var(--red);}
-  .fidx{font-size:0.68rem;color:var(--muted);}
-  .lock-btn{width:100%;padding:8px;border-radius:99px;border:1px solid var(--border2);background:var(--glass);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:7px;}
-  .lock-btn:hover{border-color:rgba(255,40,0,.5);}
-  .lock-btn.locked{background:rgba(255,40,0,.1);border-color:var(--red);color:var(--red);}
-  .vs-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding-top:36px;}
-  .vs-word{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--muted);}
-  .fight-btn{background:var(--red);border:none;padding:12px 22px;border-radius:99px;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:900;letter-spacing:.12em;color:#fff;cursor:pointer;transition:.18s;box-shadow:0 4px 20px rgba(255,40,0,.35);}
-  .fight-btn:hover{transform:scale(1.06);box-shadow:0 6px 28px rgba(255,40,0,.55);}
-  .fight-log-wrap{margin-top:1.2rem;}
-  .fight-log{background:rgba(0,0,0,.6);border:1px solid var(--border2);border-radius:18px;padding:1.2rem;max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;min-height:80px;}
-  .flog-line{padding:9px 13px;border-radius:10px;font-size:.83rem;line-height:1.55;border-left:2px solid var(--border2);animation:popIn .35s forwards;}
-  @keyframes popIn{from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:none;}}
-  .flog-line.loc{border-left-color:rgba(255,179,0,.5);color:var(--amber);font-weight:600;}
-  .flog-line.atk{border-left-color:rgba(255,40,0,.5);background:rgba(255,40,0,.04);}
-  .flog-line.drink{border-left-color:rgba(100,220,100,.4);color:#a5d6a7;}
-  .flog-line.bet-ad{border-left-color:rgba(100,180,255,.4);color:#90caf9;font-style:italic;}
-  .flog-line.win{border-left-color:var(--red);background:rgba(255,40,0,.08);font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;letter-spacing:.05em;color:var(--text);}
-  .winner-card{margin-top:1rem;background:linear-gradient(135deg,rgba(255,40,0,.12),rgba(255,179,0,.07));border:1px solid rgba(255,40,0,.35);border-radius:18px;padding:1.4rem;display:none;text-align:center;animation:popIn .4s forwards;}
-  .winner-card.show{display:block;}
-  .winner-label{font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-  .winner-name{font-family:'Barlow Condensed',sans-serif;font-size:2.6rem;font-weight:900;letter-spacing:.06em;color:var(--amber);}
-  .winner-img{width:80px;height:80px;border-radius:50%;border:3px solid var(--amber);margin:10px auto;}
-  .winner-stats{display:flex;justify-content:center;gap:1rem;margin-top:.8rem;flex-wrap:wrap;}
-  .wstat{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;text-align:center;}
-  .wstat-val{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;}
-  .wstat-lbl{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;}
-  .drink-ad{margin-top:1.2rem;border-radius:18px;overflow:hidden;border:1px solid rgba(100,220,100,.2);display:none;}
-  .drink-ad.show{display:block;animation:popIn .4s forwards;}
-  .drink-ad-inner{padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:linear-gradient(90deg,rgba(0,40,0,.7),rgba(0,20,0,.5));}
-  .drink-ad-logo{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:.1em;white-space:nowrap;}
-  .drink-ad-copy{flex:1;font-size:.82rem;color:var(--muted2);line-height:1.5;}
-  .drink-ad-cta{background:#00e676;border:none;padding:8px 18px;border-radius:99px;font-weight:700;font-size:.78rem;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:.15s;}
-  .drink-ad-cta:hover{box-shadow:0 0 14px rgba(0,230,118,.45);}
-  .betting-panel{margin-top:1.2rem;background:var(--glass);border:1px solid rgba(255,179,0,.18);border-radius:18px;padding:1.2rem 1.5rem;}
-  .bet-head{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
-  .bet-head-title{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
-  .bet-head-badge{background:rgba(255,179,0,.12);border:1px solid rgba(255,179,0,.3);border-radius:99px;padding:2px 10px;font-size:.65rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.1em;}
-  .bet-companies{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;}
-  .bet-co{cursor:pointer;padding:6px 14px;border-radius:99px;border:1px solid var(--border2);background:var(--glass);font-size:.75rem;font-weight:600;color:var(--muted2);transition:.15s;display:flex;align-items:center;gap:6px;}
-  .bet-co:hover,.bet-co.sel{border-color:var(--amber);color:var(--amber);background:rgba(255,179,0,.08);}
-  .bet-odds{display:flex;gap:8px;margin-top:.8rem;flex-wrap:wrap;}
-  .odds-chip{background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:10px;padding:.4rem .8rem;font-size:.72rem;font-weight:700;text-align:center;}
-  .odds-name{color:var(--muted);font-weight:400;font-size:.65rem;}
-  .bet-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:.8rem;}
-  .bet-select{background:var(--glass2);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:99px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;outline:none;flex:1;min-width:160px;}
-  .bet-amount-wrap{display:flex;align-items:center;gap:6px;background:var(--glass);border:1px solid var(--border2);border-radius:99px;padding:6px 14px;}
-  .bet-amount-wrap span{font-size:.75rem;color:var(--muted);}
-  .bet-amount-wrap input{background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;width:60px;outline:none;font-weight:600;}
-  .bet-place-btn{background:var(--amber);border:none;padding:9px 20px;border-radius:99px;font-weight:700;font-size:.8rem;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;transition:.15s;white-space:nowrap;}
-  .bet-place-btn:hover{box-shadow:0 0 14px rgba(255,179,0,.45);}
-  .bet-result{margin-top:.8rem;padding:.7rem 1rem;border-radius:10px;font-size:.85rem;font-weight:600;display:none;}
-  .bet-result.won{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.25);color:#a5d6a7;display:block;}
-  .bet-result.lost{background:rgba(255,40,0,.06);border:1px solid rgba(255,40,0,.2);color:#ef9a9a;display:block;}
+/* Right: airline cards like Uber ride options */
+.uber-rides-title{font-size:.63rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;}
+.uber-rides{display:flex;flex-direction:column;gap:6px;}
+.ride-card{display:flex;align-items:center;gap:10px;padding:.7rem 1rem;border-radius:12px;background:var(--glass);border:2px solid var(--border);cursor:pointer;transition:.18s;}
+.ride-card:hover,.ride-card.sel{border-color:var(--amber);background:rgba(255,179,0,.06);}
+.ride-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:rgba(255,179,0,.1);}
+.ride-body{flex:1;}
+.ride-name{font-weight:700;font-size:.85rem;}
+.ride-detail{font-size:.68rem;color:var(--muted);margin-top:1px;}
+.ride-price{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:900;color:var(--amber);text-align:right;}
+.ride-book{background:var(--amber);border:none;padding:6px 14px;border-radius:99px;font-size:.72rem;font-weight:700;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;transition:.15s;white-space:nowrap;flex-shrink:0;}
+.ride-book:hover{box-shadow:0 0 12px rgba(255,179,0,.45);}
 
-  /* MARKET PAGE */
-  .market-inner{max-width:1200px;margin:0 auto;padding:2rem 1.5rem;}
-  .market-hero{display:grid;grid-template-columns:1fr auto;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
-  @media(max-width:600px){.market-hero{grid-template-columns:1fr;}}
-  .market-hero h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
-  .market-hero p{color:var(--muted);font-size:.85rem;margin-top:4px;}
-  .sell-btn{background:var(--red);border:none;padding:10px 22px;border-radius:99px;color:#fff;font-weight:700;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;display:flex;align-items:center;gap:8px;transition:.18s;}
-  .sell-btn:hover{box-shadow:0 4px 18px rgba(255,40,0,.4);transform:translateY(-1px);}
-  .cat-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;}
-  .cbtab{cursor:pointer;display:flex;align-items:center;gap:7px;padding:8px 18px;border-radius:99px;border:1px solid var(--border);background:var(--glass);font-size:.79rem;font-weight:600;color:var(--muted);transition:.15s;font-family:'DM Sans',sans-serif;}
-  .cbtab:hover,.cbtab.on{border-color:rgba(255,40,0,.5);background:rgba(255,40,0,.07);color:var(--text);}
-  .cbtab.on{color:var(--red);}
-  .upload-modal{display:none;position:fixed;inset:0;z-index:900;background:rgba(7,7,12,.85);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:1rem;}
-  .upload-modal.open{display:flex;}
-  .upload-box{background:rgba(14,14,22,.97);border:1px solid var(--border2);border-radius:22px;padding:2rem;width:100%;max-width:520px;animation:popIn .25s forwards;}
-  .upload-box-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
-  .upload-box-head h3{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
-  .close-x{width:30px;height:30px;border-radius:50%;background:var(--glass2);border:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--muted);}
-  .close-x:hover{color:var(--text);}
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-  @media(max-width:480px){.form-grid{grid-template-columns:1fr;}}
-  .fg{display:flex;flex-direction:column;gap:5px;}
-  .fg label{font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
-  .fg input,.fg textarea,.fg select{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text);padding:9px 12px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;transition:.15s;width:100%;}
-  .fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:rgba(255,40,0,.5);}
-  .fg textarea{resize:vertical;}
-  .pub-btn{width:100%;padding:11px;border-radius:99px;background:var(--red);border:none;color:#fff;font-weight:700;font-size:.88rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.18s;margin-top:6px;}
-  .pub-btn:hover{box-shadow:0 4px 18px rgba(255,40,0,.4);}
-  .listings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
-  .lcard{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:.2s;display:flex;flex-direction:column;}
-  .lcard:hover{border-color:rgba(255,40,0,.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
-  .lcard-thumb{height:140px;background:linear-gradient(135deg,var(--bg2,#0e0e16),rgba(255,40,0,.06));display:flex;align-items:center;justify-content:center;font-size:2.8rem;border-bottom:1px solid var(--border);position:relative;}
-  .lcard-type{position:absolute;top:8px;left:8px;background:rgba(7,7,12,.8);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:99px;padding:3px 10px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;}
-  .lcard-body{padding:1rem;flex:1;display:flex;flex-direction:column;gap:.5rem;}
-  .lcard-seller{display:flex;align-items:center;gap:7px;}
-  .lcard-seller img{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);}
-  .lcard-seller-name{font-size:.7rem;color:var(--muted2);font-weight:600;}
-  .lcard-title{font-weight:700;font-size:.92rem;line-height:1.3;}
-  .lcard-desc{font-size:.75rem;color:var(--muted);line-height:1.5;flex:1;}
-  .lcard-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;padding-top:.7rem;border-top:1px solid var(--border);}
-  .lcard-price{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;color:var(--amber);}
-  .lcard-price.free{color:var(--green);}
-  .buy-btn{background:transparent;border:1px solid rgba(255,40,0,.5);color:var(--red);padding:5px 14px;border-radius:99px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
-  .buy-btn:hover{background:var(--red);color:#fff;}
-  .lcard-stats{display:flex;gap:8px;flex-wrap:wrap;}
-  .lstat{font-size:.65rem;color:var(--muted);display:flex;align-items:center;gap:4px;}
-  .auth-modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(7,7,12,.85);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:1rem;}
-  .auth-modal.open{display:flex;}
-  .auth-box{background:rgba(14,14,22,.97);border:1px solid var(--border2);border-radius:20px;padding:2rem;width:100%;max-width:380px;animation:popIn .25s forwards;}
-  .auth-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
-  .auth-head h3{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
-  .auth-submit{width:100%;padding:11px;border-radius:99px;background:var(--red);border:none;color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:.18s;}
-  .auth-submit:hover{box-shadow:0 4px 18px rgba(255,40,0,.4);}
-  footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);position:relative;z-index:1;}
-  footer span{color:var(--red);}
+/* Universe pills */
+.univ-row{width:100%;max-width:1300px;padding:1rem 1.5rem;display:flex;align-items:center;gap:10px;}
+.univ-scroll{display:flex;gap:8px;overflow-x:auto;flex:1;scroll-behavior:smooth;scrollbar-width:none;padding:4px 2px;}
+.univ-scroll::-webkit-scrollbar{display:none;}
+.sarr{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--glass);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.75rem;transition:.15s;}
+.sarr:hover{border-color:var(--red);color:var(--red);}
+.upill{cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:99px;background:var(--glass);border:1px solid var(--border);font-size:.8rem;font-weight:600;transition:.18s;}
+.upill:hover,.upill.active{border-color:rgba(255,40,0,.5);background:rgba(255,40,0,.07);}
+
+/* ═══════════════════ UNIVERSE DETAIL ═══════════════════ */
+#pg-universe{display:none;}
+#pg-universe.active{display:block;}
+.univ-detail-header{padding:1.2rem 1.5rem 0;max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.univ-back{cursor:pointer;display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:var(--muted);padding:6px 14px;border-radius:99px;border:1px solid var(--border);transition:.15s;}
+.univ-back:hover{color:var(--text);border-color:var(--border2);}
+.univ-detail-name{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;}
+.univ-layout{max-width:1400px;margin:0 auto;padding:1.2rem 1.5rem;display:grid;grid-template-columns:260px 1fr 260px;gap:1rem;}
+@media(max-width:1000px){.univ-layout{grid-template-columns:1fr;}}
+.char-col{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;max-height:calc(100vh - 160px);}
+.char-col-head{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.char-col-body{overflow-y:auto;max-height:calc(100vh - 240px);padding:.4rem;}
+.char-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:.15s;margin-bottom:3px;}
+.char-item:hover,.char-item.sel{background:rgba(255,40,0,.09);}
+.char-item img{width:44px;height:44px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;}
+.ci-name{font-size:.82rem;font-weight:600;}
+.ci-sub{font-size:.66rem;color:var(--muted);}
+.char-bio{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;display:flex;flex-direction:column;gap:1rem;}
+.bio-story{background:rgba(255,255,255,.025);border-radius:10px;padding:1rem;font-size:.82rem;line-height:1.65;color:var(--muted2);border-left:2px solid rgba(255,40,0,.35);}
+.bio-char-wrap{display:flex;flex-direction:column;align-items:center;gap:.8rem;}
+.bio-char-wrap img{width:110px;height:110px;border-radius:50%;border:2px solid var(--red);box-shadow:0 0 24px rgba(255,40,0,.2);}
+.bio-char-name{font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+.bio-stat{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;width:100%;}
+.bio-stat-lbl{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.bio-stat-val{font-size:.83rem;line-height:1.5;}
+
+/* ═══════════════════ BATTLE ═══════════════════ */
+.battle-wrap{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;}
+.battle-top{text-align:center;margin-bottom:2rem;}
+
+/* Fighter selector */
+.fight-grid{display:grid;grid-template-columns:1fr 80px 1fr;gap:1rem;align-items:start;}
+@media(max-width:660px){.fight-grid{grid-template-columns:1fr;}}
+.fighter-box{background:var(--glass);border:1px solid var(--border);border-radius:18px;padding:1.3rem;display:flex;flex-direction:column;gap:.8rem;transition:.2s;}
+.fighter-box.locked{border-color:var(--red);box-shadow:0 0 20px rgba(255,40,0,.14);}
+.fb-top{display:flex;flex-direction:column;align-items:center;gap:.6rem;}
+.fb-avatar{width:86px;height:86px;border-radius:50%;overflow:hidden;border:2px solid var(--border2);}
+.fb-avatar img{width:100%;height:100%;object-fit:cover;}
+.fighter-box.locked .fb-avatar{border-color:var(--red);}
+.fb-name{font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;text-transform:uppercase;text-align:center;letter-spacing:.04em;}
+.fb-univ{font-size:.63rem;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:.14em;}
+.fb-city{font-size:.68rem;color:var(--amber);font-weight:600;text-align:center;}
+.fb-nav{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.farr{width:30px;height:30px;border-radius:50%;background:var(--glass);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;transition:.15s;}
+.farr:hover{border-color:var(--red);color:var(--red);}
+.fb-idx{font-size:.66rem;color:var(--muted);}
+.lock-btn{width:100%;padding:8px;border-radius:99px;border:1px solid var(--border2);background:var(--glass);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.lock-btn:hover{border-color:rgba(255,40,0,.5);}
+.lock-btn.locked{background:rgba(255,40,0,.1);border-color:var(--red);color:var(--red);}
+
+.vs-col{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding-top:30px;}
+.vs-lbl{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--muted);}
+.fight-btn{background:var(--red);border:none;padding:12px 18px;border-radius:99px;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:900;letter-spacing:.12em;color:#fff;cursor:pointer;transition:.18s;box-shadow:0 4px 20px rgba(255,40,0,.35);}
+.fight-btn:hover{transform:scale(1.06);box-shadow:0 6px 28px rgba(255,40,0,.55);}
+.fight-btn:disabled{opacity:.45;cursor:default;transform:none;}
+
+/* ── ENERGY DRINK AD CONTAINERS ── */
+.drink-ad-containers{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.2rem;}
+@media(max-width:600px){.drink-ad-containers{grid-template-columns:1fr;}}
+.drink-slot{border-radius:16px;overflow:hidden;border:1px solid var(--border);min-height:80px;}
+.drink-slot-inner{padding:1rem 1.3rem;display:flex;align-items:center;gap:12px;}
+.ds-logo{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:.1em;white-space:nowrap;flex-shrink:0;}
+.ds-copy{flex:1;font-size:.78rem;line-height:1.5;color:var(--muted2);}
+.ds-cta{border:none;padding:7px 16px;border-radius:99px;font-weight:700;font-size:.74rem;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:.15s;flex-shrink:0;}
+.ds-cta:hover{filter:brightness(1.2);}
+
+/* ── FIGHT LOG ── */
+.fight-log{background:rgba(0,0,0,.6);border:1px solid var(--border2);border-radius:16px;padding:1.2rem;max-height:360px;min-height:80px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-top:1.2rem;}
+@keyframes popIn{from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:none;}}
+.ll{padding:9px 13px;border-radius:10px;font-size:.82rem;line-height:1.55;border-left:2px solid var(--border2);animation:popIn .3s forwards;}
+.ll.loc{border-left-color:rgba(255,179,0,.6);color:var(--amber);font-weight:600;}
+.ll.atk{border-left-color:rgba(255,40,0,.5);background:rgba(255,40,0,.04);}
+.ll.hp{border-left-color:rgba(0,230,118,.4);color:#a5d6a7;}
+.ll.win{border-left-color:var(--amber);background:rgba(255,179,0,.07);font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;letter-spacing:.04em;color:var(--amber);}
+.ll.narr{border-left-color:rgba(68,138,255,.4);color:#90caf9;font-style:italic;}
+
+/* Winner card */
+.winner-card{display:none;margin-top:1rem;background:linear-gradient(135deg,rgba(255,40,0,.1),rgba(255,179,0,.06));border:1px solid rgba(255,179,0,.3);border-radius:18px;padding:1.5rem;text-align:center;}
+.winner-card.show{display:block;animation:popIn .4s forwards;}
+.w-lbl{font-size:.67rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+.w-img{width:84px;height:84px;border-radius:50%;border:3px solid var(--amber);margin:8px auto;display:block;}
+.w-name{font-family:'Barlow Condensed',sans-serif;font-size:2.8rem;font-weight:900;letter-spacing:.05em;color:var(--amber);}
+.w-stats{display:flex;justify-content:center;gap:.8rem;margin-top:.8rem;flex-wrap:wrap;}
+.wstat{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:.5rem .9rem;text-align:center;}
+.wstat-v{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;}
+.wstat-l{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;}
+
+/* Comic export */
+.comic-btn{display:none;margin:.8rem auto 0;padding:9px 22px;border-radius:99px;background:rgba(68,138,255,.12);border:1px solid rgba(68,138,255,.35);color:var(--blue);font-weight:700;font-size:.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.18s;}
+.comic-btn.show{display:inline-flex;align-items:center;gap:8px;}
+.comic-btn:hover{background:rgba(68,138,255,.22);}
+
+/* ── BETTING AD CONTAINERS ── */
+.betting-ad-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-top:1.2rem;}
+@media(max-width:900px){.betting-ad-wrap{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.betting-ad-wrap{grid-template-columns:1fr;}}
+.bet-slot{background:var(--glass);border:1px solid rgba(255,179,0,.18);border-radius:14px;padding:1rem;display:flex;flex-direction:column;gap:.6rem;cursor:pointer;transition:.18s;}
+.bet-slot:hover{border-color:rgba(255,179,0,.4);background:rgba(255,179,0,.05);}
+.bet-slot-name{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em;color:var(--amber);}
+.bet-slot-odds{display:flex;gap:6px;flex-wrap:wrap;}
+.odds-pill{background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:8px;padding:3px 8px;font-size:.7rem;font-weight:700;text-align:center;}
+.odds-pill span{display:block;font-size:.58rem;color:var(--muted);font-weight:400;}
+.bet-slot-cta{width:100%;padding:7px;border-radius:99px;background:var(--amber);border:none;font-size:.72rem;font-weight:700;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;transition:.15s;}
+.bet-slot-cta:hover{box-shadow:0 0 12px rgba(255,179,0,.4);}
+
+/* Actual betting form */
+.bet-form{background:var(--glass);border:1px solid rgba(255,179,0,.18);border-radius:16px;padding:1.2rem;margin-top:.7rem;}
+.bet-form-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.8rem;}
+.bet-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.bet-sel{background:var(--glass2);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:99px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;outline:none;flex:1;min-width:150px;}
+.bet-amt-wrap{display:flex;align-items:center;gap:5px;background:var(--glass);border:1px solid var(--border2);border-radius:99px;padding:6px 14px;}
+.bet-amt-wrap span{font-size:.72rem;color:var(--muted);}
+.bet-amt-wrap input{background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;width:56px;outline:none;font-weight:600;}
+.bet-go{background:var(--amber);border:none;padding:9px 18px;border-radius:99px;font-weight:700;font-size:.78rem;cursor:pointer;color:#000;font-family:'DM Sans',sans-serif;transition:.15s;}
+.bet-go:hover{box-shadow:0 0 14px rgba(255,179,0,.4);}
+.bet-result{margin-top:.8rem;padding:.7rem 1rem;border-radius:10px;font-size:.84rem;font-weight:600;display:none;}
+.bet-result.won{background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.25);color:#a5d6a7;display:block;}
+.bet-result.lost{background:rgba(255,40,0,.06);border:1px solid rgba(255,40,0,.2);color:#ef9a9a;display:block;}
+
+/* ═══════════════════ MARKET ═══════════════════ */
+.market-wrap{max-width:1200px;margin:0 auto;padding:2rem 1.5rem;}
+.market-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.sell-btn{background:var(--red);border:none;padding:10px 22px;border-radius:99px;color:#fff;font-weight:700;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:8px;transition:.18s;flex-shrink:0;}
+.sell-btn:hover{box-shadow:0 4px 18px rgba(255,40,0,.4);transform:translateY(-1px);}
+.cat-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;}
+.cbtab{cursor:pointer;display:flex;align-items:center;gap:7px;padding:8px 18px;border-radius:99px;border:1px solid var(--border);background:var(--glass);font-size:.78rem;font-weight:600;color:var(--muted);transition:.15s;font-family:'DM Sans',sans-serif;}
+.cbtab:hover,.cbtab.on{border-color:rgba(255,40,0,.5);background:rgba(255,40,0,.07);color:var(--red);}
+.listings{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;}
+.lcard{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:.2s;}
+.lcard:hover{border-color:rgba(255,40,0,.3);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.4);}
+.lcard-thumb{height:140px;display:flex;align-items:center;justify-content:center;font-size:3rem;border-bottom:1px solid var(--border);position:relative;}
+.lcard-type{position:absolute;top:8px;left:8px;background:rgba(7,7,12,.85);backdrop-filter:blur(6px);border:1px solid var(--border2);border-radius:99px;padding:3px 10px;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.lcard-body{padding:1rem;flex:1;display:flex;flex-direction:column;gap:.45rem;}
+.seller-row{display:flex;align-items:center;gap:7px;}
+.seller-row img{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);}
+.seller-name{font-size:.7rem;color:var(--muted2);font-weight:600;}
+.lcard-title{font-weight:700;font-size:.92rem;line-height:1.3;}
+.lcard-desc{font-size:.73rem;color:var(--muted);line-height:1.5;flex:1;}
+.lcard-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.ltag{font-size:.6rem;padding:2px 8px;border-radius:99px;border:1px solid var(--border2);color:var(--muted2);}
+.lcard-stats{display:flex;gap:8px;}
+.lstat{font-size:.62rem;color:var(--muted);display:flex;align-items:center;gap:4px;}
+.lcard-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;padding-top:.7rem;border-top:1px solid var(--border);}
+.lcard-price{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;color:var(--amber);}
+.lcard-price.free{color:var(--green);}
+.buy-btn{background:transparent;border:1px solid rgba(255,40,0,.5);color:var(--red);padding:5px 14px;border-radius:99px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+.buy-btn:hover{background:var(--red);color:#fff;}
+
+/* Modals */
+.overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(7,7,12,.88);backdrop-filter:blur(18px);align-items:center;justify-content:center;padding:1rem;}
+.overlay.open{display:flex;}
+.mbox{background:rgba(12,12,20,.98);border:1px solid var(--border2);border-radius:22px;padding:2rem;width:100%;max-width:500px;animation:popIn .25s forwards;max-height:90vh;overflow-y:auto;}
+.mbox.sm{max-width:380px;}
+.mhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+.mhead h3{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.mclose{width:30px;height:30px;border-radius:50%;background:var(--glass2);border:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--muted);flex-shrink:0;}
+.mclose:hover{color:var(--text);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+@media(max-width:460px){.frow{grid-template-columns:1fr;}}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg.full{grid-column:1/-1;}
+.fg label{font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+.fg input,.fg textarea,.fg select{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text);padding:9px 12px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;transition:.15s;width:100%;}
+.fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:rgba(255,40,0,.5);}
+.fg textarea{resize:vertical;}
+.fg select option{background:#0d0d16;}
+.submit-btn{width:100%;padding:11px;border-radius:99px;background:var(--red);border:none;color:#fff;font-weight:700;font-size:.88rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.18s;margin-top:6px;}
+.submit-btn:hover{box-shadow:0 4px 18px rgba(255,40,0,.4);}
+
+footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);}
+footer b{color:var(--red);}
 </style>
 </head>
 <body>
-<nav class="nav">
-  <div class="nav-brand" data-page="home">W<span class="o">◉</span>RLDS</div>
-  <div class="nav-right">
-    <div class="nb" data-page="home"><i class="fas fa-house"></i><span> Home</span></div>
-    <div class="nb" data-page="market"><i class="fas fa-store"></i><span> Market</span></div>
-    <div class="nb" data-page="battle"><i class="fas fa-swords"></i><span> Battle</span></div>
-    <div class="nb cta" id="openAuth"><i class="fas fa-user-astronaut"></i><span> Join</span></div>
+
+<!-- NAV -->
+<nav>
+  <div class="brand" onclick="showPage('pg-home')">W<span class="o">◉</span>RLDS</div>
+  <div class="nav-links">
+    <div class="nl active" id="nl-home"    onclick="showPage('pg-home')"><i class="fas fa-house"></i><span> Home</span></div>
+    <div class="nl" id="nl-market"  onclick="showPage('pg-market')"><i class="fas fa-store"></i><span> Market</span></div>
+    <div class="nl" id="nl-battle"  onclick="showPage('pg-battle')"><i class="fas fa-swords"></i><span> Battle</span></div>
+    <div class="nl join" onclick="document.getElementById('auth-overlay').classList.add('open')"><i class="fas fa-user-astronaut"></i><span> Join</span></div>
   </div>
 </nav>
 
-<!-- HOME PAGE with globe -->
-<div id="homePage" class="page on">
+<!-- ═══════════════════════════════════════
+     HOME PAGE
+═══════════════════════════════════════ -->
+<div id="pg-home" class="page active">
+
+  <!-- Globe -->
   <div class="globe-wrap">
-    <canvas id="globeCanvas"></canvas>
-    <div class="globe-vignette"></div>
-    <div class="globe-search">
-      <input type="text" id="locSearch" placeholder="Search: Metropolis, Wakanda, Asgard…">
-      <button class="g-btn" id="flyBtn"><i class="fas fa-paper-plane"></i> Fly to</button>
+    <canvas id="gc"></canvas>
+    <div class="globe-fade"></div>
+    <div class="globe-ui">
+      <input type="text" id="locInput" placeholder="Search: Gotham, Wakanda, Tokyo…">
+      <button class="gbtn" onclick="doFlySearch()"><i class="fas fa-plane"></i> Fly to</button>
     </div>
-    <div class="planet-tag" id="planetTag">🌍 Earth</div>
+    <div class="globe-planet" id="gPlanet">🌍 Earth</div>
   </div>
-  <div class="flight-banner" id="flightBanner">
-    <div class="fb-inner">
-      <div class="fb-left">
-        <div class="fb-route"><span class="fb-city" id="fbFrom">—</span><span class="fb-arrow"><i class="fas fa-plane"></i></span><span class="fb-city" id="fbTo">—</span></div>
-        <div class="fb-airline-row">
-          <span class="fb-badge amber" id="fbAirline">—</span>
-          <span class="fb-badge" id="fbFlight">—</span>
-          <span class="fb-badge" id="fbDuration">—</span>
-          <span class="fb-badge red" id="fbClass">Economy</span>
+
+  <!-- Uber-style Flight Panel -->
+  <div class="uber-panel" id="uberPanel">
+    <div class="uber-inner">
+      <div class="uber-route">
+        <div class="uber-point">
+          <div class="uber-dot from"></div>
+          <div>
+            <div class="uber-loc-name" id="uFrom">—</div>
+            <div class="uber-loc-sub">Departure city</div>
+          </div>
+        </div>
+        <div class="uber-line-connector"></div>
+        <div class="uber-point">
+          <div class="uber-dot to"></div>
+          <div>
+            <div class="uber-loc-name" id="uTo">—</div>
+            <div class="uber-loc-sub">Destination city</div>
+          </div>
+        </div>
+        <div class="uber-meta">
+          <span class="uber-chip" id="uDist">— km</span>
+          <span class="uber-chip" id="uDuration">— hours</span>
+          <span class="uber-chip">✈ Multiple airlines</span>
         </div>
       </div>
-      <div class="fb-right">
-        <div class="fb-price" id="fbPrice">—</div>
-        <div class="fb-price-sub">per person · round trip</div>
-        <button class="fb-book-btn" id="fbBookBtn">Book Now</button>
+      <div>
+        <div class="uber-rides-title">✈ Choose Your Flight</div>
+        <div class="uber-rides" id="uberRides"></div>
       </div>
     </div>
   </div>
+
+  <!-- Universe pills -->
   <div class="univ-row">
-    <div class="univ-arrow" id="scrollL"><i class="fas fa-chevron-left"></i></div>
-    <div class="univ-scroll" id="univScroll"></div>
-    <div class="univ-arrow" id="scrollR"><i class="fas fa-chevron-right"></i></div>
+    <div class="sarr" onclick="document.getElementById('uScroll').scrollBy({left:-220,behavior:'smooth'})"><i class="fas fa-chevron-left"></i></div>
+    <div class="univ-scroll" id="uScroll">
+      <div class="upill" onclick="showUniverse('marvel')"><i class="fab fa-marvel"></i> Marvel</div>
+      <div class="upill" onclick="showUniverse('dc')"><i class="fas fa-bolt"></i> DC</div>
+      <div class="upill" onclick="showUniverse('dragonball')"><i class="fas fa-dragon"></i> Dragon Ball</div>
+      <div class="upill" onclick="showUniverse('naruto')"><i class="fas fa-paw"></i> Naruto</div>
+      <div class="upill" onclick="showUniverse('invincible')"><i class="fas fa-fist-raised"></i> Invincible</div>
+      <div class="upill" onclick="showUniverse('theboys')"><i class="fas fa-skull"></i> The Boys</div>
+      <div class="upill" onclick="showUniverse('onepunchman')"><i class="fas fa-hand-fist"></i> One Punch Man</div>
+      <div class="upill" onclick="showUniverse('aot')"><i class="fas fa-mountain"></i> Attack on Titan</div>
+      <div class="upill" onclick="showUniverse('mha')"><i class="fas fa-mask"></i> My Hero Academia</div>
+      <div class="upill" onclick="showUniverse('demonslayer')"><i class="fas fa-water"></i> Demon Slayer</div>
+      <div class="upill" onclick="showUniverse('onepiece')"><i class="fas fa-ship"></i> One Piece</div>
+      <div class="upill" onclick="showUniverse('starwars')"><i class="fas fa-rocket"></i> Star Wars</div>
+      <div class="upill" onclick="showUniverse('lotr')"><i class="fas fa-ring"></i> Lord of the Rings</div>
+      <div class="upill" onclick="showUniverse('harrypotter')"><i class="fas fa-hat-wizard"></i> Harry Potter</div>
+      <div class="upill" onclick="showUniverse('mortalkombat')"><i class="fas fa-dragon"></i> Mortal Kombat</div>
+      <div class="upill" onclick="showUniverse('streetfighter')"><i class="fas fa-hand-fist"></i> Street Fighter</div>
+    </div>
+    <div class="sarr" onclick="document.getElementById('uScroll').scrollBy({left:220,behavior:'smooth'})"><i class="fas fa-chevron-right"></i></div>
+  </div>
+
+</div><!-- /home -->
+
+<!-- ═══════════════════════════════════════
+     UNIVERSE DETAIL PAGE
+═══════════════════════════════════════ -->
+<div id="pg-universe" class="page">
+  <div class="univ-detail-header">
+    <div class="univ-back" onclick="showPage('pg-home')"><i class="fas fa-arrow-left"></i> Back</div>
+    <div class="univ-detail-name" id="univDetailName">Universe</div>
+  </div>
+  <div class="univ-layout">
+    <!-- VILLAINS LEFT -->
+    <div class="char-col">
+      <div class="char-col-head" style="color:#ef9a9a"><i class="fas fa-skull-crossbones"></i> Villains</div>
+      <div class="char-col-body" id="villainsList"></div>
+    </div>
+    <!-- BIO CENTER -->
+    <div class="char-bio" id="charBio">
+      <div class="bio-story" id="univStory">Select a character to see their bio.</div>
+      <div class="bio-char-wrap" id="charDetail">
+        <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=placeholder" alt="">
+        <div class="bio-char-name">Select a Character</div>
+        <p style="font-size:.78rem;color:var(--muted)">Click any hero or villain on the sides.</p>
+      </div>
+    </div>
+    <!-- HEROES RIGHT -->
+    <div class="char-col">
+      <div class="char-col-head" style="color:#90caf9"><i class="fas fa-shield-alt"></i> Heroes</div>
+      <div class="char-col-body" id="heroesList"></div>
+    </div>
   </div>
 </div>
 
-<div id="upages"></div>
+<!-- ═══════════════════════════════════════
+     BATTLE PAGE
+═══════════════════════════════════════ -->
+<div id="pg-battle" class="page">
+  <div class="battle-wrap">
+    <div class="battle-top">
+      <div class="sec-title">Battle Arena</div>
+      <div class="sec-sub">Pick two fighters from any universe — lock them in, watch the simulation.</div>
+    </div>
 
-<!-- BATTLE PAGE -->
-<div id="battlePage" class="page">
-  <div class="battle-page-inner">
-    <div class="section-head"><h2>Battle Arena</h2><p>Select two fighters — lock them in and watch the simulation unfold.</p></div>
-    <div class="fighters-row">
-      <div class="fcard" id="fc1">
-        <div class="fcard-top"><div class="fav"><img id="fi1" src=""></div><div class="fname-big" id="fnam1">—</div><div class="funi-tag" id="funi1">—</div><div class="fcard-city" id="fcity1"><i class="fas fa-location-dot"></i> —</div></div>
-        <div class="fnav-row"><div class="farr" id="fp1"><i class="fas fa-chevron-left"></i></div><span class="fidx" id="fidx1">1/1</span><div class="farr" id="fnxt1"><i class="fas fa-chevron-right"></i></div></div>
-        <button class="lock-btn" id="lb1"><i class="fas fa-lock-open"></i> Lock Fighter</button>
+    <!-- Fighters -->
+    <div class="fight-grid">
+      <div class="fighter-box" id="fb1">
+        <div class="fb-top">
+          <div class="fb-avatar"><img id="f1img" src="https://api.dicebear.com/9.x/avataaars/svg?seed=SpiderMan" alt=""></div>
+          <div class="fb-name" id="f1name">Spider-Man</div>
+          <div class="fb-univ" id="f1univ">Marvel</div>
+          <div class="fb-city" id="f1city"><i class="fas fa-location-dot"></i> New York</div>
+        </div>
+        <div class="fb-nav">
+          <div class="farr" onclick="prevFighter(1)"><i class="fas fa-chevron-left"></i></div>
+          <span class="fb-idx" id="f1idx">1/1</span>
+          <div class="farr" onclick="nextFighter(1)"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <button class="lock-btn" id="lb1" onclick="toggleLock(1)"><i class="fas fa-lock-open"></i> Lock Fighter</button>
       </div>
-      <div class="vs-mid"><div class="vs-word">VS</div><button class="fight-btn" id="fightBtn">FIGHT</button></div>
-      <div class="fcard" id="fc2">
-        <div class="fcard-top"><div class="fav"><img id="fi2" src=""></div><div class="fname-big" id="fnam2">—</div><div class="funi-tag" id="funi2">—</div><div class="fcard-city" id="fcity2"><i class="fas fa-location-dot"></i> —</div></div>
-        <div class="fnav-row"><div class="farr" id="fp2"><i class="fas fa-chevron-left"></i></div><span class="fidx" id="fidx2">1/1</span><div class="farr" id="fnxt2"><i class="fas fa-chevron-right"></i></div></div>
-        <button class="lock-btn" id="lb2"><i class="fas fa-lock-open"></i> Lock Fighter</button>
-      </div>
-    </div>
-    <div class="fight-log-wrap"><div class="fight-log" id="fightLog"><div class="flog-line loc">⚔️ Select two fighters, lock them in, then press FIGHT.</div></div></div>
-    <div class="winner-card" id="winnerCard"><div class="winner-label">🏆 WINNER</div><img class="winner-img" id="winnerImg" src=""><div class="winner-name" id="winnerName">—</div><div class="winner-stats" id="winnerStats"></div></div>
-    <div class="drink-ad" id="drinkAd"><div class="drink-ad-inner"><div class="drink-ad-logo" id="drinkLogo">—</div><div class="drink-ad-copy" id="drinkCopy">—</div><button class="drink-ad-cta" id="drinkCta">Get Now →</button></div></div>
-    <div class="betting-panel">
-      <div class="bet-head"><div class="bet-head-title">⚡ Betting Zone</div><div class="bet-head-badge">Demo Only</div></div>
-      <div class="bet-companies" id="betCompanies"></div>
-      <div class="bet-odds" id="betOdds"></div>
-      <div class="bet-row"><select class="bet-select" id="betSel"><option id="bo1">Fighter 1 wins</option><option id="bo2">Fighter 2 wins</option></select>
-        <div class="bet-amount-wrap"><span>$</span><input type="number" id="betAmount" value="10" min="1" max="9999"></div>
-        <button class="bet-place-btn" id="betBtn">Place Bet</button>
-      </div>
-      <div class="bet-result" id="betResult"></div>
-    </div>
-  </div>
-</div>
 
-<!-- MARKET PAGE -->
-<div id="marketPage" class="page">
-  <div class="market-inner">
-    <div class="market-hero"><div><h2>Creator's Market</h2><p>Buy and sell comics, video edits, 3D models, artwork & cosplay from the multiverse community.</p></div><button class="sell-btn" id="openUpload"><i class="fas fa-plus"></i> Sell Your Work</button></div>
-    <div class="cat-bar" id="catBar">
-      <div class="cbtab on" data-cat="all"><i class="fas fa-border-all"></i> All</div>
-      <div class="cbtab" data-cat="comic"><i class="fas fa-book-open"></i> Comics</div>
-      <div class="cbtab" data-cat="video"><i class="fas fa-video"></i> Video Edits</div>
-      <div class="cbtab" data-cat="3d"><i class="fas fa-cube"></i> 3D Models</div>
-      <div class="cbtab" data-cat="art"><i class="fas fa-paintbrush"></i> Artwork</div>
-      <div class="cbtab" data-cat="cosplay"><i class="fas fa-mask"></i> Cosplay</div>
+      <div class="vs-col">
+        <div class="vs-lbl">VS</div>
+        <button class="fight-btn" id="fightBtn" onclick="startFight()">FIGHT</button>
+      </div>
+
+      <div class="fighter-box" id="fb2">
+        <div class="fb-top">
+          <div class="fb-avatar"><img id="f2img" src="https://api.dicebear.com/9.x/avataaars/svg?seed=Superman" alt=""></div>
+          <div class="fb-name" id="f2name">Superman</div>
+          <div class="fb-univ" id="f2univ">DC</div>
+          <div class="fb-city" id="f2city"><i class="fas fa-location-dot"></i> Metropolis</div>
+        </div>
+        <div class="fb-nav">
+          <div class="farr" onclick="prevFighter(2)"><i class="fas fa-chevron-left"></i></div>
+          <span class="fb-idx" id="f2idx">1/1</span>
+          <div class="farr" onclick="nextFighter(2)"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <button class="lock-btn" id="lb2" onclick="toggleLock(2)"><i class="fas fa-lock-open"></i> Lock Fighter</button>
+      </div>
     </div>
-    <div class="listings-grid" id="listingsGrid"></div>
+
+    <!-- ⚡ ENERGY DRINK AD CONTAINERS ⚡ -->
+    <div class="drink-ad-containers">
+      <div class="drink-slot" id="drinkSlot1">
+        <div class="drink-slot-inner" style="background:linear-gradient(90deg,rgba(229,57,53,.14),rgba(0,0,0,0))">
+          <div class="ds-logo" style="color:#e53935">RED BULL</div>
+          <div class="ds-copy">Gives you wings. Even in the multiverse. Zero limits, maximum energy.</div>
+          <button class="ds-cta" style="background:#e53935;color:#fff" onclick="alert('Red Bull — Demo ad')">Shop →</button>
+        </div>
+      </div>
+      <div class="drink-slot" id="drinkSlot2">
+        <div class="drink-slot-inner" style="background:linear-gradient(90deg,rgba(0,200,83,.12),rgba(0,0,0,0))">
+          <div class="ds-logo" style="color:#00c853">MONSTER</div>
+          <div class="ds-copy">Unleash the beast within. Zero sugar, infinite power surge.</div>
+          <button class="ds-cta" style="background:#00c853;color:#000" onclick="alert('Monster Energy — Demo ad')">Shop →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fight Log -->
+    <div class="fight-log" id="fightLog">
+      <div class="ll loc">⚔️ Select two fighters, lock them in, then press FIGHT to begin the simulation.</div>
+    </div>
+
+    <!-- Winner Card -->
+    <div class="winner-card" id="winnerCard">
+      <div class="w-lbl">🏆 WINNER</div>
+      <img class="w-img" id="winnerImg" src="" alt="">
+      <div class="w-name" id="winnerName">—</div>
+      <div class="w-stats" id="winnerStats"></div>
+    </div>
+    <div style="text-align:center">
+      <button class="comic-btn" id="comicBtn" onclick="exportComic()"><i class="fas fa-book-open"></i> Export as Comic</button>
+    </div>
+
+    <!-- ⚡ BETTING AD CONTAINERS ⚡ -->
+    <div style="margin-top:1.5rem">
+      <div style="font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;">⚡ Sponsored Betting — Demo Only</div>
+      <div class="betting-ad-wrap">
+        <div class="bet-slot" id="betSlot0">
+          <div class="bet-slot-name">BetOnWorlds</div>
+          <div class="bet-slot-odds">
+            <div class="odds-pill" id="bsOdds0a">1.80x<span id="bsName0a">Fighter 1</span></div>
+            <div class="odds-pill" style="color:var(--muted2)">2.00x<span style="color:var(--muted)">Draw</span></div>
+            <div class="odds-pill" id="bsOdds0b">2.00x<span id="bsName0b">Fighter 2</span></div>
+          </div>
+          <button class="bet-slot-cta" onclick="selectBetCo(0)">Bet Here →</button>
+        </div>
+        <div class="bet-slot" id="betSlot1">
+          <div class="bet-slot-name">HeroOdds</div>
+          <div class="bet-slot-odds">
+            <div class="odds-pill" id="bsOdds1a">2.10x<span id="bsName1a">Fighter 1</span></div>
+            <div class="odds-pill" style="color:var(--muted2)">2.00x<span style="color:var(--muted)">Draw</span></div>
+            <div class="odds-pill" id="bsOdds1b">1.75x<span id="bsName1b">Fighter 2</span></div>
+          </div>
+          <button class="bet-slot-cta" onclick="selectBetCo(1)">Bet Here →</button>
+        </div>
+        <div class="bet-slot" id="betSlot2">
+          <div class="bet-slot-name">MultiverseBet</div>
+          <div class="bet-slot-odds">
+            <div class="odds-pill" id="bsOdds2a">1.65x<span id="bsName2a">Fighter 1</span></div>
+            <div class="odds-pill" style="color:var(--muted2)">2.00x<span style="color:var(--muted)">Draw</span></div>
+            <div class="odds-pill" id="bsOdds2b">2.30x<span id="bsName2b">Fighter 2</span></div>
+          </div>
+          <button class="bet-slot-cta" onclick="selectBetCo(2)">Bet Here →</button>
+        </div>
+        <div class="bet-slot" id="betSlot3">
+          <div class="bet-slot-name">InfinityBet</div>
+          <div class="bet-slot-odds">
+            <div class="odds-pill" id="bsOdds3a">2.40x<span id="bsName3a">Fighter 1</span></div>
+            <div class="odds-pill" style="color:var(--muted2)">2.00x<span style="color:var(--muted)">Draw</span></div>
+            <div class="odds-pill" id="bsOdds3b">1.60x<span id="bsName3b">Fighter 2</span></div>
+          </div>
+          <button class="bet-slot-cta" onclick="selectBetCo(3)">Bet Here →</button>
+        </div>
+      </div>
+
+      <!-- Bet form -->
+      <div class="bet-form">
+        <div class="bet-form-title">Place Your Bet — <span id="activeBetCo" style="color:var(--amber)">BetOnWorlds</span></div>
+        <div class="bet-controls">
+          <select class="bet-sel" id="betSel">
+            <option id="bo1">Spider-Man wins</option>
+            <option id="bo2">Superman wins</option>
+          </select>
+          <div class="bet-amt-wrap"><span>$</span><input type="number" id="betAmt" value="10" min="1"></div>
+          <button class="bet-go" onclick="placeBet()">Place Bet</button>
+        </div>
+        <div class="bet-result" id="betResult"></div>
+      </div>
+    </div>
+
   </div>
-</div>
+</div><!-- /battle -->
+
+<!-- ═══════════════════════════════════════
+     MARKET PAGE
+═══════════════════════════════════════ -->
+<div id="pg-market" class="page">
+  <div class="market-wrap">
+    <div class="market-head">
+      <div>
+        <div class="sec-title">Creator's Market</div>
+        <div class="sec-sub">Buy and sell comics, art, video edits, 3D models &amp; cosplay from the multiverse community.</div>
+      </div>
+      <button class="sell-btn" onclick="document.getElementById('upload-overlay').classList.add('open')"><i class="fas fa-plus"></i> Sell Your Work</button>
+    </div>
+    <div class="cat-bar">
+      <div class="cbtab on" data-cat="all" onclick="filterCat(this,'all')"><i class="fas fa-border-all"></i> All</div>
+      <div class="cbtab" data-cat="comic" onclick="filterCat(this,'comic')"><i class="fas fa-book-open"></i> Comics</div>
+      <div class="cbtab" data-cat="art" onclick="filterCat(this,'art')"><i class="fas fa-paintbrush"></i> Artwork</div>
+      <div class="cbtab" data-cat="video" onclick="filterCat(this,'video')"><i class="fas fa-video"></i> Video Edits</div>
+      <div class="cbtab" data-cat="3d" onclick="filterCat(this,'3d')"><i class="fas fa-cube"></i> 3D Models</div>
+      <div class="cbtab" data-cat="cosplay" onclick="filterCat(this,'cosplay')"><i class="fas fa-mask"></i> Cosplay</div>
+    </div>
+    <div class="listings" id="listingsGrid">
+
+      <!-- STATIC LISTING CARDS -->
+      <div class="lcard" data-cat="comic">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#1a0a00,rgba(255,40,0,.15))"><i class="fas fa-book-open" style="color:rgba(255,40,0,.3)"></i><span class="lcard-type" style="color:var(--red)">comic</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=CreatorX" alt=""><span class="seller-name">CreatorX</span></div>
+          <div class="lcard-title">Dark Tomorrow Vol.1</div>
+          <div class="lcard-desc">48-page indie comic about a fallen hero's redemption arc. Print-quality original pages.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> Original</span><span class="ltag">48 pages</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 128</span><span class="lstat"><i class="fas fa-eye"></i> 3,400</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$4.99</span><button class="buy-btn" onclick="alert('Demo: Dark Tomorrow Vol.1 — $4.99\nCheckout coming soon!')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="art">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#0a001a,rgba(124,77,255,.15))"><i class="fas fa-paintbrush" style="color:rgba(124,77,255,.3)"></i><span class="lcard-type" style="color:#7c4dff">art</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=InkDreamer" alt=""><span class="seller-name">InkDreamer</span></div>
+          <div class="lcard-title">Omega Character Sheet</div>
+          <div class="lcard-desc">Original character concept art — front, back, expressions. A2 print-ready 300dpi PSD+PNG.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> Original</span><span class="ltag">Print-ready</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 89</span><span class="lstat"><i class="fas fa-eye"></i> 2,100</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$8.00</span><button class="buy-btn" onclick="alert('Demo: Omega Character Sheet — $8.00')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="video">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#00081a,rgba(2,136,209,.15))"><i class="fas fa-video" style="color:rgba(2,136,209,.3)"></i><span class="lcard-type" style="color:#0288d1">video</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=FilmForge" alt=""><span class="seller-name">FilmForge</span></div>
+          <div class="lcard-title">Rivals Tribute Cut</div>
+          <div class="lcard-desc">Fan-made cinematic edit — 4K, licensed beats, breathtaking transitions between universes.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> Marvel</span><span class="ltag">4K</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 342</span><span class="lstat"><i class="fas fa-eye"></i> 12,000</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$1.99</span><button class="buy-btn" onclick="alert('Demo: Rivals Tribute Cut — $1.99')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="cosplay">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#001a00,rgba(0,200,83,.1))"><i class="fas fa-mask" style="color:rgba(0,200,83,.25)"></i><span class="lcard-type" style="color:var(--green)">cosplay</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=ArmorSmith" alt=""><span class="seller-name">ArmorSmith</span></div>
+          <div class="lcard-title">Arkham Batman Full Suit</div>
+          <div class="lcard-desc">Screen-accurate build — full foam EVA armor, LED eye lenses, utility belt. 6 months of work.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> DC</span><span class="ltag">LED lights</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 521</span><span class="lstat"><i class="fas fa-eye"></i> 18,700</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$299.00</span><button class="buy-btn" onclick="alert('Demo: Arkham Batman Suit — $299.00')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="3d">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#001a0a,rgba(0,230,118,.1))"><i class="fas fa-cube" style="color:rgba(0,230,118,.25)"></i><span class="lcard-type" style="color:var(--green)">3d</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=PolyBuild" alt=""><span class="seller-name">PolyBuild</span></div>
+          <div class="lcard-title">Iron Man MK50 Model</div>
+          <div class="lcard-desc">Fully rigged & textured 3D model. FBX + OBJ + Blender source. Game-ready, 4K PBR maps.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> Marvel</span><span class="ltag">Game-ready</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 204</span><span class="lstat"><i class="fas fa-eye"></i> 7,800</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$24.99</span><button class="buy-btn" onclick="alert('Demo: Iron Man MK50 3D Model — $24.99')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="comic">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#0a0a00,rgba(255,179,0,.12))"><i class="fas fa-book-open" style="color:rgba(255,179,0,.25)"></i><span class="lcard-type" style="color:var(--amber)">comic</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=MangaFan99" alt=""><span class="seller-name">MangaFan99</span></div>
+          <div class="lcard-title">Saiyan Chronicles</div>
+          <div class="lcard-desc">64-page Dragon Ball fan-doujin — untold battles between Saiyans, original art style, canon-accurate.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> Dragon Ball</span><span class="ltag">64 pages</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 670</span><span class="lstat"><i class="fas fa-eye"></i> 22,000</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$3.50</span><button class="buy-btn" onclick="alert('Demo: Saiyan Chronicles — $3.50')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="art">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#00001a,rgba(68,138,255,.12))"><i class="fas fa-paintbrush" style="color:rgba(68,138,255,.25)"></i><span class="lcard-type" style="color:var(--blue)">art</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=CanvasKing" alt=""><span class="seller-name">CanvasKing</span></div>
+          <div class="lcard-title">Viltrumite Portrait</div>
+          <div class="lcard-desc">Digital oil painting of Invincible — dramatic cinematic lighting, print-ready high-res file included.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> Invincible</span><span class="ltag">Print-ready</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 311</span><span class="lstat"><i class="fas fa-eye"></i> 9,400</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$15.00</span><button class="buy-btn" onclick="alert('Demo: Viltrumite Portrait — $15.00')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="video">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#0a001a,rgba(124,77,255,.12))"><i class="fas fa-video" style="color:rgba(124,77,255,.25)"></i><span class="lcard-type" style="color:#7c4dff">video</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=VidWizard" alt=""><span class="seller-name">VidWizard</span></div>
+          <div class="lcard-title">Anime Crossover AMV</div>
+          <div class="lcard-desc">Epic 4-min AMV blending Naruto, AOT, Demon Slayer & Jujutsu Kaisen. Shot-for-shot sync.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> Anime</span><span class="ltag">Free</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 1,200</span><span class="lstat"><i class="fas fa-eye"></i> 55,000</span></div>
+          <div class="lcard-footer"><span class="lcard-price free">FREE</span><button class="buy-btn" onclick="alert('Demo: Anime Crossover AMV — Free Download')">Download</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="cosplay">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#1a0a00,rgba(245,124,0,.12))"><i class="fas fa-mask" style="color:rgba(245,124,0,.25)"></i><span class="lcard-type" style="color:#f57c00">cosplay</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=CosplayKing" alt=""><span class="seller-name">CosplayKing</span></div>
+          <div class="lcard-title">Goku Ultra Instinct Build</div>
+          <div class="lcard-desc">Full sculpted UIS cosplay — includes wig, authentic gi, ki effect LED gloves & accessories.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> Dragon Ball</span><span class="ltag">LED</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 433</span><span class="lstat"><i class="fas fa-eye"></i> 14,200</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$180.00</span><button class="buy-btn" onclick="alert('Demo: Goku UI Build — $180.00')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="3d">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#000a1a,rgba(2,136,209,.1))"><i class="fas fa-cube" style="color:rgba(2,136,209,.25)"></i><span class="lcard-type" style="color:#0288d1">3d</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=PropsLab" alt=""><span class="seller-name">PropsLab</span></div>
+          <div class="lcard-title">Batman Grapple Gun STL</div>
+          <div class="lcard-desc">Ultra-detailed printable prop model. Measured from screen-used blueprints. Blender + STL included.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> DC</span><span class="ltag">Printable</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 156</span><span class="lstat"><i class="fas fa-eye"></i> 5,300</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$12.00</span><button class="buy-btn" onclick="alert('Demo: Batman Grapple Gun — $12.00')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="art">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#0a0800,rgba(255,179,0,.1))"><i class="fas fa-paintbrush" style="color:rgba(255,179,0,.25)"></i><span class="lcard-type" style="color:var(--amber)">art</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=InkDreamer2" alt=""><span class="seller-name">InkDreamer</span></div>
+          <div class="lcard-title">Akatsuki Cloud Poster</div>
+          <div class="lcard-desc">A1 art print — all Akatsuki members in ink-wash style. Digital download, ships as high-res PNG.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> Naruto</span><span class="ltag">A1 Print</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 720</span><span class="lstat"><i class="fas fa-eye"></i> 28,000</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$6.00</span><button class="buy-btn" onclick="alert('Demo: Akatsuki Cloud Poster — $6.00')">Buy</button></div>
+        </div>
+      </div>
+
+      <div class="lcard" data-cat="comic">
+        <div class="lcard-thumb" style="background:linear-gradient(135deg,#0a0010,rgba(198,40,40,.12))"><i class="fas fa-book-open" style="color:rgba(198,40,40,.25)"></i><span class="lcard-type" style="color:#c62828">comic</span></div>
+        <div class="lcard-body">
+          <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=IndiePen" alt=""><span class="seller-name">IndiePen</span></div>
+          <div class="lcard-title">The Boys: Untold Issue</div>
+          <div class="lcard-desc">32-page fan comic exploring Soldier Boy's secret missions. Gritty, adult-rated storytelling.</div>
+          <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> The Boys</span><span class="ltag">18+</span></div>
+          <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 390</span><span class="lstat"><i class="fas fa-eye"></i> 11,000</span></div>
+          <div class="lcard-footer"><span class="lcard-price">$2.99</span><button class="buy-btn" onclick="alert('Demo: The Boys Untold Issue — $2.99')">Buy</button></div>
+        </div>
+      </div>
+
+    </div><!-- /listings -->
+  </div>
+</div><!-- /market -->
 
 <!-- UPLOAD MODAL -->
-<div class="upload-modal" id="uploadModal"><div class="upload-box"><div class="upload-box-head"><h3>List Your Work</h3><div class="close-x" id="closeUpload"><i class="fas fa-times"></i></div></div>
-<div class="form-grid"><div class="fg" style="grid-column:1/-1"><label>Title</label><input id="uTitle" placeholder="Name your creation"></div>
-<div class="fg"><label>Category</label><select id="uCat"><option value="comic">Comic</option><option value="video">Video Edit</option><option value="3d">3D Model</option><option value="art">Artwork</option><option value="cosplay">Cosplay</option></select></div>
-<div class="fg"><label>Price (USD)</label><input id="uPrice" type="number" placeholder="0 = Free" min="0"></div>
-<div class="fg" style="grid-column:1/-1"><label>Description</label><textarea id="uDesc" rows="2" placeholder="Describe your work…"></textarea></div>
-<div class="fg" style="grid-column:1/-1"><label>Universe / Series</label><input id="uUniv" placeholder="e.g. Marvel, Naruto, Original…"></div>
-<div class="fg" style="grid-column:1/-1"><label>Preview File</label><input type="file" id="uFile" accept="image/*,video/*,application/pdf"></div></div>
-<button class="pub-btn" id="pubBtn">Publish to Market</button></div></div>
+<div class="overlay" id="upload-overlay">
+  <div class="mbox">
+    <div class="mhead"><h3>List Your Work</h3><div class="mclose" onclick="document.getElementById('upload-overlay').classList.remove('open')"><i class="fas fa-times"></i></div></div>
+    <div class="frow">
+      <div class="fg full"><label>Title *</label><input id="uTitle" placeholder="Name your creation"></div>
+      <div class="fg"><label>Category</label><select id="uCat"><option value="comic">Comic</option><option value="art">Artwork</option><option value="video">Video Edit</option><option value="3d">3D Model</option><option value="cosplay">Cosplay</option></select></div>
+      <div class="fg"><label>Price (USD)</label><input id="uPrice" type="number" placeholder="0 = Free" min="0" step="0.01"></div>
+      <div class="fg full"><label>Description</label><textarea id="uDesc" rows="3" placeholder="Describe your work, formats included, etc."></textarea></div>
+      <div class="fg full"><label>Universe / Series</label><input id="uUniv" placeholder="e.g. Marvel, Dragon Ball, Original…"></div>
+      <div class="fg full"><label>Preview Image</label><input type="file" id="uFile" accept="image/*"></div>
+    </div>
+    <button class="submit-btn" onclick="publishListing()">Publish to Market</button>
+  </div>
+</div>
 
 <!-- AUTH MODAL -->
-<div class="auth-modal" id="authModal"><div class="auth-box"><div class="auth-head"><h3>Join WORLDS</h3><div class="close-x" id="closeAuth"><i class="fas fa-times"></i></div></div>
-<div class="fg" style="margin-bottom:10px;"><input placeholder="Username" type="text"></div>
-<div class="fg" style="margin-bottom:10px;"><input placeholder="Email" type="email"></div>
-<div class="fg" style="margin-bottom:10px;"><input placeholder="Password" type="password"></div>
-<button class="auth-submit" id="mockSignup">Create Account</button></div></div>
+<div class="overlay" id="auth-overlay">
+  <div class="mbox sm">
+    <div class="mhead"><h3>Join WORLDS</h3><div class="mclose" onclick="document.getElementById('auth-overlay').classList.remove('open')"><i class="fas fa-times"></i></div></div>
+    <div class="fg" style="margin-bottom:10px"><input placeholder="Username" type="text"></div>
+    <div class="fg" style="margin-bottom:10px"><input placeholder="Email" type="email"></div>
+    <div class="fg" style="margin-bottom:10px"><input placeholder="Password" type="password"></div>
+    <button class="submit-btn" onclick="document.getElementById('auth-overlay').classList.remove('open');alert('Welcome to WORLDS!')">Create Account</button>
+  </div>
+</div>
 
-<footer>⚡ <span>WORLDS</span> — Where every universe collides</footer>
+<footer><b>WORLDS</b> — Where every universe collides · ⚡ All content is fan-made & for demo purposes</footer>
 
+<!-- THREE.JS GLOBE -->
 <script type="module">
 import * as THREE from 'three';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-
-const canvas = document.getElementById('globeCanvas');
+const canvas = document.getElementById('gc');
 const wrap = canvas.parentNode;
-const W = ()=>wrap.clientWidth, H = ()=>wrap.clientHeight;
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(42, W()/H(), 0.1, 1000);
-camera.position.set(0,0,2.7);
-const renderer = new THREE.WebGLRenderer({canvas, alpha:false, antialias:true});
-renderer.setSize(W(),H());
-renderer.setClearColor(0x07070c);
-const labelR = new CSS2DRenderer();
-labelR.setSize(W(),H());
-labelR.domElement.style.cssText='position:absolute;top:0;left:0;pointer-events:none;';
-wrap.appendChild(labelR.domElement);
-const tl = new THREE.TextureLoader();
-const earth = new THREE.Mesh(new THREE.SphereGeometry(1,64,64),new THREE.MeshPhongMaterial({map:tl.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg')}));
+const W=()=>wrap.clientWidth, H=()=>wrap.clientHeight;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(42,W()/H(),.1,1000);
+cam.position.set(0,0,2.7);
+const rend=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+rend.setPixelRatio(Math.min(devicePixelRatio,2));
+rend.setSize(W(),H()); rend.setClearColor(0x07070c);
+const lR=new CSS2DRenderer();
+lR.setSize(W(),H());
+lR.domElement.style.cssText='position:absolute;top:0;left:0;pointer-events:none;';
+wrap.appendChild(lR.domElement);
+const tl=new THREE.TextureLoader();
+const earth=new THREE.Mesh(new THREE.SphereGeometry(1,64,64),new THREE.MeshPhongMaterial({map:tl.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg')}));
 scene.add(earth);
-const clouds = new THREE.Mesh(new THREE.SphereGeometry(1.012,64,64),new THREE.MeshPhongMaterial({map:tl.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png'),transparent:true,opacity:0.07}));
+const clouds=new THREE.Mesh(new THREE.SphereGeometry(1.012,64,64),new THREE.MeshPhongMaterial({map:tl.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png'),transparent:true,opacity:.07}));
 scene.add(clouds);
-scene.add(new THREE.AmbientLight(0x555555));
-const sun = new THREE.DirectionalLight(0xffffff,1.0); sun.position.set(5,8,5); scene.add(sun);
-function ll2v(lat,lon,r=1.02){ const phi=(90-lat)*Math.PI/180, th=lon*Math.PI/180; return new THREE.Vector3(r*Math.sin(phi)*Math.cos(th),r*Math.cos(phi),r*Math.sin(phi)*Math.sin(th)); }
-
-const cities = [
-  {name:"Avengers Tower",lat:40.71,lon:-74.01,city:"New York",planet:"Earth",airline:"Delta",flight:"DL172",duration:"2h 15m",price:"$349",cls:"Business"},
-  {name:"Metropolis",lat:38.9,lon:-77.04,city:"Metropolis",planet:"Earth",airline:"United",flight:"UA007",duration:"2h 30m",price:"$299",cls:"Economy"},
-  {name:"Gotham",lat:40.67,lon:-73.94,city:"Gotham",planet:"Earth",airline:"American",flight:"AA404",duration:"2h 45m",price:"$279",cls:"Economy"},
-  {name:"Wakanda",lat:1.29,lon:36.82,city:"Wakanda",planet:"Earth",airline:"Ethiopian",flight:"ET808",duration:"8h 20m",price:"$899",cls:"First Class"},
-  {name:"Asgard",lat:60.0,lon:10.0,city:"Asgard",planet:"Asgard",airline:"SAS",flight:"SK903",duration:"1h 45m",price:"$399",cls:"Economy"},
-  {name:"Themyscira",lat:35.0,lon:25.0,city:"Themyscira",planet:"Earth",airline:"Aegean",flight:"A3-888",duration:"3h 10m",price:"$429",cls:"Business"},
-  {name:"Malibu",lat:34.03,lon:-118.78,city:"Malibu",planet:"Earth",airline:"Southwest",flight:"WN168",duration:"1h 20m",price:"$149",cls:"Economy"},
-  {name:"Rivendell",lat:45.0,lon:-5.0,city:"Rivendell",planet:"Middle-earth",airline:"Icelandair",flight:"FI450",duration:"4h 05m",price:"$559",cls:"Business"},
-  {name:"Tatooine",lat:20.0,lon:20.0,city:"Mos Eisley",planet:"Tatooine",airline:"Virgin",flight:"VGA-1",duration:"2d 4h",price:"$25,000",cls:"Galactic"},
-  {name:"Krypton",lat:-30.0,lon:150.0,city:"Kryptonopolis",planet:"Krypton",airline:"SpaceX",flight:"SX-KR1",duration:"3d 12h",price:"$12,000",cls:"Orbital"}
+scene.add(new THREE.AmbientLight(0x666666));
+const sun=new THREE.DirectionalLight(0xffffff,1); sun.position.set(5,8,5); scene.add(sun);
+function v3(lat,lon,r=1.02){const p=(90-lat)*Math.PI/180,t=lon*Math.PI/180;return new THREE.Vector3(r*Math.sin(p)*Math.cos(t),r*Math.cos(p),r*Math.sin(p)*Math.sin(t));}
+const LOCS=[
+  {n:"New York",   lat:40.71,lon:-74.01},{n:"Gotham",      lat:40.67,lon:-73.94},
+  {n:"Metropolis", lat:38.90,lon:-77.04},{n:"Malibu",      lat:34.03,lon:-118.78},
+  {n:"Wakanda",    lat:1.29, lon:36.82}, {n:"Asgard",      lat:60.00,lon:10.00},
+  {n:"Themyscira", lat:35.00,lon:25.00}, {n:"Tokyo",       lat:35.68,lon:139.69},
+  {n:"Konoha",     lat:36.20,lon:137.00},{n:"Mos Eisley",  lat:20.00,lon:20.00},
+  {n:"Rivendell",  lat:45.00,lon:-5.00}, {n:"Mount Paozu", lat:30.00,lon:105.00},
+  {n:"Krypton",    lat:-30.0,lon:150.00},{n:"Titan",       lat:-10.0,lon:60.00},
+  {n:"Tatooine",   lat:15.00,lon:32.00}, {n:"Hogsmeade",   lat:51.50,lon:-.13},
 ];
-window._cities = cities;
-let curLine=null, curSphere=null;
-
-window.flyBetweenCities = function(from, to){
-  if(curLine){scene.remove(curLine); curLine=null;}
-  if(curSphere){scene.remove(curSphere); curSphere=null;}
-  const pts=[];
-  for(let i=0;i<=120;i++){
-    const t=i/120;
-    pts.push(ll2v(from.lat*(1-t)+to.lat*t, from.lon*(1-t)+to.lon*t, 1.04));
-  }
-  const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({color:0xffb300}));
-  scene.add(line); curLine=line;
-  const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.022,16,16), new THREE.MeshStandardMaterial({color:0xffb300,emissive:0x553300}));
-  scene.add(sphere); curSphere=sphere;
-  const t0=performance.now(), dur=4000;
-  (function tick(now){
-    const t=Math.min(1,(now-t0)/dur);
-    const idx=Math.floor(t*120);
-    sphere.position.copy(pts[Math.min(idx,120)]);
-    if(t<1) requestAnimationFrame(tick);
-    else{scene.remove(sphere); curSphere=null;}
-  })(performance.now());
-  const midLat=(from.lat+to.lat)/2, midLon=(from.lon+to.lon)/2;
-  const tp=ll2v(midLat, midLon, 2.5);
-  const sp=camera.position.clone(); const st=performance.now();
-  (function mc(now){
-    const t=Math.min(1,(now-st)/2000);
-    camera.position.lerpVectors(sp,tp,t); camera.lookAt(0,0,0);
-    if(t<1) requestAnimationFrame(mc);
-  })(performance.now());
-  document.getElementById('fbFrom').innerText = from.city || from.name;
-  document.getElementById('fbTo').innerText = to.city || to.name;
-  document.getElementById('fbAirline').innerHTML = `✈ ${to.airline}`;
-  document.getElementById('fbFlight').innerText = `Flight ${to.flight}`;
-  document.getElementById('fbDuration').innerText = `⏱ ${to.duration}`;
-  document.getElementById('fbClass').innerText = to.cls;
-  document.getElementById('fbPrice').innerText = to.price;
-  document.getElementById('fbBookBtn').onclick=()=>alert(`Demo booking:\n${to.airline} ${to.flight}\n${from.city||from.name} → ${to.city||to.name}\n${to.duration} · ${to.price}`);
-  document.getElementById('flightBanner').classList.add('show');
-};
-
-function flyToCity(city){
-  document.getElementById('planetTag').innerHTML = `🌍 ${city.planet}`;
-  const hub = cities[0];
-  flyBetweenCities(hub, city);
-}
-
-cities.forEach(city=>{
-  const pos=ll2v(city.lat,city.lon);
+window._LOCS=LOCS;
+LOCS.forEach(loc=>{
+  const pos=v3(loc.lat,loc.lon);
   const el=document.createElement('div');
-  el.textContent=city.name;
-  el.style.cssText='color:#ffb300;font-size:11px;font-weight:700;background:rgba(7,7,12,.75);padding:2px 8px;border-radius:20px;border:1px solid rgba(255,40,0,.45);cursor:pointer;white-space:nowrap;';
-  el.addEventListener('click',()=>flyToCity(city));
+  el.textContent=loc.n;
+  el.style.cssText='color:#ffb300;font-size:11px;font-weight:700;background:rgba(7,7,12,.78);padding:2px 8px;border-radius:20px;border:1px solid rgba(255,40,0,.45);cursor:pointer;white-space:nowrap;font-family:DM Sans,sans-serif;pointer-events:all;';
+  el.addEventListener('click',()=>window.flyTo(LOCS[0],loc));
   const lbl=new CSS2DObject(el); lbl.position.copy(pos); scene.add(lbl);
 });
-
-document.getElementById('flyBtn').addEventListener('click',()=>{
-  const q=document.getElementById('locSearch').value.toLowerCase();
-  const city=cities.find(c=>c.name.toLowerCase().includes(q)||c.city.toLowerCase().includes(q));
-  if(city) flyToCity(city);
-  else alert('Try: Metropolis, Wakanda, Asgard, Rivendell, Tatooine…');
-});
-
-let autoRotate=true;
-canvas.addEventListener('click',()=>autoRotate=!autoRotate);
-(function loop(){
-  requestAnimationFrame(loop);
-  if(autoRotate){earth.rotation.y+=0.0010; clouds.rotation.y+=0.0012;}
-  renderer.render(scene,camera);
-  labelR.render(scene,camera);
-})();
-window.addEventListener('resize',()=>{
-  camera.aspect=W()/H(); camera.updateProjectionMatrix();
-  renderer.setSize(W(),H()); labelR.setSize(W(),H());
-});
+let curLine=null,curSphere=null;
+window.flyTo=function(from,to){
+  if(curLine)scene.remove(curLine);
+  if(curSphere)scene.remove(curSphere);
+  const pts=[];
+  for(let i=0;i<=120;i++){const t=i/120;pts.push(v3(from.lat*(1-t)+to.lat*t,from.lon*(1-t)+to.lon*t,1.04));}
+  curLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0xffb300}));
+  scene.add(curLine);
+  curSphere=new THREE.Mesh(new THREE.SphereGeometry(.022,16,16),new THREE.MeshStandardMaterial({color:0xffb300,emissive:0x553300}));
+  scene.add(curSphere);
+  const t0=performance.now(),dur=4000;
+  (function tick(now){const t=Math.min(1,(now-t0)/dur);curSphere.position.copy(pts[Math.min(Math.floor(t*120),120)]);if(t<1)requestAnimationFrame(tick);else{scene.remove(curSphere);curSphere=null;}})(performance.now());
+  const mid=v3((from.lat+to.lat)/2,(from.lon+to.lon)/2,2.5);
+  const sp=cam.position.clone(),st=performance.now();
+  (function mc(now){const t=Math.min(1,(now-st)/2000);cam.position.lerpVectors(sp,mid,t);cam.lookAt(0,0,0);if(t<1)requestAnimationFrame(mc);})(performance.now());
+  // Distance
+  const R=6371,dLat=(to.lat-from.lat)*Math.PI/180,dLon=(to.lon-from.lon)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(from.lat*Math.PI/180)*Math.cos(to.lat*Math.PI/180)*Math.sin(dLon/2)**2;
+  const dist=Math.round(2*R*Math.asin(Math.sqrt(a)));
+  window.showFlightPanel(from.n||from.name,to.n||to.name,dist);
+  document.getElementById('gPlanet').textContent='🌍 '+(to.planet||'Earth');
+};
+let autoRot=true;
+canvas.addEventListener('click',()=>autoRot=!autoRot);
+(function loop(){requestAnimationFrame(loop);if(autoRot){earth.rotation.y+=.001;clouds.rotation.y+=.0012;}rend.render(scene,cam);lR.render(scene,cam);})();
+window.addEventListener('resize',()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();rend.setSize(W(),H());lR.setSize(W(),H());});
 </script>
 
 <script>
-// UNIVERSES, CHARACTERS, BATTLE, MARKET (standard JS)
-const univNames=["Marvel","DC","Invincible","The Boys","Dragon Ball","Naruto","One Punch Man","Attack on Titan","My Hero Academia","Jujutsu Kaisen","Demon Slayer","One Piece","Bleach","Hunter x Hunter","Fairy Tail","Sword Art Online","Fullmetal Alchemist","Death Note","Tokyo Ghoul","Chainsaw Man","Mob Psycho 100","Black Clover","Fire Force","Boruto","Sailor Moon","Pokémon","Avatar: TLA","Star Wars","Lord of the Rings","Harry Potter","The Witcher","Cyberpunk","Halo","Mass Effect","Dark Souls","Mortal Kombat","Street Fighter","Tekken","Overwatch","League of Legends","Arcane","Zelda","Metroid","Warhammer 40k","Castlevania","Devil May Cry","Elder Scrolls","Digimon"];
-const iconMap={"Marvel":"fab fa-marvel","DC":"fas fa-bolt","Invincible":"fas fa-fist-raised","The Boys":"fas fa-skull","Dragon Ball":"fas fa-dragon","Naruto":"fas fa-paw","One Punch Man":"fas fa-hand-fist","Attack on Titan":"fas fa-mountain","My Hero Academia":"fas fa-mask","Jujutsu Kaisen":"fas fa-ghost","Demon Slayer":"fas fa-water","One Piece":"fas fa-ship","Bleach":"fas fa-droplet","Hunter x Hunter":"fas fa-paw","Fairy Tail":"fas fa-dragon","Sword Art Online":"fas fa-gamepad","Fullmetal Alchemist":"fas fa-cog","Death Note":"fas fa-book","Tokyo Ghoul":"fas fa-eye","Chainsaw Man":"fas fa-bolt","Mob Psycho 100":"fas fa-brain","Black Clover":"fas fa-leaf","Fire Force":"fas fa-fire","Boruto":"fas fa-paw","Sailor Moon":"fas fa-moon","Pokémon":"fas fa-paw","Avatar: TLA":"fas fa-wind","Star Wars":"fas fa-rocket","Lord of the Rings":"fas fa-ring","Harry Potter":"fas fa-hat-wizard","The Witcher":"fas fa-shield-halved","Cyberpunk":"fas fa-microchip","Halo":"fas fa-shield-halved","Mass Effect":"fas fa-rocket","Dark Souls":"fas fa-skull","Mortal Kombat":"fas fa-dragon","Street Fighter":"fas fa-hand-fist","Tekken":"fas fa-hand-fist","Overwatch":"fas fa-crosshairs","League of Legends":"fas fa-crown","Arcane":"fas fa-magic","Zelda":"fas fa-khanda","Metroid":"fas fa-bug","Warhammer 40k":"fas fa-shield-halved","Castlevania":"fas fa-church","Devil May Cry":"fas fa-skull","Elder Scrolls":"fas fa-dragon","Digimon":"fas fa-paw"};
-function getStory(u){ const s={"Marvel":"A vast reality where Avengers, X-Men, and cosmic entities coexist. Heroes battle threats from Thanos to Doctor Doom across every corner of the universe.","DC":"Superman, Batman, Wonder Woman and the Justice League defend Earth against Darkseid, the Joker, and interdimensional threats.","Dragon Ball":"Goku and Earth's warriors push beyond all limits, facing galactic tyrants and universe-level threats through sheer determination.","Naruto":"Ninja clans, secret jutsu, and the cycle of hatred — Naruto Uzumaki's path from outcast to Hokage reshapes the shinobi world.","The Boys":"In a world where superheroes are corporate celebrities, a scrappy vigilante group exposes the dark truth behind the capes."}; return s[u]||`${u} is a rich universe filled with iconic heroes, devastating villains, and lore that spans generations.`; }
-function getCharacters(u){
-  const mk=(name,seed,powers,wk,bio)=>({name,image:`https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(seed)}`,powers,weaknesses:wk,bio});
-  const heroes=[], villains=[];
-  if(u==="Marvel"){
-    heroes.push(mk("Spider-Man","SpiderMan","Wall-crawling, spider-sense, web-shooting","Self-doubt and guilt","Peter Parker — teenage photographer turned web-slinging hero."));
-    heroes.push(mk("Iron Man","IronMan","Powered armor, repulsor tech, genius intellect","Power source dependency","Tony Stark — genius billionaire in a can."));
-    heroes.push(mk("Wolverine","Wolverine","Adamantium claws, healing factor","Emotional manipulation","James Howlett — most feared X-Man."));
-    villains.push(mk("Thanos","Thanos","Infinity Gauntlet, cosmic strength","Obsession with death","The Mad Titan who seeks universal balance."));
-    villains.push(mk("Red Skull","RedSkull","HYDRA strategist, Cosmic Cube","Fanaticism","Cap's most dangerous foe."));
-    villains.push(mk("Loki","Loki","Sorcery, shapeshifting","Jealousy","God of Mischief."));
-  } else if(u==="DC"){
-    heroes.push(mk("Superman","Superman","Heat vision, flight, invulnerability","Kryptonite","Last son of Krypton."));
-    heroes.push(mk("Batman","Batman","Martial arts, gadgets, intellect","Fully mortal","The Dark Knight of Gotham."));
-    heroes.push(mk("Wonder Woman","WonderWoman","Godly strength, Lasso of Truth","Bound by her own lasso","Princess Diana of Themyscira."));
-    villains.push(mk("Joker","Joker","Chaos, toxins, unpredictability","Batman's code","Agent of chaos."));
-    villains.push(mk("Lex Luthor","LexLuthor","Genius intellect, power suit","Arrogance","Superman's obsessed rival."));
-    villains.push(mk("Darkseid","Darkseid","Omega Beams, omnipotence","Anti-Life paradox","Ruler of Apokolips."));
-  } else if(u==="Dragon Ball"){
-    heroes.push(mk("Goku","Goku","Kamehameha, Ultra Instinct, Hakai","Stamina limits","Saiyan warrior who defies all ceilings."));
-    heroes.push(mk("Vegeta","Vegeta","Final Flash, Super Saiyan Blue","Pride","Prince of all Saiyans."));
-    heroes.push(mk("Gohan","Gohan","Mystic form, Kamehameha","Lack of training","Goku's son, immense potential."));
-    villains.push(mk("Frieza","Frieza","Death beam, Golden Form","Overconfidence","Galactic tyrant who destroyed Planet Vegeta."));
-    villains.push(mk("Cell","Cell","Infinite regeneration, ki blasts","Arrogance","Perfect android built to destroy."));
-    villains.push(mk("Majin Buu","MajinBuu","Absorption, regeneration","Candy weakness","Ancient creature of destruction."));
-  } else if(u==="Naruto"){
-    heroes.push(mk("Naruto","Naruto","Rasengan, Shadow Clones, Sage Mode","Chakra depletion","Seventh Hokage, never-give-up shinobi."));
-    heroes.push(mk("Sasuke","Sasuke","Sharingan, Chidori, Rinnegan","Emotional trauma","Last Uchiha, rival to Naruto."));
-    heroes.push(mk("Sakura","Sakura","Medical ninjutsu, super strength","Overreliance on teammates","Master medic and fierce fighter."));
-    villains.push(mk("Madara","Madara","Rinnegan, Perfect Susanoo","Overconfidence","Greatest Uchiha of all time."));
-    villains.push(mk("Pain","Pain","Six Paths of Pain, Shinra Tensei","Emotional attachment","Nagato's devastating avatar."));
-    villains.push(mk("Orochimaru","Orochimaru","Body-swap jutsu, Curse Marks","Ego","Sannin turned villain, obsessed with immortality."));
-  } else {
-    for(let i=1;i<=3;i++) heroes.push(mk(`${u} Hero ${i}`,`${u}hero${i}`,"Super strength, agility","Overconfidence",`A champion of ${u}.`));
-    for(let i=1;i<=3;i++) villains.push(mk(`${u} Villain ${i}`,`${u}vil${i}`,"Dark energy, cunning","Arrogance",`A feared enemy in ${u}.`));
-  }
-  return {heroes,villains};
-}
-const uniqueUnivs = [...new Set(univNames)];
-const universes = uniqueUnivs.map((name,i)=>{const{heroes,villains}=getCharacters(name);return{id:`u${i}`,name,icon:iconMap[name]||"fas fa-globe",story:getStory(name),heroes,villains};});
-const scrollDiv=document.getElementById('univScroll');
-universes.forEach(u=>{const p=document.createElement('div');p.className='upill';p.innerHTML=`<i class="${u.icon}"></i> ${u.name}`;p.onclick=()=>showUnivPage(u);scrollDiv.appendChild(p);});
-document.getElementById('scrollL').onclick=()=>scrollDiv.scrollBy({left:-220,behavior:'smooth'});
-document.getElementById('scrollR').onclick=()=>scrollDiv.scrollBy({left:220,behavior:'smooth'});
-const upagesDiv=document.getElementById('upages');
-function showUnivPage(u){
-  const old=document.getElementById('up-'+u.id); if(old)old.remove();
-  const pg=document.createElement('div');pg.id='up-'+u.id;pg.className='page on';
-  pg.innerHTML=`<div class="upage-grid"><div class="char-col"><div class="char-col-head"><i class="fas fa-skull-crossbones"></i> Villains</div><div class="char-col-body" id="vlist-${u.id}"></div></div><div class="bio-center" id="bio-${u.id}"><div class="bio-story">${u.story}</div><div class="bio-char"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=placeholder"><div class="bio-char-name">Select a Character</div><p style="font-size:.78rem;color:var(--muted);">Click any hero or villain.</p></div></div><div class="char-col"><div class="char-col-head"><i class="fas fa-shield-alt"></i> Heroes</div><div class="char-col-body" id="hlist-${u.id}"></div></div></div>`;
-  upagesDiv.appendChild(pg);
-  function showChar(c){
-    document.getElementById(`bio-${u.id}`).innerHTML=`<div class="bio-story">${u.story}</div><div class="bio-char"><img src="${c.image}"><div class="bio-char-name">${c.name}</div><div class="bio-stat"><div class="bio-stat-label">Powers</div><div class="bio-stat-val">${c.powers}</div></div><div class="bio-stat"><div class="bio-stat-label">Weaknesses</div><div class="bio-stat-val">${c.weaknesses}</div></div><div class="bio-stat"><div class="bio-stat-label">Bio</div><div class="bio-stat-val">${c.bio}</div></div></div>`;
-  }
-  const hl=pg.querySelector(`#hlist-${u.id}`), vl=pg.querySelector(`#vlist-${u.id}`);
-  u.heroes.forEach(c=>{const it=document.createElement('div');it.className='char-item';it.innerHTML=`<img src="${c.image}"><div><div class="char-item-name">${c.name}</div><div class="char-item-sub">Hero</div></div>`;it.onclick=()=>showChar(c);hl.appendChild(it);});
-  u.villains.forEach(c=>{const it=document.createElement('div');it.className='char-item';it.innerHTML=`<img src="${c.image}"><div><div class="char-item-name">${c.name}</div><div class="char-item-sub">Villain</div></div>`;it.onclick=()=>showChar(c);vl.appendChild(it);});
-  showPage('up-'+u.id);
-}
+/* ── PAGE SWITCHING ── */
 function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  const t=document.getElementById(id); if(t) t.classList.add('on');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // nav highlight
+  ['home','market','battle'].forEach(k=>{
+    const el=document.getElementById('nl-'+k);
+    if(el)el.classList.toggle('active',id==='pg-'+k);
+  });
   window.scrollTo({top:0,behavior:'smooth'});
-  document.querySelectorAll('.nb[data-page]').forEach(n=>n.classList.toggle('on',n.dataset.page===id));
 }
-document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>showPage(el.dataset.page)));
 
-// BATTLE SYSTEM
-let allC=[];
-universes.forEach(u=>[...u.heroes,...u.villains].forEach(c=>allC.push({...c,universe:u.name})));
-let i1=0,i2=Math.min(1,allC.length-1),l1=false,l2=false;
-const charCityMap={"Spider-Man":"New York","Iron Man":"Malibu","Wolverine":"Weapon X","Thanos":"Titan","Superman":"Metropolis","Batman":"Gotham","Wonder Woman":"Themyscira","Joker":"Gotham","Lex Luthor":"Metropolis","Goku":"Mount Paozu","Frieza":"Namek","Naruto":"Konoha","Vegeta":"Planet Vegeta","Madara":"Hidden Rain"};
-function getCityForChar(name){ const c=charCityMap[name]; return cities.find(city=>city.city===c)||cities[0]; }
-function upB(){
-  const a=allC[i1],b=allC[i2];
-  document.getElementById('fi1').src=a.image; document.getElementById('fnam1').innerText=a.name; document.getElementById('funi1').innerText=a.universe;
-  const ca=getCityForChar(a.name); const cb=getCityForChar(b.name);
-  document.getElementById('fcity1').innerHTML=`<i class="fas fa-location-dot"></i> ${ca.city}`;
-  document.getElementById('fcity2').innerHTML=`<i class="fas fa-location-dot"></i> ${cb.city}`;
-  document.getElementById('fidx1').innerText=`${i1+1}/${allC.length}`;
-  document.getElementById('fi2').src=b.image; document.getElementById('fnam2').innerText=b.name; document.getElementById('funi2').innerText=b.universe;
-  document.getElementById('fidx2').innerText=`${i2+1}/${allC.length}`;
-  document.getElementById('fc1').classList.toggle('locked',l1); document.getElementById('fc2').classList.toggle('locked',l2);
+/* close overlays on backdrop click */
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+/* ── GLOBE SEARCH ── */
+function doFlySearch(){
+  const q=document.getElementById('locInput').value.toLowerCase();
+  const locs=window._LOCS||[];
+  const loc=locs.find(l=>(l.n||l.name||'').toLowerCase().includes(q));
+  if(loc)window.flyTo(locs[0],loc);
+  else alert('Try: Gotham, Wakanda, Tokyo, Asgard, Tatooine, Konoha…');
+}
+document.getElementById('locInput').addEventListener('keydown',e=>{if(e.key==='Enter')doFlySearch();});
+
+/* ── UBER FLIGHT PANEL ── */
+const AIRLINES=[
+  {name:'Emirates',      icon:'✈',  base:1.6,cls:'Business',  stops:'Non-stop',rat:4.9},
+  {name:'Delta',         icon:'✈',  base:1.0,cls:'Economy',   stops:'Non-stop',rat:4.5},
+  {name:'Qatar Airways', icon:'✈',  base:1.5,cls:'Business',  stops:'Non-stop',rat:4.8},
+  {name:'United',        icon:'✈',  base:0.9,cls:'Economy',   stops:'1 stop',  rat:4.2},
+  {name:'Lufthansa',     icon:'✈',  base:1.4,cls:'Business',  stops:'Non-stop',rat:4.7},
+  {name:'Southwest',     icon:'✈',  base:0.7,cls:'Economy',   stops:'1 stop',  rat:4.0},
+  {name:'Virgin Galactic',icon:'🚀',base:3.0,cls:'Galactic',  stops:'Direct',  rat:5.0},
+  {name:'SpaceX',        icon:'🛸', base:4.5,cls:'Orbital',   stops:'Direct',  rat:5.0},
+];
+window.showFlightPanel=function(from,to,distKm){
+  document.getElementById('uFrom').textContent=from;
+  document.getElementById('uTo').textContent=to;
+  document.getElementById('uDist').textContent=(distKm||'?').toLocaleString()+' km';
+  const hrs=Math.max(1,Math.round((distKm||500)/850));
+  const mins=Math.floor(Math.random()*55+5);
+  document.getElementById('uDuration').textContent=hrs+'h '+mins+'m avg';
+  const base=Math.max(60,Math.round((distKm||500)*0.08));
+  const ridesDiv=document.getElementById('uberRides');
+  ridesDiv.innerHTML='';
+  AIRLINES.forEach((al,i)=>{
+    const price=Math.round(base*al.base);
+    const fnum=al.name.substring(0,2).toUpperCase()+(100+Math.floor(Math.random()*899));
+    const dur=`${Math.max(1,Math.round((distKm||500)/(al.base>2?1200:850)))}h ${Math.floor(Math.random()*55)+5}m`;
+    const card=document.createElement('div');
+    card.className='ride-card'+(i===0?' sel':'');
+    card.innerHTML=`
+      <div class="ride-icon">${al.icon}</div>
+      <div class="ride-body">
+        <div class="ride-name">${al.name}</div>
+        <div class="ride-detail">${al.cls} · ${al.stops} · ${dur} · ★${al.rat}</div>
+      </div>
+      <div class="ride-price">$${price.toLocaleString()}</div>
+      <button class="ride-book" onclick="alert('Demo booking:\\n${al.name} ${fnum}\\n${from} → ${to}\\n${dur} · $${price.toLocaleString()}\\n\\nFull booking coming soon!')">Book</button>
+    `;
+    card.onclick=()=>{document.querySelectorAll('.ride-card').forEach(c=>c.classList.remove('sel'));card.classList.add('sel');};
+    ridesDiv.appendChild(card);
+  });
+  document.getElementById('uberPanel').classList.add('show');
+};
+
+/* ── UNIVERSE DATA ── */
+const UNIVERSES={
+  marvel:{name:'Marvel Universe',story:'A vast reality where the Avengers, X-Men, and cosmic entities coexist. Heroes battle threats from Thanos to Doctor Doom across every corner of the cosmos.',
+    villains:[
+      {name:'Thanos',      seed:'Thanos',      powers:'Infinity Gauntlet, cosmic strength, reality manipulation',weaknesses:'Obsession with death',bio:'The Mad Titan who seeks to balance the universe through destruction.'},
+      {name:'Red Skull',   seed:'RedSkull',     powers:'HYDRA mastery, Cosmic Cube, genius intellect',weaknesses:'Fanaticism and overconfidence',bio:'The embodiment of HYDRA — Captain America\'s most dangerous nemesis.'},
+      {name:'Loki',        seed:'Loki',         powers:'Sorcery, shapeshifting, Asgardian strength',weaknesses:'Jealousy and need for validation',bio:'God of Mischief and Thor\'s scheming adopted brother.'},
+      {name:'Magneto',     seed:'Magneto',      powers:'Magnetic field control, flight, electromagnetic mastery',weaknesses:'Non-metallic attacks',bio:'Master of Magnetism — mutant supremacist and frequent X-Men foe.'},
+      {name:'Doctor Doom', seed:'DoctorDoom',   powers:'Mystical arts, Doom armor, genius intellect',weaknesses:'Pride',bio:'Ruler of Latveria and one of Marvel\'s most dangerous villains.'},
+    ],
+    heroes:[
+      {name:'Spider-Man',  seed:'SpiderMan',    powers:'Wall-crawling, spider-sense, web-shooting, enhanced strength',weaknesses:'Self-doubt and guilt',bio:'Peter Parker — teenage photographer turned web-slinging hero of New York City.'},
+      {name:'Iron Man',    seed:'IronMan',      powers:'Powered armor, repulsor tech, genius intellect, JARVIS AI',weaknesses:'Power source dependency',bio:'Tony Stark — genius billionaire who built a suit of armor to save the world.'},
+      {name:'Wolverine',   seed:'Wolverine',    powers:'Adamantium claws, regenerative healing factor, enhanced senses',weaknesses:'Emotional manipulation',bio:'James Howlett — the Wolverine. Most feared X-Man, claws that cut through anything.'},
+      {name:'Captain America',seed:'CaptainAmerica',powers:'Peak human physiology, vibranium shield, super-soldier serum',weaknesses:'Mortal limits',bio:'Steve Rogers — the First Avenger. The living symbol of courage and justice.'},
+      {name:'Thor',        seed:'Thor',         powers:'Mjolnir, lightning control, Asgardian god strength, flight',weaknesses:'Arrogance',bio:'The God of Thunder. Prince of Asgard and protector of the Nine Realms.'},
+    ]},
+  dc:{name:'DC Universe',story:'Superman, Batman, Wonder Woman and the Justice League defend Earth against Darkseid, the Joker, and interdimensional threats. A universe of gods and mortals side by side.',
+    villains:[
+      {name:'Joker',       seed:'Joker',        powers:'Chaos, toxins, unpredictability, criminal genius',weaknesses:'Batman\'s refusal to kill',bio:'The Clown Prince of Crime — Gotham\'s most terrifying agent of chaos.'},
+      {name:'Lex Luthor',  seed:'LexLuthor',    powers:'Genius intellect, Lexcorp power suit, vast resources',weaknesses:'Arrogance',bio:'Superman\'s obsessed rival — the most dangerous mind on Earth.'},
+      {name:'Darkseid',    seed:'Darkseid',     powers:'Omega Beams, Anti-Life Equation, near-omnipotence',weaknesses:'True love\'s power',bio:'Ruler of Apokolips — the ultimate embodiment of evil in the DC universe.'},
+      {name:'Bane',        seed:'Bane',         powers:'Venom enhancement, superhuman strength, master tactician',weaknesses:'Venom dependency',bio:'The man who broke the Bat. Methodical, ruthless, brilliant.'},
+      {name:'Reverse-Flash',seed:'ReverseFlash',powers:'Negative Speed Force, time manipulation, genius intellect',weaknesses:'The Flash',bio:'Eobard Thawne — the Flash\'s greatest enemy from the future.'},
+    ],
+    heroes:[
+      {name:'Superman',    seed:'Superman',     powers:'Heat vision, flight, invulnerability, super strength, freeze breath',weaknesses:'Kryptonite, red sun',bio:'Kal-El, last son of Krypton — Earth\'s greatest protector and symbol of hope.'},
+      {name:'Batman',      seed:'Batman',       powers:'Martial arts mastery, gadgets, world-class detective intellect',weaknesses:'Fully mortal',bio:'Bruce Wayne — the Dark Knight of Gotham. Fear is his greatest weapon.'},
+      {name:'Wonder Woman',seed:'WonderWoman',  powers:'Godly strength, Lasso of Truth, combat mastery, divine armor',weaknesses:'Losing her lasso',bio:'Princess Diana of Themyscira — Amazon warrior and champion of truth.'},
+      {name:'The Flash',   seed:'TheFlash',     powers:'Speed Force, time travel, lightning attacks, infinite mass punch',weaknesses:'Emotional overload',bio:'Barry Allen — the Scarlet Speedster, fastest man alive in any universe.'},
+      {name:'Green Lantern',seed:'GreenLantern',powers:'Power ring (limited by willpower), constructs, flight',weaknesses:'Yellow (fear)',bio:'Hal Jordan — test pilot turned intergalactic cop for the Green Lantern Corps.'},
+    ]},
+  dragonball:{name:'Dragon Ball Universe',story:'Goku and Earth\'s warriors push beyond all known limits, facing galactic tyrants and universe-level threats through sheer determination and power.',
+    villains:[
+      {name:'Frieza',      seed:'Frieza',       powers:'Death beam, Golden Form, telekinesis, galactic command',weaknesses:'Overconfidence',bio:'Galactic tyrant who destroyed Planet Vegeta and enslaved countless worlds.'},
+      {name:'Cell',        seed:'Cell',         powers:'Infinite regeneration, ki blasts, absorption, Solar Kamehameha',weaknesses:'Arrogance',bio:'A perfect android engineered from the DNA of the greatest fighters.'},
+      {name:'Majin Buu',   seed:'MajinBuu',     powers:'Absorption, regeneration, candy beam, explosive wave',weaknesses:'Candy weakness',bio:'An ancient creature of pure destruction — existed before recorded history.'},
+      {name:'Broly',       seed:'Broly',        powers:'Legendary Super Saiyan form, limitless power growth',weaknesses:'Emotional instability',bio:'The Legendary Super Saiyan — power that grows with each passing second.'},
+      {name:'Jiren',       seed:'Jiren',        powers:'Power Beyond Power, ultra instinct-like reflexes, energy attacks',weaknesses:'Emotional isolation',bio:'The Pride Trooper — the strongest mortal in Universe 11.'},
+    ],
+    heroes:[
+      {name:'Goku',        seed:'Goku',         powers:'Kamehameha, Ultra Instinct, Hakai, instant transmission',weaknesses:'Stamina limits in top forms',bio:'A Saiyan raised on Earth who constantly pushes past every limit to protect his world.'},
+      {name:'Vegeta',      seed:'Vegeta',       powers:'Final Flash, Super Saiyan Blue Evolution, Hakai',weaknesses:'Pride prevents surrender',bio:'The Prince of all Saiyans — arrogance turned into the galaxy\'s fiercest warrior.'},
+      {name:'Gohan',       seed:'Gohan',        powers:'Mystic form, Kamehameha, hidden power surges',weaknesses:'Inconsistent training',bio:'Goku\'s son — possesses latent power that surpasses even his father at its peak.'},
+      {name:'Piccolo',     seed:'Piccolo',      powers:'Special Beam Cannon, regeneration, Namekian giant form',weaknesses:'Extreme cold',bio:'Former villain turned Gohan\'s mentor — one of Earth\'s most reliable defenders.'},
+      {name:'Trunks',      seed:'Trunks',       powers:'Super Saiyan Rage, Galick Gun, time travel',weaknesses:'Exhaustion from rage form',bio:'Future Trunks — a warrior from a dystopian timeline who fought to save his world.'},
+    ]},
+  naruto:{name:'Naruto Universe',story:'Ninja clans, secret jutsu, and the cycle of hatred — Naruto Uzumaki\'s path from outcast to Hokage reshapes the entire shinobi world forever.',
+    villains:[
+      {name:'Madara Uchiha',seed:'Madara',      powers:'Rinnegan, Perfect Susanoo, Wood Release, Infinite Tsukuyomi',weaknesses:'Overconfidence',bio:'The greatest Uchiha — a legend reborn who nearly achieved world domination.'},
+      {name:'Pain',        seed:'Pain',         powers:'Six Paths of Pain, Shinra Tensei, Planetary Devastation',weaknesses:'Emotional attachment',bio:'Nagato\'s ultimate weapon — six bodies controlled by Rinnegan chakra rods.'},
+      {name:'Orochimaru',  seed:'Orochimaru',   powers:'Body-swap jutsu, Curse Marks, infinite regeneration',weaknesses:'Ego and obsession',bio:'The snake Sannin — immortality-obsessed villain who experiments on ninja.'},
+      {name:'Itachi Uchiha',seed:'Itachi',      powers:'Sharingan, Susanoo, Tsukuyomi genjutsu, Amaterasu',weaknesses:'Terminal illness',bio:'The tragic genius who sacrificed everything — hero disguised as a villain.'},
+      {name:'Kaguya',      seed:'Kaguya',       powers:'All five chakra natures, dimension hopping, truth-seeking balls',weaknesses:'Nine-Tails chakra',bio:'The mother of all chakra — the original and most powerful shinobi threat.'},
+    ],
+    heroes:[
+      {name:'Naruto',      seed:'Naruto',       powers:'Rasengan, Shadow Clones, Sage of Six Paths Mode, Nine-Tails',weaknesses:'Chakra depletion in top forms',bio:'The Seventh Hokage — from village outcast to the strongest ninja who ever lived.'},
+      {name:'Sasuke',      seed:'Sasuke',       powers:'Sharingan, Chidori, Rinnegan, Susanoo, Amaterasu',weaknesses:'Emotional trauma and obsession',bio:'The Last Uchiha — Naruto\'s greatest rival and the shinobi world\'s shadow protector.'},
+      {name:'Kakashi',     seed:'Kakashi',      powers:'Sharingan, Lightning Blade, 1000 copied jutsu',weaknesses:'Eye stamina drain',bio:'Copy Ninja Kakashi — former ANBU, Team 7\'s sensei, and a living legend.'},
+      {name:'Rock Lee',    seed:'RockLee',      powers:'Eight Inner Gates, taijutsu mastery, speed beyond perception',weaknesses:'Cannot use ninjutsu',bio:'A ninja with no natural talent who became terrifying through pure hard work alone.'},
+      {name:'Minato',      seed:'Minato',       powers:'Flying Thunder God, Rasengan, space-time ninjutsu',weaknesses:'Finite chakra like all humans',bio:'The Yellow Flash of the Leaf — the Fourth Hokage and Naruto\'s father.'},
+    ]},
+  invincible:{name:'Invincible Universe',story:'Mark Grayson inherits Viltrumite powers and grapples with the brutal moral cost of heroism in a universe where consequences are permanent and devastating.',
+    villains:[
+      {name:'Omni-Man',    seed:'OmniMan',      powers:'Viltrumite strength, flight, longevity, super speed',weaknesses:'Emotional attachment to Earth',bio:'Nolan Grayson — a Viltrumite conqueror hiding as Earth\'s greatest hero.'},
+      {name:'Conquest',    seed:'Conquest',     powers:'Elite Viltrumite combat training, near invulnerability',weaknesses:'Over-reliance on strength',bio:'A brutal Viltrumite general sent to destroy any world that resists the Empire.'},
+      {name:'Angstrom Levy',seed:'AngstromLevy',powers:'Dimension hopping, absorbed knowledge of alternate selves',weaknesses:'Fragile compared to Invincible',bio:'A villain warped by accident — his vendetta against Invincible is deeply personal.'},
+      {name:'The Viltrumite Empire',seed:'Viltrumites',powers:'Collective Viltrumite army, galaxy-conquering forces',weaknesses:'Scourge Virus',bio:'An empire that has conquered half the galaxy — Invincible\'s greatest threat.'},
+      {name:'Battle Beast',seed:'BattleBeast',  powers:'Near-invulnerable alien physiology, combat genius',weaknesses:'Worthy opponents only',bio:'A warrior who lives only for battle — one of the most dangerous fighters alive.'},
+    ],
+    heroes:[
+      {name:'Invincible',  seed:'Invincible',   powers:'Viltrumite flight, strength, near-invulnerability, healing',weaknesses:'Emotional manipulation, internal conflict',bio:'Mark Grayson — half-human, half-Viltrumite hero trying to protect a world that needs him.'},
+      {name:'Atom Eve',    seed:'AtomEve',      powers:'Matter manipulation — can reshape reality at a molecular level',weaknesses:'Concentration required',bio:'Samantha Eve Wilkins — arguably the most powerful hero on Earth.'},
+      {name:'Robot',       seed:'Robot',        powers:'Genius intellect, remote-controlled robot bodies, tech mastery',weaknesses:'Emotional detachment',bio:'Rudy — a genius in a machine body who built the Teen Team from scratch.'},
+      {name:'Cecil Stedman',seed:'Cecil',       powers:'Vast government resources, super-soldier backup, strategic genius',weaknesses:'Morally grey choices',bio:'Director of the Global Defense Agency — does whatever it takes to protect Earth.'},
+      {name:'Rex Splode',  seed:'RexSplode',    powers:'Can charge any object to explode on contact',weaknesses:'Limited power range',bio:'A hero with an attitude problem and a genuinely explosive power set.'},
+    ]},
+  theboys:{name:'The Boys Universe',story:'In a world where superheroes are corporate celebrities owned by Vought International, a scrappy vigilante group exposes the dark truth behind the capes.',
+    villains:[
+      {name:'Homelander',  seed:'Homelander',   powers:'Laser vision, flight, invulnerability, superhuman strength',weaknesses:'Psychological instability, rejection',bio:'Vought\'s #1 asset and America\'s most dangerous narcissist with godlike power.'},
+      {name:'Stormfront',  seed:'Stormfront',   powers:'Lightning control, flight, invulnerability, extreme speed',weaknesses:'Fire and extreme physical trauma',bio:'A Nazi-era supe revived and rebranded for the 21st century. Terrifyingly dangerous.'},
+      {name:'Black Noir',  seed:'BlackNoir',    powers:'Peak-human combat, stealth, extreme durability',weaknesses:'Specific exploitable weakness',bio:'Vought\'s silent assassin — the most efficiently deadly member of the Seven.'},
+      {name:'A-Train',     seed:'ATrain',       powers:'Superhuman speed, compound V-enhanced physiology',weaknesses:'Heart damage from V abuse',bio:'The fastest man alive — addicted to Compound V and willing to kill to stay relevant.'},
+      {name:'The Deep',    seed:'TheDeep',      powers:'Aquatic breathing, underwater strength, marine telepathy',weaknesses:'Completely ineffective on land',bio:'Vought\'s most mocked hero — banished to Sandusky, Ohio for his many crimes.'},
+    ],
+    heroes:[
+      {name:'Billy Butcher',seed:'BillyButcher',powers:'Tactical genius, compound V temp powers, pure hatred',weaknesses:'Self-destructive nature',bio:'The head of The Boys — will do literally anything to bring down Vought.'},
+      {name:'Hughie',      seed:'Hughie',       powers:'Compound V enhanced strength (temporary)',weaknesses:'Emotional attachment',bio:'The heart of The Boys — an ordinary guy thrown into extraordinary circumstances.'},
+      {name:'Mother\'s Milk',seed:'MothersMilk',powers:'Compound V enhanced physiology (passive)',weaknesses:'Obsession with family safety',bio:'The moral compass of The Boys — the one who keeps them from going too far.'},
+      {name:'Frenchie',    seed:'Frenchie',     powers:'Chemistry and explosives genius, street combat',weaknesses:'PTSD triggers',bio:'The Boys\' weapons expert — makes every impossible situation slightly less impossible.'},
+      {name:'Kimiko',      seed:'Kimiko',       powers:'Regenerative healing, superhuman strength, combat instinct',weaknesses:'Communication barriers',bio:'A supe by force — one of the most lethal people on the planet, searching for humanity.'},
+    ]},
+  onepunchman:{name:'One Punch Man Universe',story:'A world of monsters and heroes ranked by power, where Saitama defeated the meaning of struggle itself by becoming too strong to feel it.',
+    villains:[
+      {name:'Boros',       seed:'Boros',        powers:'Dominator of the Universe form, energy projection, regeneration',weaknesses:'Saitama',bio:'An alien conqueror who crossed the galaxy to find a worthy challenge — and finally did.'},
+      {name:'Garou',       seed:'Garou',        powers:'Cosmic Fear Mode, martial arts adaptation, monster awakening',weaknesses:'Saitama\'s limitlessness',bio:'The Hero Hunter — a martial artist who chose the path of monsters.'},
+      {name:'Orochi',      seed:'Orochi',       powers:'Monster King transformation, dragon summoning, energy absorption',weaknesses:'Saitama exists',bio:'The Monster King — head of the Monster Association, ruler of all kaiju.'},
+      {name:'Psykos',      seed:'Psykos',       powers:'Psychic energy on a global scale, monster fusion',weaknesses:'Tatsumaki-level opposition',bio:'The tactical genius behind the Monster Association\'s grand plan.'},
+      {name:'Homeless Emperor',seed:'HomelessEmperor',powers:'Divine energy orbs, flight, city-destroying blasts',weaknesses:'God withdraws blessing',bio:'A former salaryman blessed with godlike energy — and a hatred for all life.'},
+    ],
+    heroes:[
+      {name:'Saitama',     seed:'Saitama',      powers:'One punch that ends anything — literally unlimited physical strength',weaknesses:'Cannot find a worthy opponent',bio:'The hero who trained until his hair fell out. One punch. Every time. No exceptions.'},
+      {name:'Genos',       seed:'Genos',        powers:'Cyborg incineration cannons, machine gun blows, upgradeable body',weaknesses:'Physical components can be destroyed',bio:'Saitama\'s disciple — a cyborg demon cyborg dedicated to surpassing his own limits.'},
+      {name:'Tornado',     seed:'Tornado',      powers:'Psychic power — strongest esper alive, city-level telekinesis',weaknesses:'Pride and underestimation',bio:'Tatsumaki — the most powerful esper in existence, and everyone knows it.'},
+      {name:'Bang',        seed:'Bang',         powers:'Flowing Water Rock Smashing Fist — redirects any force perfectly',weaknesses:'Age limiting top performance',bio:'Silver Fang — an S-Class hero whose martial art is a lifetime of mastery.'},
+      {name:'King',        seed:'King',         powers:'The King Engine (bluff), extreme luck, survival instinct',weaknesses:'Actually has no powers',bio:'The Strongest Man on Earth — a complete fraud whose bluff the universe plays along with.'},
+    ]},
+  aot:{name:'Attack on Titan Universe',story:'Humanity survives behind walls, haunted by Titans. The truth about their world — and their own history — is darker than they ever imagined.',
+    villains:[
+      {name:'Eren Yeager', seed:'ErenYeager',   powers:'Founding Titan, Attack Titan, War Hammer Titan',weaknesses:'Controlled by Ymir\'s will',bio:'The protagonist turned villain — his path to freedom consumed everything and everyone he loved.'},
+      {name:'Zeke Yeager', seed:'Zeke',         powers:'Beast Titan throwing ability, royal blood screams, Titan form',weaknesses:'Must expose himself to transform',bio:'A master tactician who sees euthanasia as salvation for the Eldian people.'},
+      {name:'Annie Leonhart',seed:'Annie',      powers:'Female Titan hardening, crystal cocoon, refined combat form',weaknesses:'Emotional attachment',bio:'A cold, distant warrior who trained her whole life for a mission she didn\'t fully believe in.'},
+      {name:'Reiner Braun',seed:'Reiner',       powers:'Armored Titan — near-impenetrable shell, elite combat',weaknesses:'Shell has weak points',bio:'A soldier broken by guilt and duty — arguably the most tragic figure in the series.'},
+      {name:'The Rumbling',seed:'TheRumbling',  powers:'Millions of colossal Titans, global extinction capability',weaknesses:'Alliance of Survey Corps and Warriors',bio:'Eren\'s ultimate plan — the Wall Titans march to flatten every civilization outside Paradis.'},
+    ],
+    heroes:[
+      {name:'Levi Ackerman',seed:'Levi',        powers:'Ackermann awakening, ODM mastery, blade speed beyond human limits',weaknesses:'Explosive injuries',bio:'Humanity\'s Strongest Soldier. No Titan-shifting power — just skill refined to an inhuman edge.'},
+      {name:'Mikasa Ackermann',seed:'Mikasa',   powers:'Ackermann combat instinct, ODM mastery, elite physical stats',weaknesses:'Emotional dependency on Eren',bio:'The top graduate of the 104th Cadet Corps — loyalty and lethal skill in equal measure.'},
+      {name:'Armin Arlert',seed:'Armin',        powers:'Colossal Titan, strategic genius, persuasion',weaknesses:'Self-sacrifice instinct',bio:'The heart and mind of the trio — his strategies turned the tide of impossible battles.'},
+      {name:'Hange Zoë',   seed:'Hange',        powers:'Strategic brilliance, Titan research, field command',weaknesses:'Recklessness in experimentation',bio:'Commander Hange — eccentric, brilliant, and willing to die for knowledge and peace.'},
+      {name:'Erwin Smith', seed:'Erwin',        powers:'Strategic vision, unwavering leadership, inspiring conviction',weaknesses:'Mortal — no special powers',bio:'The Commander who charged a Titan with a broken arm. Pure human will as a superpower.'},
+    ]},
+  mha:{name:'My Hero Academia Universe',story:'In a world where 80% of the population has a Quirk, a boy born powerless inherits the world\'s greatest ability and fights to become the greatest hero.',
+    villains:[
+      {name:'All For One',  seed:'AllForOne',   powers:'Can steal any Quirk and wield them all simultaneously',weaknesses:'One For All wielders',bio:'The original villain — a centuries-old monster who has ruled the shadows of society.'},
+      {name:'Shigaraki',   seed:'Shigaraki',    powers:'Decay Quirk — disintegrates anything he touches with all five fingers',weaknesses:'Can\'t touch certain materials safely',bio:'All For One\'s successor — a man whose entire life was shaped by loss and manipulation.'},
+      {name:'Dabi',        seed:'Dabi',         powers:'Cremation — black flames hotter than Endeavor\'s',weaknesses:'Flames damage his own body',bio:'Touya Todoroki — Endeavor\'s abandoned son, consumed entirely by fire and resentment.'},
+      {name:'Toga',        seed:'Toga',         powers:'Transform into anyone whose blood she\'s consumed',weaknesses:'Limited blood supply',bio:'A girl who loves blood a little too much — and whose Quirk makes her dangerously unpredictable.'},
+      {name:'Overhaul',    seed:'Overhaul',     powers:'Disassemble and reassemble anything — including people',weaknesses:'Requires all ten fingers',bio:'The Yakuza heir who saw Quirks as a disease and nearly created a Quirk-erasing drug.'},
+    ],
+    heroes:[
+      {name:'Deku',        seed:'Deku',         powers:'One For All — physical enhancement + 6 predecessor Quirks',weaknesses:'Overuse destroys his body',bio:'Izuku Midoriya — Quirkless boy who became the living legacy of the greatest hero alive.'},
+      {name:'All Might',   seed:'AllMight',     powers:'One For All at 100% — the Symbol of Peace',weaknesses:'Depleted power, severe injury',bio:'The greatest hero of his era — his smile alone was enough to save people.'},
+      {name:'Bakugo',      seed:'Bakugo',       powers:'Explosion Quirk — AP Shot, Howitzer Impact, refined blast precision',weaknesses:'Sweat dependency',bio:'Explosive, aggressive, and undeniably brilliant — one of the most powerful students alive.'},
+      {name:'Todoroki',    seed:'Todoroki',     powers:'Half-Cold Half-Hot — ice and fire from both parents\'s Quirks',weaknesses:'Emotional trauma',bio:'Shoto Todoroki — a walking contradiction learning to use his whole self, not just half.'},
+      {name:'Endeavor',    seed:'Endeavor',     powers:'Hellflame Quirk — the hottest fire in the world',weaknesses:'Body heat damage',bio:'The #1 hero after All Might — atoning for a lifetime of terrible choices as a father.'},
+    ]},
+  demonslayer:{name:'Demon Slayer Universe',story:'In Taisho-era Japan, demons lurk in the night. Tanjiro Kamado joins the Demon Slayer Corps to cure his sister and destroy the first demon ever created.',
+    villains:[
+      {name:'Muzan Kibutsuji',seed:'Muzan',     powers:'Unstoppable regeneration, blood poison, twelve demon subordinates',weaknesses:'Sunlight and Wisteria',bio:'The Demon King — the origin of all demons, who has not died in over 1000 years.'},
+      {name:'Doma',        seed:'Doma',         powers:'Cryogenic fan techniques, ice lotus constructs, absorbs souls',weaknesses:'Poisons from within',bio:'Upper Moon Two — a cult leader who absorbed his own followers into beautiful death.'},
+      {name:'Akaza',       seed:'Akaza',        powers:'Compass Needle, Destructive Death martial arts, powerful regeneration',weaknesses:'Memories of his human life',bio:'Upper Moon Three — a demon who respects strength and despises weakness above all.'},
+      {name:'Kokushibo',   seed:'Kokushibo',    powers:'Moon Breathing — sixteen forms, demon blood art sword techniques',weaknesses:'Sunrise weakness as all demons',bio:'Upper Moon One — Yoriichi\'s twin brother, consumed by envy for a millennium.'},
+      {name:'Enmu',        seed:'Enmu',         powers:'Dream manipulation, infinite sleep induction, train fusion',weaknesses:'Cannot fight while others are awake',bio:'Lower Moon One — the only demon Muzan empowered personally. Controls dreams.'},
+    ],
+    heroes:[
+      {name:'Tanjiro',     seed:'Tanjiro',      powers:'Water Breathing + Hinokami Kagura, exceptional empathy and smell',weaknesses:'Physical stamina limits',bio:'A kind-hearted boy who became one of the Demon Slayer Corps\' most exceptional members.'},
+      {name:'Nezuko',      seed:'Nezuko',       powers:'Demon blood art — Exploding Blood, miniaturization, healing factor',weaknesses:'Sunlight (partially overcome)',bio:'Tanjiro\'s sister — a demon who chose to protect humans rather than devour them.'},
+      {name:'Zenitsu',     seed:'Zenitsu',      powers:'Thunderclap and Flash — a single flawless form of Thunder Breathing',weaknesses:'Only effective while asleep/unconscious',bio:'A coward whose unconscious self is the most precise lightning-user in the Corps.'},
+      {name:'Inosuke',     seed:'Inosuke',      powers:'Beast Breathing — flexible body, dual blades, adaptable fighting style',weaknesses:'Emotional intelligence',bio:'Raised by boars in the mountains — his instincts in battle are beyond human logic.'},
+      {name:'Rengoku',     seed:'Rengoku',      powers:'Flame Breathing — Ninth Form: Rengoku',weaknesses:'Mortal body',bio:'The Flame Hashira — SET YOUR HEART ABLAZE. A legend who died in a blaze of glory.'},
+    ]},
+  onepiece:{name:'One Piece Universe',story:'In the Grand Age of Pirates, Monkey D. Luffy sails the seas to find the legendary One Piece treasure and become King of the Pirates.',
+    villains:[
+      {name:'Kaido',       seed:'Kaido',        powers:'Mythical Zoan — Azure Dragon, Conqueror\'s Haki, Toughest creature alive',weaknesses:'Wants to die but can\'t',bio:'The King of Beasts — considered the world\'s most powerful creature. Cannot be killed.'},
+      {name:'Big Mom',     seed:'BigMom',       powers:'Soul-Soul Fruit, Conqueror\'s Haki, weather manipulation',weaknesses:'Cake obsession and homies',bio:'Charlotte Linlin — a Yonko whose craving for sweets has leveled entire cities.'},
+      {name:'Blackbeard',  seed:'Blackbeard',   powers:'Dark-Dark Fruit + Quake-Quake Fruit simultaneously',weaknesses:'Two devil fruits destabilize his body',bio:'Marshall D. Teach — the man who stole two Devil Fruits and shattered the old world order.'},
+      {name:'Doflamingo',  seed:'Doflamingo',   powers:'String-String Fruit — Birdcage, parasite control, awakened threads',weaknesses:'Joker pattern predictability',bio:'A Celestial Dragon turned pirate warlord — the most theatrical villain in the New World.'},
+      {name:'Rob Lucci',   seed:'RobLucci',     powers:'Zoan CP0 master — Leopard-Human Hybrid + Rokushiki mastery',weaknesses:'Underestimates growth',bio:'The most dangerous agent in World Government history — cold, efficient, merciless.'},
+    ],
+    heroes:[
+      {name:'Luffy',       seed:'Luffy',        powers:'Gear 5 — Sun God Nika, Conqueror\'s Haki, rubber reality-bending',weaknesses:'Sea water, seastone',bio:'Monkey D. Luffy — the most unpredictable captain in the seas, future King of the Pirates.'},
+      {name:'Zoro',        seed:'Zoro',         powers:'Three Sword Style — Enma, Wado Ichimonji, Sandai Kitetsu + Advanced Haki',weaknesses:'Directions',bio:'The world\'s greatest swordsman in progress — every scar earned on the road to the top.'},
+      {name:'Shanks',      seed:'Shanks',       powers:'Conqueror\'s Haki so powerful it K.O.s entire fleets, master swordsmanship',weaknesses:'One arm',bio:'Red-Haired Shanks — a Yonko whose Haki alone commands the respect of the entire world.'},
+      {name:'Whitebeard',  seed:'Whitebeard',   powers:'Quake-Quake Fruit — shake the world, man closest to One Piece',weaknesses:'Old age and illness',bio:'Edward Newgate — the world\'s strongest man. His death shook the entire Grand Line.'},
+      {name:'Nico Robin',  seed:'NicoRobin',    powers:'Flower-Flower Fruit — replicate body parts anywhere, archaeologist',weaknesses:'Sea water',bio:'The only person who can read Poneglyphs — the key to finding the One Piece and the True History.'},
+    ]},
+  starwars:{name:'Star Wars Universe',story:'In a galaxy far, far away — the eternal struggle between the light and dark side of the Force shapes civilizations, families, and destinies across the stars.',
+    villains:[
+      {name:'Darth Vader', seed:'DarthVader',   powers:'Dark side mastery, Force choke, lightsaber combat, life support armor',weaknesses:'His son Luke',bio:'Anakin Skywalker — the Chosen One who fell, became the Empire\'s iron fist, then returned to light.'},
+      {name:'Palpatine',   seed:'Palpatine',    powers:'Force lightning at senate-annihilating levels, decades of manipulation',weaknesses:'Overconfidence in lineage',bio:'Darth Sidious — masterminded the fall of the Republic and the Jedi from inside the Senate.'},
+      {name:'Kylo Ren',    seed:'KyloRen',      powers:'Force freeze, lightsaber mastery, dark side sensitivity',weaknesses:'Conflict within him',bio:'Ben Solo torn between light and dark — the most emotionally complex villain in the sequel era.'},
+      {name:'General Grievous',seed:'Grievous', powers:'Four-arm lightsaber combat, cyborg body, tactical genius',weaknesses:'Organic organs remain vulnerable',bio:'A Jedi killer who collected their lightsabers as trophies. Feared across the galaxy.'},
+      {name:'Count Dooku', seed:'Dooku',        powers:'Makashi lightsaber form, Force lightning, manipulation',weaknesses:'Overreliance on elegance',bio:'A Jedi master who walked away from the Order — and served Sidious as Darth Tyranus.'},
+    ],
+    heroes:[
+      {name:'Luke Skywalker',seed:'Luke',       powers:'Force mastery, lightsaber combat, Force projection, persuasion',weaknesses:'Emotional attachment',bio:'The farm boy from Tatooine who saved the galaxy twice and rebuilt the Jedi Order.'},
+      {name:'Rey',         seed:'Rey',          powers:'Raw Force power, lightsaber instinct, Force healing, Palpatine lineage',weaknesses:'Dark side temptation',bio:'A scavenger from Jakku who became the last Jedi and ended the Sith lineage forever.'},
+      {name:'Obi-Wan Kenobi',seed:'ObiWan',    powers:'Soresu lightsaber mastery, negotiation, Force ghost potential',weaknesses:'Attachment despite teachings',bio:'One of the greatest Jedi Masters — steadfast, witty, and the last teacher of both Skywalkers.'},
+      {name:'Yoda',        seed:'Yoda',         powers:'Ataru lightsaber combat, unparalleled Force wisdom and power',weaknesses:'Physical limitations of age',bio:'800 years of wisdom — the Jedi Grandmaster whose Force understanding exceeded all others.'},
+      {name:'Mando',       seed:'Mando',        powers:'Beskar armor, whistling birds, jetpack, Darksaber',weaknesses:'The Way requires sacrifice',bio:'Din Djarin — a Mandalorian bounty hunter who found a foundling and changed his entire world.'},
+    ]},
+  lotr:{name:'Lord of the Rings Universe',story:'The fate of Middle-earth hinges on a Fellowship\'s journey to destroy the One Ring before the Dark Lord Sauron can plunge all free peoples into eternal darkness.',
+    villains:[
+      {name:'Sauron',      seed:'Sauron',       powers:'Dark Lord omnipotence, Ring corruption, Maia spiritual form',weaknesses:'Existence of the One Ring',bio:'The Dark Lord — poured his will and power into the One Ring to dominate all life.'},
+      {name:'Morgoth',     seed:'Morgoth',      powers:'Vala-level destruction, corrupted entire races, forged Silmarils',weaknesses:'Bound by his own material power',bio:'The original Dark Lord — Sauron\'s master, who marred Arda at its very creation.'},
+      {name:'Balrog',      seed:'Balrog',       powers:'Fire and shadow, Maia spirit, overwhelming physical power',weaknesses:'Specific ancient sorcery',bio:'A Maia corrupted by Morgoth — ancient beyond reckoning, fire given terrible form.'},
+      {name:'Saruman',     seed:'Saruman',      powers:'Istari wizard power, voice of power, industrial war machine',weaknesses:'Pride and obsession',bio:'The White Wizard who fell — betrayed the order and raised an army for the One Ring.'},
+      {name:'Nazgûl',      seed:'Nazgul',       powers:'Ring-wraith powers, undead terror, flight on fell beasts',weaknesses:'Light and the name of Elbereth',bio:'Nine mortal kings corrupted by Rings of Power — now eternal servants of the Eye.'},
+    ],
+    heroes:[
+      {name:'Gandalf',     seed:'Gandalf',      powers:'Maia wizard fire, staff and sword, wisdom across ages',weaknesses:'Must work within rules of his order',bio:'Gandalf the Grey. Gandalf the White. The wandering wizard who carried hope across all of Middle-earth.'},
+      {name:'Aragorn',     seed:'Aragorn',      powers:'Dúnedain longevity, Andúril, command of the Dead',weaknesses:'Doubt in his own lineage',bio:'The rightful King of Gondor — ranger, ranger, king. He chose his people over a thousand safer paths.'},
+      {name:'Frodo',       seed:'Frodo',        powers:'Unexpected Hobbit resilience, Ring-bearer endurance',weaknesses:'Ring\'s corrupting influence grows',bio:'A Hobbit who carried the fate of the world on his finger. And nearly broke under the weight.'},
+      {name:'Legolas',     seed:'Legolas',      powers:'Elven archery precision, agility, sight beyond sight',weaknesses:'Emotional attachment to mortal friends',bio:'Prince of the Woodland Realm — his arrow never missed and his friendship with Gimli changed both peoples.'},
+      {name:'Samwise',     seed:'Samwise',      powers:'Absolute loyalty, the gift of the Galadhrim, love as an armor',weaknesses:'Cannot resist Shire nostalgia',bio:'Samwise Gamgee — the real hero of Lord of the Rings. He carried Frodo when Frodo could not walk.'},
+    ]},
+  harrypotter:{name:'Harry Potter Universe',story:'A boy discovers he is a wizard and enters a hidden world of magic, friendship, and a dark lord who has been trying to kill him since before he could walk.',
+    villains:[
+      {name:'Voldemort',   seed:'Voldemort',    powers:'Horcrux immortality, killing curse mastery, Parselmagic',weaknesses:'Love as a magic he cannot comprehend',bio:'Lord Voldemort — the most dangerous Dark Wizard in a century. He who must not be named.'},
+      {name:'Bellatrix',   seed:'Bellatrix',    powers:'Master dueling, Unforgivable Curses, unyielding fanaticism',weaknesses:'Overconfidence when close to victory',bio:'Voldemort\'s most devoted servant — cruel, brilliant, and sadistically loyal.'},
+      {name:'Dolores Umbridge',seed:'Umbridge', powers:'Ministry authority, blood quill torture, bureaucratic cruelty',weaknesses:'Centaurs',bio:'The most despised character in the series — proof evil doesn\'t need dark magic, just power.'},
+      {name:'Lucius Malfoy',seed:'Lucius',      powers:'Dark Arts mastery, Ministry influence, Slytherin cunning',weaknesses:'His own family\'s safety',bio:'Death Eater and social climber — his fear of Voldemort was always greater than his loyalty.'},
+      {name:'Fenrir Greyback',seed:'Fenrir',    powers:'Werewolf transformation, feral combat, infection spreading',weaknesses:'Wolfsbane potion, full moon timing',bio:'The most savage werewolf in the series — chose infection as a weapon against wizards.'},
+    ],
+    heroes:[
+      {name:'Harry Potter', seed:'HarryPotter', powers:'Parseltongue, exceptional broom flying, love protection',weaknesses:'Impulse over planning',bio:'The Boy Who Lived — the only person Voldemort ever feared, not for his power but for his love.'},
+      {name:'Hermione',    seed:'Hermione',     powers:'Near-perfect spell mastery, magical theory, Time-Turner',weaknesses:'Rule-following sometimes limits her',bio:'The brightest witch of her age — Harry and Ron would have died in chapter one without her.'},
+      {name:'Albus Dumbledore',seed:'Dumbledore',powers:'Greatest wizard alive, Elder Wand mastery, decades of strategy',weaknesses:'Blind spots for those he loves',bio:'Headmaster, Order leader, the only wizard Voldemort ever feared. And it was entirely earned.'},
+      {name:'Neville Longbottom',seed:'Neville',powers:'Herbology mastery, Sword of Gryffindor, extraordinary resilience',weaknesses:'Early self-doubt',bio:'The boy who could have been The Chosen One — and destroyed the final Horcrux when it mattered most.'},
+      {name:'Minerva McGonagall',seed:'McGonagall',powers:'Expert Transfiguration, Animagus form, tactical defense leadership',weaknesses:'Strict adherence to rules',bio:'Deputy Headmistress and Head of Gryffindor — defended Hogwarts against an army without blinking.'},
+    ]},
+  mortalkombat:{name:'Mortal Kombat Universe',story:'A brutal interdimensional tournament determines the fate of Earthrealm. Ten consecutive Mortal Kombat victories would grant the Outworld the right to invade and conquer Earth.',
+    villains:[
+      {name:'Shao Kahn',   seed:'ShaoKahn',     powers:'Wrath Hammer, soul absorption, magic of Outworld royalty',weaknesses:'Elder God edicts',bio:'Konqueror of Outworld — a tyrant who has crushed civilizations and refuses to stop at Earth.'},
+      {name:'Shinnok',     seed:'Shinnok',      powers:'Necromancer\'s amulet, Elder God power, possession, mirror moves',weaknesses:'His own stolen amulet',bio:'A fallen Elder God imprisoned in the Netherrealm — his freedom always means catastrophe.'},
+      {name:'Quan Chi',    seed:'QuanChi',      powers:'Dark magic, revenant creation, skeleton hammer, sorcery',weaknesses:'Physical combat without magic',bio:'The deadliest sorcerer in all the realms — his resurrections chain warriors to him forever.'},
+      {name:'Kronika',     seed:'Kronika',      powers:'Time itself — can rewind and reshape all of history',weaknesses:'Mortal physical combat',bio:'The Keeper of Time — Shinnok\'s mother and the most powerful entity in all of MK lore.'},
+      {name:'Onaga',       seed:'Onaga',        powers:'Dragon King invulnerability, Kamidogu use, undead army',weaknesses:'Kombat itself with proper weapons',bio:'The Dragon King — so powerful that Shao Kahn had to poison him just to take his throne.'},
+    ],
+    heroes:[
+      {name:'Liu Kang',    seed:'LiuKang',      powers:'Dragon Fire, flying kick, Bicycle Kick, god of fire title',weaknesses:'Revenant state corruption',bio:'Earth\'s greatest champion — won Mortal Kombat multiple times and was rewarded with death and resurrection.'},
+      {name:'Scorpion',    seed:'Scorpion',     powers:'Hellfire, spear chain, teleport punch, Netherrealm sorcery',weaknesses:'Manipulation through his dead clan',bio:'GET OVER HERE. Hanzo Hasashi — a specter fueled by vengeance who finally found peace.'},
+      {name:'Sub-Zero',    seed:'SubZero',      powers:'Cryomancy — ice clones, freeze attacks, spine rip legacy',weaknesses:'Fire and heat-based attacks',bio:'Kuai Liang — Grandmaster of the Lin Kuei, who turned a clan of assassins into protectors.'},
+      {name:'Raiden',      seed:'Raiden',       powers:'God of Thunder lightning, teleport, force push',weaknesses:'Elder God rules prevent direct action',bio:'The Eternal God of Thunder — Earth\'s protector for thousands of years of tournaments.'},
+      {name:'Johnny Cage', seed:'JohnnyCage',   powers:'Green plasma energy, splits punch, shadow kick, shadow clone',weaknesses:'Ego in personal conflicts',bio:'A Hollywood actor with shadow energy lineage — more dangerous than anyone gives him credit for.'},
+    ]},
+  streetfighter:{name:'Street Fighter Universe',story:'World warriors from every continent compete in fierce martial arts tournaments, facing ultimate evil in the form of M. Bison and the cursed Satsui no Hado.',
+    villains:[
+      {name:'M. Bison',    seed:'MBison',       powers:'Psycho Power — unlimited dark chi, flight, Psycho Crusher',weaknesses:'Body is a vessel, not permanent',bio:'The lord of Shadaloo — his Psycho Power corrupts everything it touches.'},
+      {name:'Akuma',       seed:'Akuma',        powers:'Satsui no Hado mastered, Raging Demon, Messatsu-Gou-Hadou',weaknesses:'Seeks worthy opponents only',bio:'A demon who abandoned his humanity for power. His Raging Demon has killed gods.'},
+      {name:'Gill',        seed:'Gill',         powers:'Pyrokinesis + Cryokinesis combined, Resurrection, Seraphic Wing',weaknesses:'Cannot die permanently',bio:'Illuminati leader — a godlike fighter who believes himself destined to rule the new world.'},
+      {name:'Necalli',     seed:'Necalli',      powers:'Soul devouring, V-Trigger transformation, ancient power',weaknesses:'Dependent on souls for stability',bio:'An ancient warrior resurrected to devour the souls of the world\'s greatest fighters.'},
+      {name:'Urien',       seed:'Urien',        powers:'Metallic body, Aegis Reflector, thunder kicks',weaknesses:'Ego prevents tactical patience',bio:'The Vice President of the Illuminati — Gill\'s brother and constant rival for power.'},
+    ],
+    heroes:[
+      {name:'Ryu',         seed:'Ryu',          powers:'Hadouken, Shoryuken, Tatsumaki, power of nothingness',weaknesses:'Satsui no Hado temptation',bio:'The eternal wandering warrior — fights only to grow stronger, never for fame or glory.'},
+      {name:'Chun-Li',     seed:'ChunLi',       powers:'Hyakuretsukyaku lightning legs, Kikouken, exceptional speed',weaknesses:'Personal vendetta clouds judgment',bio:'The strongest woman in the world — a INTERPOL agent hunting M. Bison for her father\'s murder.'},
+      {name:'Ken Masters', seed:'Ken',          powers:'Flaming Shoryuken, Tatsumaki, powered-up Hadouken',weaknesses:'Hot-headed and impatient',bio:'Ryu\'s rival and best friend — his flames make his fighting style more aggressive and unpredictable.'},
+      {name:'Guile',       seed:'Guile',        powers:'Sonic Boom, Flash Kick, military discipline and toughness',weaknesses:'Slow movement speed',bio:'An American Air Force soldier who vowed to avenge Charlie Nash — and never stops charging.'},
+      {name:'Cammy',       seed:'Cammy',        powers:'Cannon Spike, Spiral Arrow, Delta Red combat training',weaknesses:'Past Shadaloo programming',bio:'Shadaloo\'s former weapon freed from mind control — now one of the world\'s elite fighters.'},
+    ]},
+};
+
+function showUniverse(id){
+  const u=UNIVERSES[id];
+  if(!u)return;
+  document.getElementById('univDetailName').textContent=u.name;
+  document.getElementById('univStory').textContent=u.story;
+  // Reset bio
+  document.getElementById('charDetail').innerHTML=`
+    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=placeholder" alt="">
+    <div class="bio-char-name">Select a Character</div>
+    <p style="font-size:.78rem;color:var(--muted)">Click any hero or villain on the sides.</p>`;
+  // Build villain list
+  const vl=document.getElementById('villainsList');
+  vl.innerHTML='';
+  u.villains.forEach(c=>{
+    const d=document.createElement('div');
+    d.className='char-item';
+    d.innerHTML=`<img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(c.seed)}" alt="${c.name}"><div><div class="ci-name">${c.name}</div><div class="ci-sub">Villain</div></div>`;
+    d.onclick=()=>showCharBio(c,u.story);
+    vl.appendChild(d);
+  });
+  // Build hero list
+  const hl=document.getElementById('heroesList');
+  hl.innerHTML='';
+  u.heroes.forEach(c=>{
+    const d=document.createElement('div');
+    d.className='char-item';
+    d.innerHTML=`<img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(c.seed)}" alt="${c.name}"><div><div class="ci-name">${c.name}</div><div class="ci-sub">Hero</div></div>`;
+    d.onclick=()=>showCharBio(c,u.story);
+    hl.appendChild(d);
+  });
+  showPage('pg-universe');
+  // highlight active pill
+  document.querySelectorAll('.upill').forEach(p=>p.classList.remove('active'));
+}
+
+function showCharBio(c,story){
+  document.querySelectorAll('.char-item').forEach(i=>i.classList.remove('sel'));
+  document.getElementById('charDetail').innerHTML=`
+    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(c.seed)}" alt="${c.name}">
+    <div class="bio-char-name">${c.name}</div>
+    <div class="bio-stat"><div class="bio-stat-lbl">Powers</div><div class="bio-stat-val">${c.powers}</div></div>
+    <div class="bio-stat"><div class="bio-stat-lbl">Weaknesses</div><div class="bio-stat-val">${c.weaknesses}</div></div>
+    <div class="bio-stat"><div class="bio-stat-lbl">Bio</div><div class="bio-stat-val">${c.bio}</div></div>`;
+}
+
+/* ── BATTLE SYSTEM ── */
+const ALL_FIGHTERS=[
+  // Marvel
+  {name:'Spider-Man',   seed:'SpiderMan',  univ:'Marvel',     city:'New York',    lat:40.71,lon:-74.01, powers:'Spider-sense, wall-crawling, web-shooting',weaknesses:'Self-doubt',actions:['swings in and fires a web-blast at full force','dodges with spider-sense and launches a diving kick','unleashes a venom blast directly at close range']},
+  {name:'Iron Man',     seed:'IronMan',    univ:'Marvel',     city:'Malibu',      lat:34.03,lon:-118.78,powers:'Repulsor beams, powered armor, JARVIS AI',weaknesses:'Power source',actions:['locks on with JARVIS and fires a uni-beam blast','deploys Mark L nanotech armor at full power','fires precision repulsors targeting every weak point']},
+  {name:'Wolverine',    seed:'Wolverine',  univ:'Marvel',     city:'New York',    lat:40.71,lon:-74.01, powers:'Adamantium claws, healing factor',weaknesses:'Emotional triggers',actions:['SNIKT — pops all six claws and charges in a berserker rage','takes three hits, heals instantly, and grins','drives both sets of claws upward in a brutal double strike']},
+  {name:'Thor',         seed:'Thor',       univ:'Marvel',     city:'Asgard',      lat:60.0, lon:10.0,   powers:'Mjolnir, lightning, Asgardian strength',weaknesses:'Arrogance',actions:['hurls Mjolnir at blinding speed and calls it back immediately','summons a lightning strike that splits the battlefield','channels the full power of lightning through his fists']},
+  {name:'Thanos',       seed:'Thanos',     univ:'Marvel',     city:'Titan',       lat:-10.0,lon:60.0,   powers:'Infinity Gauntlet, cosmic strength',weaknesses:'Obsession',actions:['snaps the Reality Stone — the arena bends and shatters','drives a fist through solid force-fields with the Power Stone','warps space with the Space Stone to appear behind the opponent']},
+  // DC
+  {name:'Superman',     seed:'Superman',   univ:'DC',         city:'Metropolis',  lat:38.9, lon:-77.04,  powers:'Heat vision, flight, invulnerability',weaknesses:'Kryptonite',actions:['dives from orbit with fists forward — a sonic boom shakes the arena','fires a sustained heat vision beam melting the ground','uses freeze breath to lock the opponent then delivers a devastating uppercut']},
+  {name:'Batman',       seed:'Batman',     univ:'DC',         city:'Gotham',      lat:40.67,lon:-73.94,  powers:'Martial arts, gadgets, intellect',weaknesses:'Mortal',actions:['vanishes into shadows and reappears with a nerve-strike to the spine','deploys a sonic batarang that scrambles all senses','activates the Hellbat armor — pushing mortal limits past all reason']},
+  {name:'Wonder Woman', seed:'WonderWoman',univ:'DC',         city:'Themyscira',  lat:35.0, lon:25.0,    powers:'Godly strength, Lasso of Truth',weaknesses:'Bound lasso',actions:['binds with the Lasso of Truth and disarms in one fluid motion','deflects every attack with her bracers and counters instantly','spins Mjolnir-like with her axe and launches a divine strike']},
+  {name:'Joker',        seed:'Joker',      univ:'DC',         city:'Gotham',      lat:40.67,lon:-73.94,  powers:'Chaos, toxins, unpredictability',weaknesses:'Batman\'s code',actions:['deploys a joy-buzzer that overloads any cybernetic system','hurls a gas grenade — the arena fills with choking purple smoke','pulls an impossibly large mallet from nowhere and swings']},
+  // Dragon Ball
+  {name:'Goku',         seed:'Goku',       univ:'Dragon Ball',city:'Mount Paozu', lat:30.0, lon:105.0,   powers:'Kamehameha, Ultra Instinct, Hakai',weaknesses:'Stamina in top forms',actions:['screams as golden ki erupts — the sky cracks with Super Saiyan Blue','fires a point-blank Kamehameha that levels a mountain','triggers Ultra Instinct — moving before the attack even begins']},
+  {name:'Vegeta',       seed:'Vegeta',     univ:'Dragon Ball',city:'New York',    lat:40.71,lon:-74.01,  powers:'Final Flash, Super Saiyan Blue',weaknesses:'Pride',actions:['removes his limiter — Majin power surging beyond control','fires Final Flash — a column of blue that vaporizes the ground for 200m','screams I AM THE PRINCE OF ALL SAIYANS and powers through the pain']},
+  {name:'Frieza',       seed:'Frieza',     univ:'Dragon Ball',city:'Titan',       lat:-10.0,lon:60.0,    powers:'Death beam, Golden Form',weaknesses:'Overconfidence',actions:['transforms into Golden Frieza — power multiplied a thousandfold','fires a Death Ball at close range — it could destroy a planet','telekinetically crushes the ground creating a gravity prison']},
+  // Naruto
+  {name:'Naruto',       seed:'Naruto',     univ:'Naruto',     city:'Konoha',      lat:36.2, lon:137.0,   powers:'Rasengan, Shadow Clones, Sage Mode',weaknesses:'Chakra depletion',actions:['summons a thousand shadow clones — the arena fills with orange','charges a Rasenshuriken that tears reality at the seams','enters Sage Mode — natural energy crackling visibly around him']},
+  {name:'Sasuke',       seed:'Sasuke',     univ:'Naruto',     city:'Konoha',      lat:36.2, lon:137.0,   powers:'Sharingan, Chidori, Rinnegan',weaknesses:'Emotional trauma',actions:['activates Susanoo — a purple chakra giant rises around him','fires Amaterasu — black flames that cannot be extinguished','teleports with Rinnegan and strikes from every angle at once']},
+  {name:'Madara',       seed:'Madara',     univ:'Naruto',     city:'Konoha',      lat:36.2, lon:137.0,   powers:'Rinnegan, Perfect Susanoo, Wood Release',weaknesses:'Overconfidence',actions:['activates Perfect Susanoo — a titan of chakra 40 stories tall','rains truth-seeking balls that incinerate whatever they touch','casts Infinite Tsukuyomi — the moon becomes a blinding spotlight']},
+  // Invincible
+  {name:'Invincible',   seed:'Invincible', univ:'Invincible', city:'New York',    lat:40.71,lon:-74.01,  powers:'Viltrumite flight, strength, healing',weaknesses:'Emotional manipulation',actions:['punches through the sound barrier directly into the opponent','takes a devastating blow, bleeds, and charges back with rage','delivers a bone-shattering Viltrumite speed-strike from above']},
+  {name:'Omni-Man',     seed:'OmniMan',    univ:'Invincible', city:'New York',    lat:40.71,lon:-74.01,  powers:'Full Viltrumite power, centuries of training',weaknesses:'Emotional attachment',actions:['moves faster than the eye can track and lands twenty blows at once','grabs and uses the opponent as a weapon against the ground','flies directly through the opponent at Mach 30']},
+  // One Punch Man
+  {name:'Saitama',      seed:'Saitama',    univ:'One Punch Man',city:'Tokyo',     lat:35.68,lon:139.69,  powers:'One Punch — literally unlimited strength',weaknesses:'Cannot find worthy opponents',actions:['raises one fist — the opponent\'s power level is irrelevant','does a casual serious punch — the shockwave splits the clouds','tries a light tap — the resulting crater is visible from orbit']},
+  {name:'Genos',        seed:'Genos',      univ:'One Punch Man',city:'Tokyo',     lat:35.68,lon:139.69,  powers:'Cyborg incineration cannons, upgradeable body',weaknesses:'Components can be destroyed',actions:['fires his incineration cannons at maximum power output','upgrades on the fly — new weapons emerge from his cyborg arms','charges his Machine Gun Blows — hundreds of strikes per second']},
+  // Attack on Titan
+  {name:'Levi Ackerman',seed:'Levi',       univ:'Attack on Titan',city:'Gotham', lat:40.67,lon:-73.94,  powers:'Ackermann combat speed, ODM mastery',weaknesses:'Explosive injuries',actions:['spins at superhuman speed in an ODM whirlwind of blades','appears behind the opponent before they finish their attack','performs the Five-Second Kill technique — clinical, cold, perfect']},
+  {name:'Eren Yeager',  seed:'ErenYeager', univ:'Attack on Titan',city:'Gotham', lat:40.67,lon:-73.94,  powers:'Founding + Attack + War Hammer Titan',weaknesses:'Controlled by Ymir',actions:['transforms — a skeletal Titan 15m tall erupts from the earth','calls the Rumbling — distant thunder of Colossal Titans echoes','hardens War Hammer crystals into a devastating lance formation']},
+  // My Hero Academia
+  {name:'Deku',         seed:'Deku',       univ:'My Hero Academia',city:'Tokyo', lat:35.68,lon:139.69,  powers:'One For All — all 7 predecessor Quirks',weaknesses:'Body takes serious damage',actions:['charges 100% Delaware Smash — the pressure wave levels buildings','activates Blackwhip and snaps it like a giant fist','combines Float + Fa Jin into a lightning-speed aerial assault']},
+  {name:'All Might',    seed:'AllMight',   univ:'My Hero Academia',city:'Tokyo', lat:35.68,lon:139.69,  powers:'One For All at full 100% — the Symbol of Peace',weaknesses:'Power was depleted',actions:['TEXAS SMASH — a buffet of wind pressure sends shockwaves for miles','DETROIT SMASH — a downward strike that parts storm clouds','UNITED STATES OF SMASH — everything he has, one final blow']},
+];
+
+let i1=0, i2=Math.min(5,ALL_FIGHTERS.length-1), l1=false, l2=false;
+let lastLines=[], lastF1=null, lastF2=null, lastWinner=null;
+const BET_COS_DATA=[{n:'BetOnWorlds',o1:1.80,o2:2.00},{n:'HeroOdds',o1:2.10,o2:1.75},{n:'MultiverseBet',o1:1.65,o2:2.30},{n:'InfinityBet',o1:2.40,o2:1.60}];
+let activeBetCo=0;
+
+function updateFighterUI(){
+  const a=ALL_FIGHTERS[i1], b=ALL_FIGHTERS[i2];
+  document.getElementById('f1img').src=`https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(a.seed)}`;
+  document.getElementById('f1name').textContent=a.name;
+  document.getElementById('f1univ').textContent=a.univ;
+  document.getElementById('f1city').innerHTML=`<i class="fas fa-location-dot"></i> ${a.city}`;
+  document.getElementById('f1idx').textContent=`${i1+1}/${ALL_FIGHTERS.length}`;
+  document.getElementById('f2img').src=`https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(b.seed)}`;
+  document.getElementById('f2name').textContent=b.name;
+  document.getElementById('f2univ').textContent=b.univ;
+  document.getElementById('f2city').innerHTML=`<i class="fas fa-location-dot"></i> ${b.city}`;
+  document.getElementById('f2idx').textContent=`${i2+1}/${ALL_FIGHTERS.length}`;
+  document.getElementById('fb1').classList.toggle('locked',l1);
+  document.getElementById('fb2').classList.toggle('locked',l2);
   const lb1=document.getElementById('lb1'),lb2=document.getElementById('lb2');
   lb1.className='lock-btn'+(l1?' locked':''); lb1.innerHTML=l1?'<i class="fas fa-lock"></i> Locked':'<i class="fas fa-lock-open"></i> Lock Fighter';
   lb2.className='lock-btn'+(l2?' locked':''); lb2.innerHTML=l2?'<i class="fas fa-lock"></i> Locked':'<i class="fas fa-lock-open"></i> Lock Fighter';
-  document.getElementById('bo1').innerText=a.name+' wins'; document.getElementById('bo2').innerText=b.name+' wins';
-  document.getElementById('winnerCard').classList.remove('show'); document.getElementById('drinkAd').classList.remove('show');
-  document.getElementById('betResult').className='bet-result'; document.getElementById('betResult').innerHTML='';
+  document.getElementById('bo1').textContent=a.name+' wins';
+  document.getElementById('bo2').textContent=b.name+' wins';
+  document.getElementById('winnerCard').classList.remove('show');
+  document.getElementById('comicBtn').classList.remove('show');
+  document.getElementById('betResult').className='bet-result';
+  // Update bet slot names
+  for(let i=0;i<4;i++){
+    const co=BET_COS_DATA[i];
+    document.getElementById(`bsName${i}a`).textContent=a.name;
+    document.getElementById(`bsName${i}b`).textContent=b.name;
+    document.getElementById(`bsOdds${i}a`).childNodes[0].textContent=co.o1.toFixed(2)+'x';
+    document.getElementById(`bsOdds${i}b`).childNodes[0].textContent=co.o2.toFixed(2)+'x';
+  }
 }
-document.getElementById('fp1').onclick=()=>{if(!l1){i1=(i1-1+allC.length)%allC.length;upB();}};
-document.getElementById('fnxt1').onclick=()=>{if(!l1){i1=(i1+1)%allC.length;upB();}};
-document.getElementById('fp2').onclick=()=>{if(!l2){i2=(i2-1+allC.length)%allC.length;upB();}};
-document.getElementById('fnxt2').onclick=()=>{if(!l2){i2=(i2+1)%allC.length;upB();}};
-document.getElementById('lb1').onclick=()=>{l1=!l1;upB();};
-document.getElementById('lb2').onclick=()=>{l2=!l2;upB();};
+function prevFighter(n){if(n===1&&!l1){i1=(i1-1+ALL_FIGHTERS.length)%ALL_FIGHTERS.length;updateFighterUI();}else if(n===2&&!l2){i2=(i2-1+ALL_FIGHTERS.length)%ALL_FIGHTERS.length;updateFighterUI();}}
+function nextFighter(n){if(n===1&&!l1){i1=(i1+1)%ALL_FIGHTERS.length;updateFighterUI();}else if(n===2&&!l2){i2=(i2+1)%ALL_FIGHTERS.length;updateFighterUI();}}
+function toggleLock(n){if(n===1)l1=!l1;else l2=!l2;updateFighterUI();}
+function selectBetCo(i){activeBetCo=i;document.getElementById('activeBetCo').textContent=BET_COS_DATA[i].n;document.querySelectorAll('.bet-slot').forEach((s,j)=>s.style.borderColor=j===i?'rgba(255,179,0,.45)':'rgba(255,179,0,.18)');}
 
-const energyDrinks=[{name:"RED BULL",tagline:"Gives you wings.",color:"#e53935"},{name:"MONSTER",tagline:"Unleash the beast.",color:"#00c853"},{name:"GHOST",tagline:"Zero sugar, max power.",color:"#7c4dff"},{name:"BANG",tagline:"Feel the surge.",color:"#0288d1"},{name:"CELSIUS",tagline:"Live fit.",color:"#f57c00"}];
-const betCompanies=[{name:"BetOnWorlds",odds_f1:1.8,odds_f2:2.0},{name:"MultiVerse Bet",odds_f1:2.1,odds_f2:1.75},{name:"HeroOdds",odds_f1:1.65,odds_f2:2.3},{name:"InfinityBet",odds_f1:2.4,odds_f2:1.6}];
-let selBetCo=0;
-const bcDiv=document.getElementById('betCompanies');
-betCompanies.forEach((co,i)=>{const el=document.createElement('div');el.className='bet-co'+(i===0?' sel':'');el.innerHTML=`<i class="fas fa-dice"></i> ${co.name}`;el.onclick=()=>{selBetCo=i; document.querySelectorAll('.bet-co').forEach((x,j)=>x.classList.toggle('sel',j===i)); updateOdds();}; bcDiv.appendChild(el);});
-function updateOdds(){const a=allC[i1],b=allC[i2],co=betCompanies[selBetCo]; document.getElementById('betOdds').innerHTML=`<div class="odds-chip"><div class="wstat-val" style="color:var(--amber)">${co.odds_f1.toFixed(2)}x</div><div class="odds-name">${a.name}</div></div><div class="odds-chip"><div class="wstat-val" style="color:var(--muted2)">2.00x</div><div class="odds-name">Draw</div></div><div class="odds-chip"><div class="wstat-val" style="color:var(--amber)">${co.odds_f2.toFixed(2)}x</div><div class="odds-name">${b.name}</div></div>`;}
-const charActions={"Spider-Man":["swings between skyscrapers, web-shooting relentlessly","launches a venom strike from above"],"Iron Man":["locks on with JARVIS and fires a uni-beam blast","deploys nanotech armor"],"Superman":["launches into the sky then dives with heat vision blazing","channels solar energy into a ground-shattering punch"],"Batman":["vanishes in a smoke pellet and reappears behind","deploys an EMP batarang"],"Goku":["powers up to Super Saiyan Blue, ki erupting around him","fires a fully charged Kamehameha"],"Thanos":["clenches the Infinity Gauntlet and reorders reality","uses the Space Stone to teleport behind the opponent"],"Wolverine":["pops all six adamantium claws with a metallic SNIKT","heals from three direct blows and charges back in"],"Joker":["hurls a handful of razor-sharp playing cards","deploys a laughing-gas grenade"]};
-function getActions(name){return charActions[name]||[`${name} attacks with full force`,`${name} counters decisively`];}
-document.getElementById('fightBtn').onclick=()=>{
-  const a=allC[i1],b=allC[i2];
-  const log=document.getElementById('fightLog'); log.innerHTML='';
-  document.getElementById('winnerCard').classList.remove('show'); document.getElementById('drinkAd').classList.remove('show');
-  const ca=getCityForChar(a.name), cb=getCityForChar(b.name);
-  const drink=energyDrinks[Math.floor(Math.random()*energyDrinks.length)];
-  const aActs=getActions(a.name), bActs=getActions(b.name);
-  let hpA=100,hpB=100; const dmgA=[Math.floor(25+Math.random()*20),Math.floor(15+Math.random()*15),Math.floor(20+Math.random()*25)];
-  const dmgB=[Math.floor(20+Math.random()*20),Math.floor(18+Math.random()*18),Math.floor(22+Math.random()*22)];
-  hpB-=dmgA[0]; hpA-=dmgB[0]; hpB-=dmgA[1]; hpA-=dmgB[1]; hpB-=dmgA[2]; hpA-=dmgB[2];
-  const winner=hpA>hpB?a:b; const loser=hpA>hpB?b:a;
-  const lines=[
-    {cls:'loc',txt:`📍 LOCATION: ${ca.city} (${a.universe}) × ${cb.city} (${b.universe})`},
-    {cls:'atk',txt:`⚔️  ${a.name} vs ${b.name} — the ground cracks as they face off.`},
-    {cls:'',txt:`🔴 ${a.name} ${aActs[0]}`},{cls:'atk',txt:`💥 Direct hit on ${b.name}! (−${dmgA[0]} HP)`},
-    {cls:'',txt:`🔵 ${b.name} ${bActs[0]}`},{cls:'atk',txt:`💥 ${a.name} takes the blow! (−${dmgB[0]} HP)`},
-    {cls:'drink',txt:`🥤 AD: ${a.name} cracks open a ${drink.name} — "${drink.tagline}" [+8 Energy Surge]`},
-    {cls:'',txt:`⚡ Energized — ${a.name} ${aActs[1]}`},{cls:'atk',txt:`💥 ${b.name} staggers! (−${dmgA[1]} HP)`},
-    {cls:'drink',txt:`🥤 AD: ${b.name} grabs a ${drink.name} — "${drink.tagline}" [+6 Energy Surge]`},
-    {cls:'',txt:`⚡ ${b.name} ${bActs[1]}`},{cls:'atk',txt:`💥 Brutal counter on ${a.name}! (−${dmgB[1]} HP)`},
-    {cls:'',txt:`🔴 Final round — ${a.name} ${aActs[0]}`},{cls:'atk',txt:`💥 Devastating blow! (−${dmgA[2]} HP)`},
-    {cls:'',txt:`🔵 ${b.name} tries to come back — ${bActs[1]}`},{cls:'atk',txt:`💥 Lands on ${a.name}! (−${dmgB[2]} HP)`},
-    {cls:'win',txt:`🏆 WINNER: ${winner.name} — Final HP: ${Math.max(0,winner===a?hpA:hpB)} vs ${Math.max(0,winner===a?hpB:hpA)}`},
-  ];
-  lines.forEach((line,i)=>{setTimeout(()=>{const d=document.createElement('div');d.className=`flog-line ${line.cls}`;d.textContent=line.txt;log.appendChild(d);log.scrollTop=log.scrollHeight;},i*480);});
-  setTimeout(()=>{document.getElementById('winnerImg').src=winner.image; document.getElementById('winnerName').innerText=winner.name; document.getElementById('winnerStats').innerHTML=`<div class="wstat"><div class="wstat-val" style="color:var(--green)">${Math.max(0,winner===a?hpA:hpB)}</div><div class="wstat-lbl">HP Left</div></div><div class="wstat"><div class="wstat-val" style="color:var(--amber)">${dmgA.reduce((s,x)=>s+x,0)+dmgB.reduce((s,x)=>s+x,0)}</div><div class="wstat-lbl">Total Dmg</div></div><div class="wstat"><div class="wstat-val">${winner.universe}</div><div class="wstat-lbl">Universe</div></div>`; document.getElementById('winnerCard').classList.add('show');},lines.length*480+200);
-  setTimeout(()=>{const da=document.getElementById('drinkAd'); document.getElementById('drinkLogo').innerHTML=drink.name; document.getElementById('drinkLogo').style.color=drink.color; document.getElementById('drinkCopy').innerHTML=`${drink.tagline} — ${winner.name} drinks ${drink.name} before every battle.`; document.getElementById('drinkCta').style.background=drink.color; document.getElementById('drinkCta').onclick=()=>alert(`Demo: Visit ${drink.name} store`); da.classList.add('show');},lines.length*480+400);
-  setTimeout(()=>{if(typeof window.flyBetweenCities==='function'){const fromCity=getCityForChar(a.name); const toCity=getCityForChar(b.name); window.flyBetweenCities(fromCity,toCity);}},800);
-  updateOdds();
-};
-document.getElementById('betBtn').onclick=()=>{
-  const sel=document.getElementById('betSel').value;
-  const amount=parseFloat(document.getElementById('betAmount').value)||10;
-  const a=allC[i1],b=allC[i2],co=betCompanies[selBetCo];
-  const win=Math.random()>.5?a.name:b.name;
-  const betOnA=sel.includes(a.name);
-  const won=(betOnA&&win===a.name)||(!betOnA&&win===b.name);
-  const odds=betOnA?co.odds_f1:co.odds_f2;
-  const payout=(amount*odds).toFixed(2);
-  const res=document.getElementById('betResult');
-  if(won){res.className='bet-result won'; res.innerHTML=`🎉 You won! ${win} won. Payout: $${payout} (${odds}x odds via ${co.name}) — Demo only`;}
-  else{res.className='bet-result lost'; res.innerHTML=`😢 You lost $${amount.toFixed(2)}. ${win} won. Try again! — Demo only`;}
-};
-upB();
-
-// MARKETPLACE
-const seedListings=[
-  {type:'comic',title:'Dark Tomorrow Vol.1',desc:'Indie comic about a fallen hero\'s redemption arc across 48 pages.',price:4.99,univ:'Original',seller:'CreatorX',likes:128,views:3400},
-  {type:'video',title:'Rivals Tribute Cut',desc:'Fan-made cinematic edit — 4K, licensed beats, breathtaking transitions.',price:1.99,univ:'Marvel',seller:'FilmForge',likes:342,views:12000},
-  {type:'art',title:'Omega Character Sketch',desc:'Original character concept art — A2 print-ready, 300dpi.',price:8.00,univ:'Original',seller:'InkDreamer',likes:89,views:2100},
-  {type:'cosplay',title:'Arkham Batman Suit',desc:'Screen-accurate cosplay build — full foam EVA armor with LED eyes.',price:299.00,univ:'DC',seller:'ArmorSmith',likes:521,views:18700},
-  {type:'3d',title:'Iron Man MK50 Model',desc:'Fully rigged 3D model, FBX+OBJ, game-ready topology.',price:24.99,univ:'Marvel',seller:'PolyBuild',likes:204,views:7800},
-  {type:'comic',title:'Saiyan Chronicles',desc:'Fan-made Dragon Ball doujin — 64 pages of untold battles.',price:3.50,univ:'Dragon Ball',seller:'MangaFan99',likes:670,views:22000},
+const DRINKS=[
+  {name:'RED BULL',   tag:'Gives you wings.',               color:'#e53935',bg:'rgba(229,57,53,.14)'},
+  {name:'MONSTER',    tag:'Unleash the beast.',             color:'#00c853',bg:'rgba(0,200,83,.12)'},
+  {name:'GHOST',      tag:'Zero sugar. Max power.',         color:'#7c4dff',bg:'rgba(124,77,255,.12)'},
+  {name:'BANG',       tag:'Feel the surge.',                color:'#0288d1',bg:'rgba(2,136,209,.12)'},
+  {name:'CELSIUS',    tag:'Live fit. Fight harder.',        color:'#f57c00',bg:'rgba(245,124,0,.12)'},
+  {name:'ROCKSTAR',   tag:'Party like a rockstar.',         color:'#c62828',bg:'rgba(198,40,40,.14)'},
 ];
-const typeIcons={comic:'fa-book-open',video:'fa-video',art:'fa-paintbrush','3d':'fa-cube',cosplay:'fa-mask'};
-let currentCat='all';
-function renderListings(){
-  const grid=document.getElementById('listingsGrid'); grid.innerHTML='';
-  const filtered=currentCat==='all'?seedListings:seedListings.filter(l=>l.type===currentCat);
-  filtered.forEach(l=>{const card=document.createElement('div');card.className='lcard';card.innerHTML=`<div class="lcard-thumb"><i class="fas ${typeIcons[l.type]||'fa-star'}" style="color:rgba(255,255,255,.2)"></i><span class="lcard-type">${l.type}</span></div><div class="lcard-body"><div class="lcard-seller"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(l.seller)}"><span class="lcard-seller-name">${l.seller}</span></div><div class="lcard-title">${l.title}</div><div class="lcard-desc">${l.desc}</div><div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> ${l.likes}</span><span class="lstat"><i class="fas fa-eye"></i> ${l.views.toLocaleString()}</span><span class="lstat"><i class="fas fa-tag"></i> ${l.univ}</span></div><div class="lcard-footer"><span class="lcard-price ${l.price===0?'free':''}">${l.price===0?'FREE':'$'+l.price.toFixed(2)}</span><button class="buy-btn" onclick="alert('Demo: Purchase ${l.title} — checkout coming soon!')">${l.price===0?'Download':'Buy'}</button></div></div>`;grid.appendChild(card);});
+
+function startFight(){
+  const a=ALL_FIGHTERS[i1], b=ALL_FIGHTERS[i2];
+  lastF1=a; lastF2=b;
+  const log=document.getElementById('fightLog');
+  log.innerHTML='';
+  document.getElementById('winnerCard').classList.remove('show');
+  document.getElementById('comicBtn').classList.remove('show');
+  document.getElementById('fightBtn').disabled=true;
+
+  // HP
+  let hA=100,hB=100;
+  const dA=[25+Math.floor(Math.random()*18),14+Math.floor(Math.random()*16),20+Math.floor(Math.random()*22)];
+  const dB=[20+Math.floor(Math.random()*18),16+Math.floor(Math.random()*14),18+Math.floor(Math.random()*22)];
+  dA.forEach(d=>hB-=d); dB.forEach(d=>hA-=d);
+  const winner=hA>=hB?a:b;
+  lastWinner=winner;
+
+  // Drink ads
+  const d1=DRINKS[Math.floor(Math.random()*DRINKS.length)];
+  const d2=DRINKS[Math.floor(Math.random()*DRINKS.length)];
+  // Update drink containers
+  document.getElementById('drinkSlot1').querySelector('.drink-slot-inner').style.background=`linear-gradient(90deg,${d1.bg},transparent)`;
+  document.getElementById('drinkSlot1').querySelector('.ds-logo').textContent=d1.name;
+  document.getElementById('drinkSlot1').querySelector('.ds-logo').style.color=d1.color;
+  document.getElementById('drinkSlot1').querySelector('.ds-copy').textContent=d1.tag+` — ${a.name} drinks ${d1.name} before every fight.`;
+  document.getElementById('drinkSlot1').querySelector('.ds-cta').style.background=d1.color;
+  document.getElementById('drinkSlot1').querySelector('.ds-cta').style.color=d1.color==='#00c853'?'#000':'#fff';
+  document.getElementById('drinkSlot2').querySelector('.drink-slot-inner').style.background=`linear-gradient(90deg,${d2.bg},transparent)`;
+  document.getElementById('drinkSlot2').querySelector('.ds-logo').textContent=d2.name;
+  document.getElementById('drinkSlot2').querySelector('.ds-logo').style.color=d2.color;
+  document.getElementById('drinkSlot2').querySelector('.ds-copy').textContent=d2.tag+` — ${b.name}'s fuel of choice.`;
+  document.getElementById('drinkSlot2').querySelector('.ds-cta').style.background=d2.color;
+  document.getElementById('drinkSlot2').querySelector('.ds-cta').style.color=d2.color==='#00c853'?'#000':'#fff';
+
+  const lines=[
+    {c:'loc', t:`📍 ${a.city} (${a.univ}) × ${b.city} (${b.univ}) — the worlds collide`},
+    {c:'atk', t:`⚔️  ${a.name} vs ${b.name} — the ground fractures as they face off`},
+    {c:'narr',t:`🔴 ${a.name} ${a.actions[0]}`},
+    {c:'atk', t:`💥 Direct hit on ${b.name}! −${dA[0]} HP`},
+    {c:'hp',  t:`❤️  ${b.name}: ${Math.max(0,100-dA[0])} HP  |  ${a.name}: 100 HP`},
+    {c:'narr',t:`🔵 ${b.name} ${b.actions[0]}`},
+    {c:'atk', t:`💥 ${a.name} takes the blow! −${dB[0]} HP`},
+    {c:'hp',  t:`❤️  ${a.name}: ${Math.max(0,100-dB[0])} HP  |  ${b.name}: ${Math.max(0,100-dA[0])} HP`},
+    {c:'narr',t:`🥤 [${d1.name} AD] "${d1.tag}" — ${a.name} takes a long sip. +8 Energy`},
+    {c:'narr',t:`🔴 Fueled — ${a.name} ${a.actions[1]}`},
+    {c:'atk', t:`💥 ${b.name} staggers! −${dA[1]} HP`},
+    {c:'narr',t:`🥤 [${d2.name} AD] "${d2.tag}" — ${b.name} crushes the can. +6 Energy`},
+    {c:'narr',t:`🔵 ${b.name} ${b.actions[1]}`},
+    {c:'atk', t:`💥 Hard counter on ${a.name}! −${dB[1]} HP`},
+    {c:'narr',t:`🔴 Final round — ${a.name} ${a.actions[2]}`},
+    {c:'atk', t:`💥 Devastating blow! −${dA[2]} HP`},
+    {c:'narr',t:`🔵 ${b.name} tries to come back — ${b.actions[2]}`},
+    {c:'atk', t:`💥 Last counter! −${dB[2]} HP`},
+    {c:'hp',  t:`❤️  Final: ${a.name}: ${Math.max(0,hA)} HP  |  ${b.name}: ${Math.max(0,hB)} HP`},
+    {c:'win', t:`🏆 WINNER: ${winner.name} — standing with ${Math.max(0,winner===a?hA:hB)} HP remaining`},
+  ];
+  lastLines=lines;
+
+  lines.forEach((line,idx)=>{
+    setTimeout(()=>{
+      const d=document.createElement('div');
+      d.className=`ll ${line.c}`;
+      d.textContent=line.t;
+      log.appendChild(d);
+      log.scrollTop=log.scrollHeight;
+      if(idx===lines.length-1){
+        // Show winner
+        document.getElementById('winnerImg').src=`https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(winner.seed)}`;
+        document.getElementById('winnerName').textContent=winner.name;
+        const totalDmg=[...dA,...dB].reduce((s,x)=>s+x,0);
+        document.getElementById('winnerStats').innerHTML=`
+          <div class="wstat"><div class="wstat-v" style="color:var(--green)">${Math.max(0,winner===a?hA:hB)}</div><div class="wstat-l">HP Left</div></div>
+          <div class="wstat"><div class="wstat-v" style="color:var(--amber)">${totalDmg}</div><div class="wstat-l">Total Dmg</div></div>
+          <div class="wstat"><div class="wstat-v">${winner.univ}</div><div class="wstat-l">Universe</div></div>`;
+        document.getElementById('winnerCard').classList.add('show');
+        document.getElementById('comicBtn').classList.add('show');
+        document.getElementById('fightBtn').disabled=false;
+        // Trigger globe flight
+        setTimeout(()=>{
+          if(typeof window.flyTo==='function'&&a.lat&&b.lat){
+            window.flyTo({n:a.city,name:a.city,lat:a.lat,lon:a.lon},{n:b.city,name:b.city,lat:b.lat,lon:b.lon});
+          }
+        },300);
+      }
+    },idx*420);
+  });
 }
-renderListings();
-document.querySelectorAll('.cbtab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.cbtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');currentCat=t.dataset.cat;renderListings();});
-const uploadModal=document.getElementById('uploadModal');
-document.getElementById('openUpload').onclick=()=>uploadModal.classList.add('open');
-document.getElementById('closeUpload').onclick=()=>uploadModal.classList.remove('open');
-uploadModal.onclick=e=>{if(e.target===uploadModal)uploadModal.classList.remove('open');};
-document.getElementById('pubBtn').onclick=()=>{const title=document.getElementById('uTitle').value.trim();const cat=document.getElementById('uCat').value;const price=parseFloat(document.getElementById('uPrice').value)||0;const desc=document.getElementById('uDesc').value.trim();const univ=document.getElementById('uUniv').value.trim()||'Original';if(!title){document.getElementById('uTitle').focus();return;}seedListings.unshift({type:cat,title,desc:desc||'No description.',price,univ,seller:'You',likes:0,views:0});currentCat='all';document.querySelectorAll('.cbtab').forEach((x,i)=>x.classList.toggle('on',i===0));renderListings();uploadModal.classList.remove('open');['uTitle','uPrice','uDesc','uUniv','uFile'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});};
-const authModal=document.getElementById('authModal');
-document.getElementById('openAuth').onclick=()=>authModal.classList.add('open');
-document.getElementById('closeAuth').onclick=()=>authModal.classList.remove('open');
-authModal.onclick=e=>{if(e.target===authModal)authModal.classList.remove('open');};
-document.getElementById('mockSignup').onclick=()=>{authModal.classList.remove('open');alert('Welcome to WORLDS! (Demo account created)');};
+
+function exportComic(){
+  if(!lastLines.length)return;
+  const a=lastF1,b=lastF2,winner=lastWinner;
+  const COL={'loc':'#ffb300','atk':'#ff2800','hp':'#00e676','win':'#ffb300','narr':'#448aff','':'#ede9e2'};
+  const panels=lastLines.map(l=>`<div style="background:rgba(255,255,255,.04);border:2px solid ${(COL[l.c]||'#ede9e2')}33;border-left:4px solid ${COL[l.c]||'#ede9e2'};border-radius:12px;padding:14px 18px;margin-bottom:10px;font-size:14px;line-height:1.6;color:${COL[l.c]||'#ede9e2'};font-family:DM Sans,sans-serif">${l.t}</div>`).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>⚔ ${a.name} vs ${b.name}</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Sans&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#07070c;color:#ede9e2;font-family:'DM Sans',sans-serif;padding:2rem;max-width:800px;margin:0 auto;}
+h1{font-family:'Barlow Condensed',sans-serif;font-size:3rem;letter-spacing:.1em;color:#ff2800;text-align:center;margin-bottom:.5rem;}
+.sub{text-align:center;color:rgba(237,233,226,.45);font-size:.85rem;margin-bottom:2rem;}
+.fighters{display:flex;gap:1.5rem;justify-content:center;margin-bottom:2rem;flex-wrap:wrap;}
+.fbox{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1rem;text-align:center;min-width:150px;}
+.fbox img{width:80px;height:80px;border-radius:50%;border:2px solid #ff2800;}
+.fn{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;margin-top:.5rem;}
+.fu{font-size:.7rem;color:rgba(237,233,226,.45);}
+</style></head><body>
+<h1>⚔ ${a.name} vs ${b.name}</h1>
+<div class="sub">WORLDS Battle Simulation — Comic Export</div>
+<div class="fighters">
+  <div class="fbox"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${a.seed}"><div class="fn">${a.name}</div><div class="fu">${a.univ}</div></div>
+  <div style="display:flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:2rem;color:rgba(237,233,226,.3)">VS</div>
+  <div class="fbox"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${b.seed}"><div class="fn">${b.name}</div><div class="fu">${b.univ}</div></div>
+</div>
+${panels}
+<div style="margin-top:2rem;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;color:#ffb300;">🏆 ${winner.name} WINS</div>
+<div style="margin-top:.5rem;text-align:center;font-size:.7rem;color:rgba(237,233,226,.25);">Generated by WORLDS</div>
+</body></html>`;
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  link.download=`${a.name}_vs_${b.name}_comic.html`;
+  link.click();
+}
+
+function placeBet(){
+  const sel=document.getElementById('betSel').value;
+  const amt=parseFloat(document.getElementById('betAmt').value)||10;
+  const a=ALL_FIGHTERS[i1],b=ALL_FIGHTERS[i2];
+  const co=BET_COS_DATA[activeBetCo];
+  const win=Math.random()>.5?a.name:b.name;
+  const onA=sel.includes(a.name);
+  const won=(onA&&win===a.name)||(!onA&&win===b.name);
+  const odds=onA?co.o1:co.o2;
+  const payout=(amt*odds).toFixed(2);
+  const res=document.getElementById('betResult');
+  res.className='bet-result '+(won?'won':'lost');
+  res.textContent=won?`🎉 You won! ${win} won. Payout: $${payout} (${odds}x via ${co.n}) — Demo`:`😢 You lost $${amt.toFixed(2)}. ${win} won. Try again! — Demo`;
+}
+
+/* ── MARKET FILTER ── */
+function filterCat(el,cat){
+  document.querySelectorAll('.cbtab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.lcard').forEach(c=>{
+    c.style.display=(cat==='all'||c.dataset.cat===cat)?'flex':'none';
+  });
+}
+
+/* ── PUBLISH NEW LISTING ── */
+function publishListing(){
+  const title=document.getElementById('uTitle').value.trim();
+  const cat=document.getElementById('uCat').value;
+  const price=parseFloat(document.getElementById('uPrice').value)||0;
+  const desc=document.getElementById('uDesc').value.trim();
+  const univ=document.getElementById('uUniv').value.trim()||'Original';
+  if(!title){document.getElementById('uTitle').focus();return;}
+  const COLS={'comic':'rgba(255,40,0,.15)','art':'rgba(124,77,255,.15)','video':'rgba(2,136,209,.15)','3d':'rgba(0,230,118,.1)','cosplay':'rgba(0,200,83,.1)'};
+  const ICOLS={'comic':'#ff2800','art':'#7c4dff','video':'#0288d1','3d':'#00e676','cosplay':'#00c853'};
+  const ICONS={'comic':'fa-book-open','art':'fa-paintbrush','video':'fa-video','3d':'fa-cube','cosplay':'fa-mask'};
+  const safe=s=>s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  const seller='You';
+  const card=document.createElement('div');
+  card.className='lcard'; card.dataset.cat=cat;
+  card.innerHTML=`
+    <div class="lcard-thumb" style="background:linear-gradient(135deg,#0d0d16,${COLS[cat]||'rgba(255,40,0,.1)'})">
+      <i class="fas ${ICONS[cat]||'fa-star'}" style="color:${ICOLS[cat]||'#ff2800'}33"></i>
+      <span class="lcard-type" style="color:${ICOLS[cat]||'#ff2800'}">${cat}</span>
+    </div>
+    <div class="lcard-body">
+      <div class="seller-row"><img src="https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(seller)}" alt=""><span class="seller-name">${safe(seller)}</span></div>
+      <div class="lcard-title">${safe(title)}</div>
+      <div class="lcard-desc">${safe(desc||'No description provided.')}</div>
+      <div class="lcard-tags"><span class="ltag"><i class="fas fa-tag"></i> ${safe(univ)}</span></div>
+      <div class="lcard-stats"><span class="lstat"><i class="fas fa-heart"></i> 0</span><span class="lstat"><i class="fas fa-eye"></i> 0</span></div>
+      <div class="lcard-footer">
+        <span class="lcard-price ${price===0?'free':''}">${price===0?'FREE':'$'+price.toFixed(2)}</span>
+        <button class="buy-btn" onclick="alert('Demo: ${safe(title)} — ${price===0?'Free':'$'+price.toFixed(2)}')">${price===0?'Download':'Buy'}</button>
+      </div>
+    </div>`;
+  document.getElementById('listingsGrid').prepend(card);
+  // Reset filter to all
+  filterCat(document.querySelector('.cbtab[data-cat="all"]'),'all');
+  document.getElementById('upload-overlay').classList.remove('open');
+  ['uTitle','uPrice','uDesc','uUniv','uFile'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
+
+/* Init */
+updateFighterUI();
 </script>
 </body>
 </html>
