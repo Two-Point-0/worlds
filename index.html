@@ -4,88 +4,49 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Ma3 — Move · Market · Mirth</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/lucide@latest"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Unbounded:wght@400;700;900&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;900&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.128.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.128.0/examples/jsm/"}}</script>
 <style>
-:root{
-  --ink:#06060a;--ink2:#0c0c14;--ink3:#12121c;--ink4:#1a1a26;
-  --gold:#ffb300;--sun:#f5a623;--fire:#ff2800;--red:#ff3d2e;--green:#00e676;--sage:#00c896;--sky:#448aff;--blue:#3d8bff;--lilac:#b388ff;--purple:#b388ff;
-  --white:#f4f0e8;--muted:rgba(244,240,232,0.35);--muted2:rgba(244,240,232,0.65);
-  --glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.08);--glass3:rgba(255,255,255,0.12);
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
-  --nav-h:68px;--top-h:56px;--r:18px;
-  --font:'Syne','Space Grotesk',sans-serif;
-  --font-display:'Unbounded','Barlow Condensed',sans-serif;
-  --font-mono:'DM Mono',monospace;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:var(--font);background:var(--ink);color:var(--white);overflow-x:hidden;min-height:100vh;-webkit-tap-highlight-color:transparent;}
-::-webkit-scrollbar{width:0px;height:0px;}
-
-/* ── LOADER ── */
-#loader{position:fixed;inset:0;z-index:20000;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .9s, visibility .9s;}
-#loader.done{opacity:0;visibility:hidden;pointer-events:none;}
+:root{--ink:#06060a;--ink2:#0c0c14;--ink3:#12121c;--ink4:#1a1a26;--gold:#ffb300;--sun:#f5a623;--fire:#ff2800;--red:#ff3d2e;--green:#00e676;--sage:#00c896;--sky:#448aff;--blue:#3d8bff;--lilac:#b388ff;--purple:#b388ff;--white:#f4f0e8;--muted:rgba(244,240,232,0.35);--muted2:rgba(244,240,232,0.65);--glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.08);--glass3:rgba(255,255,255,0.12);--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--nav-h:68px;--top-h:56px;--r:18px;--font:'Syne','Space Grotesk',sans-serif;--font-display:'Unbounded','Barlow Condensed',sans-serif;--font-mono:'DM Mono',monospace;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}body{font-family:var(--font);background:var(--ink);color:var(--white);overflow-x:hidden;min-height:100vh;-webkit-tap-highlight-color:transparent;}::-webkit-scrollbar{width:0px;height:0px;}
+#loader{position:fixed;inset:0;z-index:20000;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .9s, visibility .9s;}#loader.done{opacity:0;visibility:hidden;pointer-events:none;}
 .loader-stage{position:relative;height:100px;display:flex;align-items:center;justify-content:center;width:100%;}
 .lb-mathree-full{position:absolute;font-family:var(--font-display);font-size:3.2rem;font-weight:900;letter-spacing:-.03em;color:var(--white);transition:all .6s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;}
-.lb-mathree-full .thr{color:var(--muted2);transition:all .5s;}
-.lb-mathree-full .ee{color:var(--gold);display:inline-block;transition:all .6s cubic-bezier(0.34,1.56,0.64,1);}
+.lb-mathree-full .thr{color:var(--muted2);transition:all .5s;}.lb-mathree-full .ee{color:var(--gold);display:inline-block;transition:all .6s cubic-bezier(0.34,1.56,0.64,1);}
 .lb-ma3{position:absolute;font-family:var(--font-display);font-size:3.2rem;font-weight:900;letter-spacing:-.03em;color:var(--white);opacity:0;transform:scale(.7);transition:all .6s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;}
 .lb-ma3 .three{color:var(--gold);display:inline-block;transform-origin:center 60%;}
-#loader.phase1 .lb-mathree-full{opacity:1;transform:scale(1);}
-#loader.phase1 .lb-ma3{opacity:0;transform:scale(.7);}
-#loader.phase2 .lb-mathree-full{opacity:0;transform:scale(1.2);}
-#loader.phase2 .lb-mathree-full .thr{opacity:0;letter-spacing:.5em;}
-#loader.phase2 .lb-mathree-full .ee{transform:rotate(-180deg) scale(0);opacity:0;}
-#loader.phase2 .lb-ma3{opacity:1;transform:scale(1);}
-#loader.phase2 .lb-ma3 .three{animation:spin3 .8s cubic-bezier(0.34,1.56,0.64,1) forwards;}
+#loader.phase1 .lb-mathree-full{opacity:1;transform:scale(1);}#loader.phase1 .lb-ma3{opacity:0;transform:scale(.7);}
+#loader.phase2 .lb-mathree-full{opacity:0;transform:scale(1.2);}#loader.phase2 .lb-mathree-full .thr{opacity:0;letter-spacing:.5em;}#loader.phase2 .lb-mathree-full .ee{transform:rotate(-180deg) scale(0);opacity:0;}
+#loader.phase2 .lb-ma3{opacity:1;transform:scale(1);}#loader.phase2 .lb-ma3 .three{animation:spin3 .8s cubic-bezier(0.34,1.56,0.64,1) forwards;}
 @keyframes spin3{0%{transform:rotate(-360deg) scale(0);}100%{transform:rotate(0deg) scale(1);}}
 .theme-words{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center;}
 .theme-word{font-size:.72rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;opacity:0;transition:all .5s;white-space:nowrap;}
-.theme-word.m{animation:themeInHold 2.6s forwards .4s;}
-.theme-word.a{animation:themeInHold 2.6s forwards 1.0s;}
-.theme-word.b{animation:themeInHold 2.6s forwards 1.6s;}
+.theme-word.m{animation:themeInHold 2.6s forwards .4s;}.theme-word.a{animation:themeInHold 2.6s forwards 1.0s;}.theme-word.b{animation:themeInHold 2.6s forwards 1.6s;}
 @keyframes themeInHold{0%{opacity:0;transform:translateY(12px);filter:blur(6px);}15%{opacity:1;transform:translateY(0);filter:blur(0);}85%{opacity:1;transform:translateY(0);filter:blur(0);}100%{opacity:0;transform:translateY(-6px);filter:blur(2px);}}
 .loader-track{width:160px;height:3px;background:var(--glass2);border-radius:99px;margin-top:1.2rem;overflow:hidden;}
 .loader-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--sage));border-radius:99px;animation:loadBar 2.6s cubic-bezier(0.4,0,0.2,1) forwards;}
 @keyframes loadBar{to{width:100%;}}
-
-/* ── NOISE ── */
 body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");opacity:.5;}
-
-/* ── TOP BAR ── */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:var(--top-h);background:rgba(6,6,10,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:center;padding:0 1.1rem;}
 .topbar-left{position:absolute;left:1.1rem;}
 .app-logo{font-family:var(--font-display);font-size:1.5rem;font-weight:900;letter-spacing:-.02em;display:flex;align-items:center;gap:1px;}
-.logo-ma{color:var(--white);}
-.logo-3{color:var(--gold);display:inline-block;transition:transform .8s cubic-bezier(0.34,1.56,0.64,1);transform-origin:center 60%;}
-.logo-3.spin{transform:rotate(360deg);}
+.logo-ma{color:var(--white);}.logo-3{color:var(--gold);display:inline-block;transition:transform .8s cubic-bezier(0.34,1.56,0.64,1);transform-origin:center 60%;}.logo-3.spin{transform:rotate(360deg);}
 .logo-sub{font-size:.5rem;font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:block;margin-top:-3px;margin-left:2px;}
 .top-right{position:absolute;right:1.1rem;display:flex;align-items:center;gap:8px;}
 .token-pill{display:flex;align-items:center;gap:5px;background:rgba(255,179,0,0.1);border:1px solid rgba(255,179,0,0.25);border-radius:99px;padding:5px 11px;font-family:var(--font-mono);font-size:.72rem;font-weight:500;color:var(--gold);}
 .icon-btn{width:34px;height:34px;border-radius:50%;background:var(--glass2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted2);font-size:.85rem;transition:.15s;}
 .icon-btn:hover{color:var(--white);border-color:var(--border2);}
-
-/* ── BOTTOM NAV (7 items) ── */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:900;height:var(--nav-h);background:rgba(6,6,10,0.96);backdrop-filter:blur(24px);border-top:1px solid var(--border2);display:grid;grid-template-columns:repeat(7,1fr);align-items:center;padding:0 .1rem;}
 .bn{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 0;transition:.2s;color:var(--muted);position:relative;}
-.bn.on{color:var(--gold);}
-.bn-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:.2s;border:1px solid transparent;}
+.bn.on{color:var(--gold);}.bn-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:.2s;border:1px solid transparent;}
 .bn.on .bn-ic{background:rgba(255,179,0,0.12);border-color:rgba(255,179,0,0.25);}
 .bn-lbl{font-size:.5rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
-.bn-dot{position:absolute;top:4px;right:calc(50% - 16px);width:5px;height:5px;border-radius:50%;background:var(--fire);}
-
-/* ── PAGES ── */
 .page{display:none;min-height:100vh;padding-top:calc(var(--top-h) + 12px);padding-bottom:calc(var(--nav-h) + 20px);}
-.page.on{display:block;}
-.inner{max-width:640px;margin:0 auto;padding:0 1rem;}
-
-/* ── SHARED ── */
-.ph{margin-bottom:1.2rem;}
-.ph h2{font-family:var(--font-display);font-size:1.7rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;}
+.page.on{display:block;}.inner{max-width:640px;margin:0 auto;padding:0 1rem;}
+.ph{margin-bottom:1.2rem;}.ph h2{font-family:var(--font-display);font-size:1.7rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;}
 .ph p{font-size:.78rem;color:var(--muted2);margin-top:.3rem;}
 .sec-label{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
 .pill-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0;margin-bottom:.8rem;}
@@ -106,12 +67,10 @@ body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
 .btn-sage{background:var(--sage);color:#000;padding:10px 18px;font-size:.8rem;}
 .btn-sage:hover{box-shadow:0 0 16px rgba(0,200,150,.4);}
 .finput{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--white);padding:10px 13px;border-radius:10px;font-family:var(--font);font-size:.84rem;transition:.15s;width:100%;}
-.finput:focus{outline:none;border-color:rgba(255,179,0,.4);}
-.finput::placeholder{color:var(--muted);}
+.finput:focus{outline:none;border-color:rgba(255,179,0,.4);}.finput::placeholder{color:var(--muted);}
 label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px;}
 .overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(6,6,10,.92);backdrop-filter:blur(18px);align-items:center;justify-content:center;padding:1rem;}
-.overlay.open{display:flex;}
-@keyframes popIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:none;}}
+.overlay.open{display:flex;}@keyframes popIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:none;}}
 .mbox{background:rgba(10,10,18,.98);border:1px solid var(--border2);border-radius:22px;padding:1.6rem;width:100%;max-width:460px;animation:popIn .2s forwards;max-height:92vh;overflow-y:auto;}
 .mhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;}
 .mhead h3{font-family:var(--font-display);font-size:1.2rem;font-weight:700;letter-spacing:-.02em;}
@@ -122,14 +81,8 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .bsheet-inner{background:var(--ink3);border-top:1px solid var(--border2);border-radius:24px 24px 0 0;padding:1.2rem 1rem 2rem;width:100%;max-width:640px;animation:slideUp .3s forwards;}
 @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
 .bsheet-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto .8rem;}
-
-/* TOAST */
 .confirm-toast{position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;transform:translateX(-50%);background:rgba(0,200,150,.15);backdrop-filter:blur(16px);border:1px solid rgba(0,200,150,.4);border-radius:14px;padding:.7rem 1.2rem;z-index:9995;display:flex;align-items:center;gap:10px;font-size:.8rem;font-weight:600;color:var(--sage);max-width:340px;width:calc(100% - 2rem);transition:opacity .3s;opacity:0;pointer-events:none;}
 .confirm-toast.show{opacity:1;}
-
-/*═══════════════════════════════════════
-  HOME
-═══════════════════════════════════════*/
 .home-hero{background:linear-gradient(135deg,rgba(255,179,0,.08),rgba(255,40,0,.04));border:1px solid rgba(255,179,0,.15);border-radius:24px;padding:1.4rem;margin-bottom:1.2rem;}
 .hero-greeting{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;}
 .hero-name{font-family:var(--font-display);font-size:1.9rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;}
@@ -140,20 +93,12 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .m3-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:.6;}
 .m3-card:hover{transform:translateY(-3px);border-color:var(--accent);}
 .m3-ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin:0 auto .5rem;background:rgba(255,255,255,.04);}
-.m3-title{font-weight:700;font-size:.82rem;}
-.m3-sub{font-size:.62rem;color:var(--muted);margin-top:2px;}
+.m3-title{font-weight:700;font-size:.82rem;}.m3-sub{font-size:.62rem;color:var(--muted);margin-top:2px;}
 .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1.2rem;}
 .qcard{background:var(--glass);border:1px solid var(--border2);border-radius:var(--r);padding:1rem;cursor:pointer;transition:.18s;}
 .qcard:hover{transform:translateY(-2px);border-color:rgba(255,179,0,.25);}
 .qcard-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:.5rem;}
-.qcard-title{font-weight:700;font-size:.82rem;}
-.qcard-sub{font-size:.62rem;color:var(--muted);}
-.move-sub-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-top:.4rem;}
-.msub-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:1rem;text-align:center;cursor:pointer;transition:.15s;}
-.msub-card:hover{border-color:var(--gold);background:rgba(255,179,0,.06);transform:translateY(-2px);}
-.msub-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin:0 auto .4rem;}
-.msub-title{font-weight:700;font-size:.78rem;}
-.msub-desc{font-size:.58rem;color:var(--muted);margin-top:2px;}
+.qcard-title{font-weight:700;font-size:.82rem;}.qcard-sub{font-size:.62rem;color:var(--muted);}
 .univ-panel{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-top:.8rem;}
 @media(max-width:600px){.univ-panel{grid-template-columns:1fr;}}
 .ucol{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
@@ -162,8 +107,7 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .ci{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;transition:.13s;}
 .ci:hover,.ci.on{background:rgba(255,179,0,.07);}
 .ci img{width:36px;height:36px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;}
-.ci-name{font-size:.76rem;font-weight:600;}
-.ci-role{font-size:.6rem;color:var(--muted);}
+.ci-name{font-size:.76rem;font-weight:600;}.ci-role{font-size:.6rem;color:var(--muted);}
 .bio-panel{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:.9rem;display:flex;flex-direction:column;gap:.5rem;}
 .bio-img{width:72px;height:72px;border-radius:50%;border:2px solid var(--gold);margin:0 auto;display:block;}
 .bio-name{font-family:var(--font-display);font-size:1rem;font-weight:700;text-align:center;margin-top:.3rem;}
@@ -171,21 +115,9 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .bs-l{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
 .bs-v{font-size:.74rem;margin-top:1px;}
 .bio-story{font-size:.74rem;line-height:1.6;color:var(--muted2);border-left:2px solid rgba(255,179,0,.35);padding-left:.7rem;}
-
-/*═══════════════════════════════════════
-  MA3 PAGE - RETHOUGHT
-═══════════════════════════════════════*/
 .ma3-header{padding:.6rem 1rem .3rem;}
 .ma3-header h2{font-family:var(--font-display);font-size:1.4rem;font-weight:900;}
 .ma3-header p{font-size:.72rem;color:var(--muted2);}
-.tube-tabs{display:flex;gap:4px;padding:0 1rem .8rem;overflow-x:auto;scrollbar-width:none;}
-.tube-tabs::-webkit-scrollbar{display:none;}
-.ttab{cursor:pointer;white-space:nowrap;padding:7px 14px;border-radius:99px;background:var(--glass);border:1px solid var(--border);font-size:.72rem;font-weight:600;transition:.15s;color:var(--muted);}
-.ttab:hover,.ttab.on{background:rgba(255,40,0,.1);border-color:rgba(255,40,0,.35);color:var(--fire);}
-.tube-panel{display:none;}
-.tube-panel.on{display:block;}
-
-/* MAP TAB - full integrated */
 .ma3-map-full{position:relative;height:55vw;max-height:360px;min-height:220px;border-radius:18px;overflow:hidden;border:1px solid var(--border2);margin:0 1rem .6rem;}
 .ma3-map-full #ma3MapFull{width:100%;height:100%;}
 .map-overlay-controls{position:absolute;top:8px;right:8px;z-index:500;display:flex;flex-direction:column;gap:5px;}
@@ -195,43 +127,24 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .map-legend{position:absolute;bottom:8px;left:8px;z-index:500;background:rgba(6,6,10,.88);border:1px solid var(--border2);border-radius:10px;padding:6px 10px;}
 .ml-item{display:flex;align-items:center;gap:6px;font-size:.58rem;color:var(--muted2);margin-bottom:2px;}
 .ml-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-
-/* ROUTE LIST */
 .route-search-bar{display:flex;gap:6px;padding:0 1rem .5rem;align-items:center;}
 .route-search-bar input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--white);padding:8px 12px;border-radius:10px;font-family:var(--font);font-size:.8rem;outline:none;}
 .route-search-bar input:focus{border-color:rgba(255,40,0,.4);}
-.route-search-bar input::placeholder{color:var(--muted);}
-
 .stop-card{background:var(--glass);border:1px solid var(--border);border-radius:14px;margin:0 1rem .5rem;overflow:hidden;cursor:pointer;transition:.15s;}
 .stop-card:hover{border-color:rgba(255,40,0,.3);}
 .stop-card-head{display:flex;align-items:center;gap:10px;padding:.6rem .8rem;}
 .stop-badge{width:36px;height:36px;border-radius:50%;background:var(--fire);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.75rem;font-weight:700;flex-shrink:0;}
-.stop-info{flex:1;}
-.stop-name{font-weight:700;font-size:.82rem;}
-.stop-meta{font-size:.6rem;color:var(--muted);margin-top:1px;}
+.stop-info{flex:1;}.stop-name{font-weight:700;font-size:.82rem;}.stop-meta{font-size:.6rem;color:var(--muted);margin-top:1px;}
 .stop-routes{display:flex;gap:4px;flex-wrap:wrap;padding:.3rem .8rem .6rem 58px;}
 .rpill{padding:3px 9px;border-radius:99px;font-size:.6rem;font-weight:700;background:rgba(255,40,0,.12);color:var(--fire);border:1px solid rgba(255,40,0,.25);cursor:pointer;transition:.13s;}
 .rpill:hover{background:rgba(255,40,0,.25);}
-.rpill.blue{background:rgba(68,138,255,.12);color:var(--sky);border-color:rgba(68,138,255,.25);}
-.rpill.blue:hover{background:rgba(68,138,255,.25);}
-.rpill.gold{background:rgba(255,179,0,.12);color:var(--gold);border-color:rgba(255,179,0,.25);}
-.rpill.gold:hover{background:rgba(255,179,0,.25);}
-.rpill.sage{background:rgba(0,200,150,.12);color:var(--sage);border-color:rgba(0,200,150,.25);}
-
-/* Means that pass this stop */
 .stop-means-list{background:rgba(0,0,0,.4);border-top:1px solid var(--border);padding:.5rem .8rem;display:none;}
 .stop-means-list.open{display:block;}
 .smeans-item{display:flex;align-items:center;gap:8px;padding:.4rem .5rem;border-radius:8px;cursor:pointer;transition:.13s;}
 .smeans-item:hover{background:rgba(255,179,0,.06);}
 .smeans-no{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.72rem;font-weight:700;flex-shrink:0;color:#fff;}
-.smeans-info{flex:1;}
-.smeans-name{font-size:.78rem;font-weight:600;}
-.smeans-route{font-size:.6rem;color:var(--muted);}
+.smeans-info{flex:1;}.smeans-name{font-size:.78rem;font-weight:600;}.smeans-route{font-size:.6rem;color:var(--muted);}
 .smeans-fare{font-family:var(--font-mono);font-size:.72rem;color:var(--gold);}
-
-/* PLANNER */
-.planner-toggle-btn{margin:0 1rem .5rem;width:calc(100% - 2rem);padding:9px;border-radius:99px;background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.25);color:var(--sage);font-family:var(--font);font-weight:700;font-size:.78rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:.15s;}
-.planner-toggle-btn:hover{background:rgba(0,200,150,.14);}
 .planner-box{background:var(--glass);border:1px solid var(--border2);border-radius:18px;padding:1rem;margin:0 1rem .8rem;display:none;}
 .planner-box.open{display:block;}
 .planner-row{display:flex;align-items:center;gap:10px;padding:.4rem 0;}
@@ -244,38 +157,70 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .planner-meta{display:flex;gap:6px;margin-top:.6rem;align-items:center;flex-wrap:wrap;}
 .planner-chip{padding:5px 12px;border-radius:99px;background:var(--glass);border:1px solid var(--border);font-size:.7rem;font-weight:600;color:var(--muted);cursor:pointer;}
 .planner-chip.on{background:rgba(255,40,0,.1);border-color:rgba(255,40,0,.3);color:var(--fire);}
-
 .journey-result{background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:.8rem;margin:0 1rem .6rem;}
 .jr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;}
-.jr-time{font-family:var(--font-mono);font-size:.9rem;font-weight:500;}
-.jr-dur{font-size:.72rem;color:var(--muted);}
+.jr-time{font-family:var(--font-mono);font-size:.9rem;font-weight:500;}.jr-dur{font-size:.72rem;color:var(--muted);}
 .jr-routes{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:.4rem;}
 .jr-rno{padding:4px 10px;border-radius:99px;background:var(--fire);color:#fff;font-family:var(--font-mono);font-size:.72rem;font-weight:700;}
 .jr-arr{display:flex;align-items:center;gap:4px;font-size:.65rem;color:var(--muted);}
 .jr-fare{font-family:var(--font-mono);font-size:1rem;color:var(--gold);}
 .journey-leg{display:flex;align-items:center;gap:6px;padding:.4rem .6rem;background:rgba(0,0,0,.3);border-radius:8px;margin-bottom:.3rem;}
-.jl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.jl-text{font-size:.68rem;color:var(--muted2);}
+.jl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}.jl-text{font-size:.68rem;color:var(--muted2);}
 .jl-badge{padding:2px 7px;border-radius:99px;font-size:.58rem;font-weight:700;color:#fff;background:var(--fire);}
-
-/* DEPARTURES TAB */
 .dep-list{padding:0 1rem;}
 .dep-item{display:flex;align-items:center;gap:10px;padding:.6rem .8rem;background:var(--glass);border:1px solid var(--border);border-radius:14px;margin-bottom:.5rem;cursor:pointer;transition:.13s;}
 .dep-item:hover{border-color:rgba(255,179,0,.2);}
 .dep-badge{width:32px;height:32px;border-radius:50%;background:var(--fire);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.75rem;font-weight:700;flex-shrink:0;}
-.dep-info{flex:1;}
-.dep-dest{font-weight:700;font-size:.82rem;}
-.dep-via{font-size:.62rem;color:var(--muted);margin-top:1px;}
-.dep-time{font-family:var(--font-mono);font-size:.9rem;color:var(--gold);}
-.dep-min{font-size:.6rem;color:var(--muted);}
+.dep-info{flex:1;}.dep-dest{font-weight:700;font-size:.82rem;}.dep-via{font-size:.62rem;color:var(--muted);margin-top:1px;}
+.dep-time{font-family:var(--font-mono);font-size:.9rem;color:var(--gold);}.dep-min{font-size:.6rem;color:var(--muted);}
 
-/*═══════════════════════════════════════
-  HIRE NGANYA - MODERN
-═══════════════════════════════════════*/
+/* Vehicle Float Card */
+.vehicle-float{position:fixed;bottom:calc(var(--nav-h) + 10px);left:50%;transform:translateX(-50%) translateY(120%);width:calc(100% - 2rem);max-width:420px;background:rgba(8,8,14,.98);border:1px solid rgba(255,179,0,.25);border-radius:24px;padding:1.1rem;z-index:880;backdrop-filter:blur(20px);transition:transform .35s cubic-bezier(0.16,1,0.3,1);box-shadow:0 -8px 40px rgba(0,0,0,.6);}
+.vehicle-float.open{transform:translateX(-50%) translateY(0);}
+.vf-head{display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem;}
+.vf-img{width:72px;height:72px;border-radius:16px;object-fit:cover;border:2px solid var(--gold);background:var(--ink3);}
+.vf-meta{flex:1;}.vf-name{font-family:var(--font-display);font-size:1rem;font-weight:700;letter-spacing:-.02em;}
+.vf-plate{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);margin-top:1px;}
+.vf-route{font-size:.62rem;color:var(--gold);margin-top:2px;font-weight:600;}
+.vf-close{margin-left:auto;width:28px;height:28px;border-radius:50%;background:var(--glass2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);}
+.vf-race-title{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:.6rem 0 .4rem;}
+.race-bar{margin-bottom:.5rem;}
+.race-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
+.race-label{font-size:.62rem;font-weight:700;display:flex;align-items:center;gap:4px;}
+.race-val{font-family:var(--font-mono);font-size:.65rem;}
+.race-track{height:10px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;border:1px solid rgba(255,255,255,.08);position:relative;}
+.race-fill{height:100%;border-radius:99px;transition:width .9s cubic-bezier(0.34,1.56,0.64,1);position:relative;}
+.race-fill::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;border-radius:99px;background:rgba(255,255,255,.25);}
+.vf-actions{display:flex;gap:.5rem;margin-top:.7rem;}
+
+/* Stage / Lock-In Panel */
+.stage-panel{position:fixed;bottom:var(--nav-h);left:0;right:0;z-index:850;background:linear-gradient(to top,var(--ink3),rgba(12,12,20,.98));border-top:1px solid var(--border2);border-radius:24px 24px 0 0;padding:1rem 1rem 1.5rem;backdrop-filter:blur(16px);transform:translateY(110%);transition:transform .35s cubic-bezier(0.16,1,0.3,1);max-height:60vh;overflow-y:auto;}
+.stage-panel.open{transform:translateY(0);}
+.sp-title{font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:.6rem;display:flex;align-items:center;gap:6px;}
+.stage-row{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;margin-bottom:.4rem;transition:.15s;}
+.stage-row:hover{border-color:rgba(255,179,0,.2);}
+.stage-dist{width:52px;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:var(--gold);flex-shrink:0;}
+.stage-info{flex:1;}.stage-nm{font-weight:700;font-size:.8rem;}.stage-sub{font-size:.58rem;color:var(--muted);}
+.stage-btn{padding:6px 12px;border-radius:99px;font-size:.7rem;font-weight:700;border:none;cursor:pointer;font-family:var(--font);transition:.15s;}
+.stage-btn.lock{background:var(--sage);color:#000;}.stage-btn.lock:hover{box-shadow:0 0 12px rgba(0,200,150,.4);}
+.stage-btn.walk{background:rgba(255,179,0,.1);color:var(--gold);border:1px solid rgba(255,179,0,.25);}
+.stage-btn.walk:hover{background:rgba(255,179,0,.2);}
+.sp-status{font-size:.65rem;color:var(--muted2);text-align:center;margin-top:.4rem;padding:.4rem;background:rgba(0,0,0,.3);border-radius:8px;}
+
+/* Ride Rate Overlay */
+.ride-rate-overlay{display:none;position:fixed;inset:0;z-index:1500;background:rgba(6,6,10,.96);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:1rem;}
+.ride-rate-overlay.open{display:flex;}
+.ride-rate-box{background:rgba(8,8,16,.98);border:1px solid rgba(0,200,150,.25);border-radius:24px;padding:1.4rem;width:100%;max-width:420px;animation:popIn .25s forwards;}
+.rr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+.rr-head h3{font-family:var(--font-display);font-size:1.1rem;}
+.rr-driver{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;}
+.rr-av{width:56px;height:56px;border-radius:14px;background:var(--glass2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;border:1px solid var(--border2);}
+.rr-name{font-weight:700;font-size:.9rem;}.rr-car{font-size:.62rem;color:var(--muted);margin-top:1px;}
+
+/* Hire */
 .hire-hero{background:linear-gradient(135deg,rgba(255,179,0,.12),rgba(255,40,0,.06));border:1px solid rgba(255,179,0,.22);border-radius:20px;padding:1.1rem;margin:0 1rem .8rem;text-align:center;}
 .hire-hero-title{font-family:var(--font-display);font-size:1.2rem;font-weight:900;letter-spacing:-.02em;}
 .hire-hero-sub{font-size:.72rem;color:var(--muted2);margin-top:.2rem;}
-
 .hire-occasions{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;padding:0 1rem;margin-bottom:.8rem;}
 .hire-occ{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:.7rem .5rem;text-align:center;cursor:pointer;transition:.18s;position:relative;overflow:hidden;}
 .hire-occ:hover{transform:translateY(-3px);}
@@ -285,11 +230,8 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .hire-occ-ic{font-size:1.6rem;margin-bottom:.25rem;}
 .hire-occ-name{font-size:.7rem;font-weight:700;}
 .hire-occ-price{font-size:.58rem;color:var(--gold);margin-top:2px;}
-
 .nganya-garage{padding:0 1rem .8rem;}
 .sec-label-lrg{font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;display:flex;align-items:center;gap:6px;}
-
-/* VIDEO-GAME STYLE NGANYA CARD */
 .nganya-select-row{display:flex;gap:.6rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.4rem;}
 .nganya-select-row::-webkit-scrollbar{display:none;}
 .ng-card{flex-shrink:0;width:180px;background:rgba(0,0,0,.6);border:2px solid var(--border2);border-radius:18px;overflow:hidden;cursor:pointer;transition:.2s;position:relative;}
@@ -303,8 +245,6 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .ng-name{font-family:var(--font-display);font-size:.88rem;font-weight:700;color:var(--white);}
 .ng-route{font-size:.6rem;color:var(--muted);margin-top:1px;}
 .ng-price{font-family:var(--font-mono);font-size:.8rem;color:var(--gold);margin-top:.3rem;}
-
-/* STAT BARS */
 .ng-stats{padding:.5rem .7rem .7rem;}
 .ng-stat{margin-bottom:.4rem;}
 .ng-stat-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
@@ -312,8 +252,6 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .ng-stat-val{font-family:var(--font-mono);font-size:.6rem;color:var(--gold);}
 .ng-stat-bar{height:5px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;}
 .ng-stat-fill{height:100%;border-radius:99px;transition:width .6s cubic-bezier(0.34,1.56,0.64,1);}
-
-/* Selected nganya detail panel */
 .ng-detail-panel{background:var(--glass);border:1px solid rgba(255,179,0,.2);border-radius:18px;padding:1rem;margin:0 1rem .8rem;display:none;}
 .ng-detail-panel.open{display:block;}
 .ngd-header{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;}
@@ -325,49 +263,11 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .ngd-feat{padding:3px 9px;border-radius:99px;font-size:.6rem;font-weight:700;background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.2);color:var(--gold);}
 .hire-date-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem;}
 
-/*═══════════════════════════════════════
-  RATING - VIDEO GAME STYLE
-═══════════════════════════════════════*/
-.rating-overlay{display:none;position:fixed;inset:0;z-index:1500;background:rgba(6,6,10,.96);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:1rem;}
-.rating-overlay.open{display:flex;}
-.rating-box{background:rgba(8,8,16,.98);border:1px solid rgba(255,179,0,.3);border-radius:24px;padding:1.4rem;width:100%;max-width:420px;animation:popIn .25s forwards;}
-.rating-vehicle-art{height:120px;border-radius:16px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;overflow:hidden;}
-.rating-vehicle-art::before{content:'';position:absolute;inset:0;background:var(--vg);opacity:.5;}
-.rating-vehicle-emoji{position:relative;z-index:1;filter:drop-shadow(0 0 16px rgba(255,179,0,.6));}
-.rating-name{font-family:var(--font-display);font-size:1.4rem;font-weight:900;text-align:center;letter-spacing:-.02em;margin-bottom:.2rem;}
-.rating-route{font-size:.68rem;color:var(--muted);text-align:center;margin-bottom:1rem;}
-
-/* ENERGY BARS */
-.energy-bar-section{margin-bottom:1.2rem;}
-.energy-stat{margin-bottom:.6rem;}
-.energy-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
-.energy-label{font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
-.energy-val{font-family:var(--font-mono);font-size:.7rem;color:var(--gold);}
-.energy-bar-outer{height:12px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.08);}
-.energy-bar-fill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(0.34,1.56,0.64,1);position:relative;}
-.energy-bar-fill::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;border-radius:99px;background:rgba(255,255,255,.25);}
-.energy-glow{position:absolute;right:0;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;filter:blur(4px);}
-
-/* STAR RATING */
-.star-row{display:flex;gap:6px;justify-content:center;margin-bottom:.4rem;}
-.star{font-size:1.8rem;cursor:pointer;transition:.15s;filter:grayscale(1);opacity:.4;}
-.star.lit{filter:none;opacity:1;}
-.star:hover{transform:scale(1.2);}
-.energy-stat-group{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem;}
-.mini-energy{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:12px;padding:.6rem;}
-.mini-energy-label{font-size:.55rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;display:flex;align-items:center;gap:4px;}
-.mini-stars{display:flex;gap:2px;}
-.mini-star{font-size:.9rem;cursor:pointer;filter:grayscale(1);opacity:.4;transition:.1s;}
-.mini-star.lit{filter:none;opacity:1;}
-
-/*═══════════════════════════════════════
-  RIDE & RUMBLE
-═══════════════════════════════════════*/
+/* Ride */
 .ride-map-wrap{position:fixed;top:var(--top-h);left:0;right:0;bottom:var(--nav-h);z-index:1;}
 #rideMap{width:100%;height:100%;z-index:1;}
 .ride-sheet{position:fixed;bottom:var(--nav-h);left:0;right:0;z-index:10;background:linear-gradient(to top,var(--ink3),rgba(12,12,20,.95));border-top:1px solid var(--border2);border-radius:24px 24px 0 0;padding:1rem 1rem 1.5rem;backdrop-filter:blur(12px);}
 .ride-search{background:var(--glass2);border:1px solid var(--border2);border-radius:14px;padding:.7rem .9rem;display:flex;align-items:center;gap:10px;margin-bottom:.8rem;}
-.ride-search i{color:var(--muted);font-size:.9rem;}
 .ride-search input{background:transparent;border:none;color:var(--white);font-family:var(--font);font-size:.9rem;flex:1;outline:none;}
 .ride-search input::placeholder{color:var(--muted);}
 .ride-search .later-btn{padding:5px 10px;border-radius:99px;background:var(--glass);border:1px solid var(--border);font-size:.65rem;color:var(--muted);cursor:pointer;white-space:nowrap;}
@@ -375,20 +275,15 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .svc-card{background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:.7rem .4rem;text-align:center;cursor:pointer;transition:.15s;}
 .svc-card:hover,.svc-card.on{border-color:var(--gold);background:rgba(255,179,0,.08);}
 .svc-ic{font-size:1.6rem;margin-bottom:4px;}
-.svc-nm{font-size:.65rem;font-weight:700;}
-.svc-sub{font-size:.55rem;color:var(--muted);}
+.svc-nm{font-size:.65rem;font-weight:700;}.svc-sub{font-size:.55rem;color:var(--muted);}
 .ride-recent{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.8rem;}
 .recent-row{display:flex;align-items:center;gap:10px;padding:.5rem .6rem;border-radius:10px;background:var(--glass);border:1px solid var(--border);cursor:pointer;}
 .recent-row:hover{border-color:rgba(255,179,0,.2);}
 .recent-icon{width:28px;height:28px;border-radius:50%;background:var(--glass2);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--muted);}
-.recent-info{flex:1;}
-.recent-name{font-size:.78rem;font-weight:600;}
-.recent-loc{font-size:.6rem;color:var(--muted);}
+.recent-info{flex:1;}.recent-name{font-size:.78rem;font-weight:600;}.recent-loc{font-size:.6rem;color:var(--muted);}
 .ride-actions{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
 
-/*═══════════════════════════════════════
-  FLY & FIGHT
-═══════════════════════════════════════*/
+/* Fly */
 .globe-wrap{position:relative;width:100%;height:min(50vw,400px);min-height:260px;overflow:hidden;background:#000;border-radius:20px;border:1px solid var(--border);margin-bottom:.9rem;}
 #gc{width:100%;height:100%;display:block;}
 .globe-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(6,6,10,.2) 0%,transparent 20%,transparent 70%,rgba(6,6,10,.95) 100%);}
@@ -408,8 +303,7 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .al-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.45rem;padding:.5rem .9rem .8rem;}
 .al-card{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:12px;padding:.75rem;display:flex;align-items:center;justify-content:space-between;gap:7px;cursor:pointer;transition:.15s;}
 .al-card:hover,.al-card.on{border-color:var(--gold);}
-.al-name{font-size:.8rem;font-weight:700;}
-.al-meta{font-size:.6rem;color:var(--muted);}
+.al-name{font-size:.8rem;font-weight:700;}.al-meta{font-size:.6rem;color:var(--muted);}
 .al-price{font-family:var(--font-mono);font-size:1rem;font-weight:500;color:var(--gold);}
 .al-book{background:var(--gold);border:none;padding:4px 11px;border-radius:99px;font-size:.65rem;font-weight:700;cursor:pointer;color:#000;display:block;margin-top:3px;font-family:var(--font);}
 .fp-section{background:var(--glass);border:1px solid rgba(255,40,0,.18);border-radius:18px;padding:.9rem;margin-bottom:.9rem;display:none;}
@@ -423,17 +317,12 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .fp-vs{font-family:var(--font-display);font-size:1.3rem;color:var(--muted);text-align:center;}
 .fp-btn{width:100%;margin-top:.6rem;padding:8px;border-radius:99px;background:var(--fire);border:none;color:#fff;font-family:var(--font);font-weight:700;font-size:.74rem;cursor:pointer;}
 
-/*═══════════════════════════════════════
-  MIRTH — BATTLE + SPORTS BETTING
-═══════════════════════════════════════*/
+/* Mirth */
 .mirth-tabs{display:flex;gap:6px;padding:0 1rem;margin-bottom:1rem;overflow-x:auto;scrollbar-width:none;}
 .mirth-tabs::-webkit-scrollbar{display:none;}
 .mtab{cursor:pointer;white-space:nowrap;padding:7px 16px;border-radius:99px;background:var(--glass);border:1px solid var(--border);font-size:.74rem;font-weight:600;transition:.15s;}
 .mtab:hover,.mtab.on{background:rgba(255,40,0,.1);border-color:rgba(255,40,0,.35);color:var(--fire);}
-.mirth-panel{display:none;}
-.mirth-panel.on{display:block;}
-
-/* BATTLE */
+.mirth-panel{display:none;}.mirth-panel.on{display:block;}
 .battle-grid{display:grid;grid-template-columns:1fr 64px 1fr;gap:.7rem;align-items:start;margin:0 1rem .8rem;}
 @media(max-width:500px){.battle-grid{grid-template-columns:1fr;}}
 .fb{background:var(--glass);border:1px solid var(--border2);border-radius:18px;padding:1rem;transition:.18s;}
@@ -474,13 +363,7 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .wstat-v{font-family:var(--font-mono);font-size:1.1rem;}
 .wstat-l{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
 
-/* NGANYA VS */
-.nganya-vs-panel{margin:0 1rem .8rem;background:var(--glass);border:1px solid rgba(255,179,0,.15);border-radius:18px;padding:1rem;display:none;}
-.nganya-vs-panel.show{display:block;}
-
-/*═══════════════════════════════════════
-  SPORTS BETTING — REVAMPED
-═══════════════════════════════════════*/
+/* Sports */
 #mp-betting{padding:0;}
 .sports-header{padding:.4rem 1rem .6rem;}
 .sports-header h3{font-family:var(--font-display);font-size:1.1rem;font-weight:900;letter-spacing:-.02em;}
@@ -489,8 +372,6 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .sport-pills::-webkit-scrollbar{display:none;}
 .sport-pill{cursor:pointer;white-space:nowrap;padding:6px 13px;border-radius:99px;background:var(--glass);border:1px solid var(--border);font-size:.7rem;font-weight:600;transition:.13s;color:var(--muted);display:flex;align-items:center;gap:5px;flex-shrink:0;}
 .sport-pill:hover,.sport-pill.on{border-color:rgba(255,179,0,.4);background:rgba(255,179,0,.08);color:var(--gold);}
-
-/* VS MATCH CARD */
 .match-card{background:rgba(0,0,0,.5);border:1px solid var(--border2);border-radius:20px;overflow:hidden;margin:0 1rem .7rem;position:relative;}
 .match-live-badge{position:absolute;top:10px;left:10px;background:var(--fire);color:#fff;font-size:.58rem;font-weight:700;letter-spacing:.15em;padding:3px 9px;border-radius:99px;z-index:2;animation:pulse 1.5s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
@@ -507,15 +388,11 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .vs-text{font-family:var(--font-display);font-size:1.3rem;font-weight:900;color:var(--muted);}
 .vs-score{font-family:var(--font-mono);font-size:.8rem;color:var(--white);}
 .vs-time{font-size:.6rem;color:var(--muted);}
-
-/* ENERGY DRINK ADS */
 .drink-ad{background:linear-gradient(135deg,var(--ad-c1),var(--ad-c2));border-radius:12px;padding:.6rem .8rem;margin:0 1rem .5rem;display:flex;align-items:center;gap:10px;cursor:pointer;}
 .drink-ad-icon{font-size:1.6rem;}
 .drink-ad-name{font-family:var(--font-display);font-size:.78rem;font-weight:700;}
 .drink-ad-tag{font-size:.58rem;color:rgba(255,255,255,.7);margin-top:1px;}
 .drink-ad-cta{margin-left:auto;background:rgba(255,255,255,.2);border-radius:99px;padding:4px 10px;font-size:.6rem;font-weight:700;white-space:nowrap;}
-
-/* BETTING SLIP */
 .bet-slip{background:rgba(0,0,0,.5);border:1px solid rgba(255,179,0,.15);border-radius:18px;padding:.9rem;margin:0 1rem .7rem;}
 .bet-slip-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem;}
 .bet-slip-title{font-family:var(--font-display);font-size:.88rem;font-weight:700;}
@@ -544,9 +421,7 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .bet-result-toast.won{background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.2);color:#a5d6a7;display:block;}
 .bet-result-toast.lost{background:rgba(255,40,0,.06);border:1px solid rgba(255,40,0,.18);color:#ef9a9a;display:block;}
 
-/*═══════════════════════════════════════
-  MARKET
-═══════════════════════════════════════*/
+/* Market */
 .market-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.6rem;}
 .cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
 .cttab{cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:var(--glass);font-size:.72rem;font-weight:600;color:var(--muted);transition:.13s;}
@@ -570,9 +445,7 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .buy-btn{background:transparent;border:1px solid rgba(255,40,0,.4);color:var(--fire);padding:4px 11px;border-radius:99px;font-size:.66rem;font-weight:700;cursor:pointer;transition:.13s;font-family:var(--font);}
 .buy-btn:hover{background:var(--fire);color:#fff;}
 
-/*═══════════════════════════════════════
-  EXPLORE
-═══════════════════════════════════════*/
+/* Explore */
 .exp-hero{background:linear-gradient(135deg,rgba(68,138,255,.1),rgba(179,136,255,.05));border:1px solid rgba(68,138,255,.2);border-radius:20px;padding:1.3rem;margin-bottom:1rem;text-align:center;}
 .offer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.7rem;}
 .offer-card{background:var(--glass);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;transition:.18s;cursor:pointer;}
@@ -591,11 +464,22 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 .sl{padding:7px 11px;border-left:2px solid var(--border2);border-radius:8px;font-size:.76rem;line-height:1.5;animation:slideIn .3s forwards;}
 .sl.info{border-left-color:var(--blue);color:#90caf9;}
 
+/* Rating overlay */
+.rating-overlay{display:none;position:fixed;inset:0;z-index:1500;background:rgba(6,6,10,.96);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:1rem;}
+.rating-overlay.open{display:flex;}
+.rating-box{background:rgba(8,8,16,.98);border:1px solid rgba(255,179,0,.3);border-radius:24px;padding:1.4rem;width:100%;max-width:420px;animation:popIn .25s forwards;}
+.rating-vehicle-art{height:120px;border-radius:16px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;overflow:hidden;}
+.rating-vehicle-art::before{content:'';position:absolute;inset:0;background:var(--vg);opacity:.5;}
+.rating-vehicle-emoji{position:relative;z-index:1;filter:drop-shadow(0 0 16px rgba(255,179,0,.6));}
+.rating-name{font-family:var(--font-display);font-size:1.4rem;font-weight:900;text-align:center;letter-spacing:-.02em;margin-bottom:.2rem;}
+.rating-route{font-size:.68rem;color:var(--muted);text-align:center;margin-bottom:1rem;}
+.star-row{display:flex;gap:6px;justify-content:center;margin-bottom:.4rem;}
+.star{font-size:1.8rem;cursor:pointer;transition:.15s;filter:grayscale(1);opacity:.4;}
+.star.lit{filter:none;opacity:1;}
+.star:hover{transform:scale(1.2);}
 
-/* Mobile-first improvements */
 @media(max-width:480px){
-  .home-hero{padding:1.1rem;}
-  .hero-name{font-size:1.5rem;}
+  .home-hero{padding:1.1rem;}.hero-name{font-size:1.5rem;}
   .m3-grid{grid-template-columns:1fr;gap:.5rem;}
   .m3-card{padding:.8rem;display:flex;align-items:center;gap:.8rem;text-align:left;}
   .m3-ic{margin:0;width:44px;height:44px;flex-shrink:0;}
@@ -641,98 +525,21 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
   .al-grid{grid-template-columns:1fr;}
   .fp-grid{grid-template-columns:1fr;gap:.4rem;}
   .fp-vs{text-align:center;padding:.3rem 0;}
+  .vehicle-float{max-width:calc(100% - 1rem);padding:.9rem;}
+  .stage-panel{max-height:55vh;}
 }
 @media(min-width:481px) and (max-width:640px){
   .m3-grid{grid-template-columns:1fr 1fr 1fr;}
   .quick-grid{grid-template-columns:1fr 1fr;}
   .hire-occasions{grid-template-columns:repeat(3,1fr);}
 }
-
-
-/* Leaflet dark */
 .leaflet-container{background:var(--ink2);font-family:var(--font);}
 .leaflet-popup-content-wrapper{background:rgba(12,12,20,.95);border:1px solid var(--border2);color:var(--white);border-radius:12px;}
 .leaflet-popup-tip{background:rgba(12,12,20,.95);}
 .leaflet-control-attribution{background:rgba(6,6,10,.8)!important;color:var(--muted)!important;}
 .leaflet-control-attribution a{color:var(--muted2)!important;}
-
-@media(max-width:480px){
-  .m3-grid{grid-template-columns:1fr !important;gap:.5rem !important;}
-  .m3-card{padding:.75rem;display:flex;align-items:center;gap:.7rem;text-align:left !important;}
-  .m3-ic{margin:0 !important;width:40px;height:40px;flex-shrink:0;}
-  .m3-title{font-size:.8rem;}
-  .m3-sub{font-size:.58rem;}
-  .quick-grid{grid-template-columns:1fr 1fr;gap:.5rem;}
-  .qcard{padding:.7rem;}
-  .qcard-ic{width:34px;height:34px;}
-  .qcard-title{font-size:.76rem;}
-  .qcard-sub{font-size:.58rem;}
-  .home-hero{padding:1.1rem;}
-  .hero-name{font-size:1.5rem;}
-  .hero-sub{font-size:.72rem;}
-  .hero-meta{gap:.35rem;}
-  .chip{font-size:.58rem;padding:2px 8px;}
-  .univ-panel{grid-template-columns:1fr;}
-  .ucol-body{max-height:200px;}
-  .battle-grid{grid-template-columns:1fr !important;gap:.5rem !important;margin:0 .8rem .6rem !important;}
-  .fb{padding:.8rem;}
-  .vs-mid{padding:8px 0 !important;flex-direction:row !important;justify-content:center !important;gap:12px !important;}
-  .vs-lbl{font-size:1.1rem !important;}
-  .fight-btn{padding:8px 16px !important;font-size:.75rem !important;}
-  .offer-grid{grid-template-columns:1fr !important;}
-  .listings{grid-template-columns:1fr !important;}
-  .ma3-map-full{height:38vh !important;min-height:180px !important;margin:0 .7rem .4rem !important;border-radius:14px !important;}
-  .hire-occasions{grid-template-columns:repeat(2,1fr) !important;}
-  .nganya-select-row{gap:.4rem !important;}
-  .ng-card{width:140px !important;}
-  .match-vs-row{grid-template-columns:1fr 36px 1fr !important;}
-  .team-flag{font-size:1.6rem !important;}
-  .team-name{font-size:.7rem !important;}
-  .team-odds{font-size:.9rem !important;}
-  .sports-header{padding:.3rem .8rem .5rem !important;}
-  .sport-pills{padding:0 .8rem .5rem !important;}
-  .match-card{margin:0 .8rem .5rem !important;}
-  .bet-slip{margin:0 .8rem .5rem !important;}
-  .drink-ad{margin:0 .8rem .4rem !important;}
-  .ride-sheet{padding:.8rem .8rem 1.2rem !important;}
-  .ride-services{grid-template-columns:repeat(2,1fr) !important;}
-  .inner{padding:0 .8rem !important;}
-  .page{padding-top:calc(var(--top-h) + 8px) !important;padding-bottom:calc(var(--nav-h) + 16px) !important;}
-  .tube-tabs{padding:0 .8rem .5rem !important;}
-  .route-search-bar{padding:0 .8rem .3rem !important;}
-  .stop-card{margin:0 .8rem .4rem !important;}
-  .dep-list{padding:0 .8rem !important;}
-  .journey-result{margin:0 .8rem .4rem !important;}
-  .planner-box{margin:0 .8rem .5rem !important;}
-  .hire-hero{margin:0 .8rem .5rem !important;}
-  .nganya-garage{padding:0 .8rem .5rem !important;}
-  .ng-detail-panel{margin:0 .8rem .5rem !important;}
-  .fight-log{margin:0 .8rem .5rem !important;}
-  .winner-card{margin:.5rem .8rem !important;}
-  .exp-hero{padding:1rem !important;}
-  .exp-hero h2{font-size:1.3rem !important;}
-  .globe-wrap{height:min(50vw,300px) !important;min-height:180px !important;}
-  .al-grid{grid-template-columns:1fr !important;}
-  .fp-grid{grid-template-columns:1fr !important;gap:.4rem !important;}
-  .fp-vs{text-align:center !important;padding:.3rem 0 !important;}
-  .market-head{flex-direction:column;align-items:flex-start !important;}
-  .cat-tabs{gap:4px !important;}
-  .cttab{padding:5px 10px !important;font-size:.65rem !important;}
-  .topbar{padding:0 .8rem !important;}
-  .token-pill{font-size:.65rem !important;padding:4px 8px !important;}
-  .app-logo{font-size:1.3rem !important;}
-  .logo-sub{font-size:.45rem !important;}
-  .bottom-nav{height:62px !important;}
-  .bn-ic{width:32px !important;height:32px !important;font-size:.8rem !important;}
-  .bn-lbl{font-size:.45rem !important;}
-  .page{padding-bottom:calc(62px + 16px) !important;}
-  .confirm-toast{bottom:calc(62px + 10px) !important;}
-  .loader-stage{height:80px !important;}
-  .lb-mathree-full,.lb-ma3{font-size:2.4rem !important;}
-}
-
+i[data-lucide]{display:inline-flex;align-items:center;justify-content:center;}
 </style>
-<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -754,18 +561,18 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 
 <div class="topbar">
   <div class="topbar-left">
-    <div class="token-pill"><i class="fas fa-bolt"></i> <span id="gtok">100</span></div>
+    <div class="token-pill"><i data-lucide="zap" style="width:12px;height:12px;"></i> <span id="gtok">100</span></div>
   </div>
   <div style="text-align:center;">
     <div class="app-logo"><span class="logo-ma">Ma</span><span class="logo-3" id="logo3">3</span></div>
     <span class="logo-sub">Move · Market · Mirth</span>
   </div>
   <div class="top-right">
-    <div class="icon-btn" onclick="alert('Notifications coming soon!')"><i class="fas fa-bell"></i></div>
+    <div class="icon-btn" onclick="showToast('Notifications coming soon!')"><i data-lucide="bell" style="width:16px;height:16px;"></i></div>
   </div>
 </div>
 
-<!-- ═══ HOME ═══ -->
+<!-- HOME -->
 <div id="pg-home" class="page on">
 <div class="inner">
   <div class="home-hero">
@@ -773,93 +580,59 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     <div class="hero-name" id="heroAlias">The Web-Slinger</div>
     <div class="hero-sub" id="heroOrigin">Artefact from the New York Nexus · Power Level 7</div>
     <div class="hero-meta">
-      <span class="chip" style="background:rgba(255,179,0,.12);color:var(--gold);border:1px solid rgba(255,179,0,.25)"><i class="fas fa-coins"></i> <span id="heroTok">100</span> ⚡</span>
-      <span class="chip" id="heroRankChip" style="background:rgba(0,200,150,.1);color:var(--sage);border:1px solid rgba(0,200,150,.25)"><i class="fas fa-shield"></i> Bronze · Rank 7</span>
+      <span class="chip" style="background:rgba(255,179,0,.12);color:var(--gold);border:1px solid rgba(255,179,0,.25)"><i data-lucide="coins" style="width:12px;height:12px;"></i> <span id="heroTok">100</span> ⚡</span>
+      <span class="chip" id="heroRankChip" style="background:rgba(0,200,150,.1);color:var(--sage);border:1px solid rgba(0,200,150,.25)"><i data-lucide="shield" style="width:12px;height:12px;"></i> Bronze · Rank 7</span>
     </div>
   </div>
-
-  <!-- M3 Grid - stacks on mobile -->
   <div class="m3-grid" id="homeM3Grid">
     <div class="m3-card" style="--accent:var(--sage)" onclick="openMoveSheet()">
-      <div class="m3-ic" style="background:rgba(0,200,150,.12)"><span style="font-size:1.3rem">🚌</span></div>
-      <div class="m3-title">Move</div>
-      <div class="m3-sub">Ma3 · Ride · Fly</div>
+      <div class="m3-ic" style="background:rgba(0,200,150,.12)"><i data-lucide="bus" style="width:22px;height:22px;color:var(--sage)"></i></div>
+      <div class="m3-title">Move</div><div class="m3-sub">Ma3 · Ride · Fly</div>
     </div>
     <div class="m3-card" style="--accent:var(--fire)" onclick="showPage('market')">
-      <div class="m3-ic" style="background:rgba(255,40,0,.12)"><i class="fas fa-store" style="color:var(--fire)"></i></div>
-      <div class="m3-title">Market</div>
-      <div class="m3-sub">Buy · Sell · Create</div>
+      <div class="m3-ic" style="background:rgba(255,40,0,.12)"><i data-lucide="store" style="width:22px;height:22px;color:var(--fire)"></i></div>
+      <div class="m3-title">Market</div><div class="m3-sub">Buy · Sell · Create</div>
     </div>
     <div class="m3-card" style="--accent:var(--gold)" onclick="showPage('mirth')">
-      <div class="m3-ic" style="background:rgba(255,179,0,.12)"><i class="fas fa-fire" style="color:var(--gold)"></i></div>
-      <div class="m3-title">Mirth</div>
-      <div class="m3-sub">Battle · Bet · Win</div>
+      <div class="m3-ic" style="background:rgba(255,179,0,.12)"><i data-lucide="flame" style="width:22px;height:22px;color:var(--gold)"></i></div>
+      <div class="m3-title">Mirth</div><div class="m3-sub">Battle · Bet · Win</div>
     </div>
   </div>
-
-  <!-- Quick Grid -->
   <div class="quick-grid">
-    <div class="qcard" onclick="showPage('ma3')">
-      <div class="qcard-ic" style="background:rgba(255,40,0,.12)"><span style="font-size:1.2rem">🚐</span></div>
-      <div class="qcard-title">Ma3 Tracker</div>
-      <div class="qcard-sub">Nairobi · Routes · Live GPS</div>
-    </div>
-    <div class="qcard" onclick="showPage('ride')">
-      <div class="qcard-ic" style="background:rgba(0,200,150,.12)"><i class="fas fa-taxi" style="color:var(--sage)"></i></div>
-      <div class="qcard-title">Ride & Rumble</div>
-      <div class="qcard-sub">Taxi · Boda · Schedule</div>
-    </div>
-    <div class="qcard" onclick="showPage('fly')">
-      <div class="qcard-ic" style="background:rgba(68,138,255,.12)"><i class="fas fa-plane" style="color:var(--blue)"></i></div>
-      <div class="qcard-title">Fly & Fight</div>
-      <div class="qcard-sub">Flights · Guardians · Earn</div>
-    </div>
-    <div class="qcard" onclick="showPage('explore')">
-      <div class="qcard-ic" style="background:rgba(0,200,150,.12)"><i class="fas fa-map-marked-alt" style="color:var(--sage)"></i></div>
-      <div class="qcard-title">Explore Zone</div>
-      <div class="qcard-sub">Offers · Navigate · Earn</div>
-    </div>
+    <div class="qcard" onclick="showPage('ma3')"><div class="qcard-ic" style="background:rgba(255,40,0,.12)"><i data-lucide="bus" style="width:20px;height:20px;color:var(--fire)"></i></div><div class="qcard-title">Ma3 Tracker</div><div class="qcard-sub">Nairobi · Routes · Live GPS</div></div>
+    <div class="qcard" onclick="showPage('ride')"><div class="qcard-ic" style="background:rgba(0,200,150,.12)"><i data-lucide="car" style="width:20px;height:20px;color:var(--sage)"></i></div><div class="qcard-title">Ride & Rumble</div><div class="qcard-sub">Taxi · Boda · Schedule</div></div>
+    <div class="qcard" onclick="showPage('fly')"><div class="qcard-ic" style="background:rgba(68,138,255,.12)"><i data-lucide="plane" style="width:20px;height:20px;color:var(--blue)"></i></div><div class="qcard-title">Fly & Fight</div><div class="qcard-sub">Flights · Guardians · Earn</div></div>
+    <div class="qcard" onclick="showPage('explore')"><div class="qcard-ic" style="background:rgba(0,200,150,.12)"><i data-lucide="map-pin" style="width:20px;height:20px;color:var(--sage)"></i></div><div class="qcard-title">Explore Zone</div><div class="qcard-sub">Offers · Navigate · Earn</div></div>
   </div>
-
-  <!-- Upgrade Card -->
   <div class="card" style="padding:.9rem 1rem;margin-bottom:1rem;cursor:pointer;border-color:rgba(255,179,0,.18)" onclick="upgradeArtefact()">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem">
       <div style="display:flex;align-items:center;gap:.6rem">
         <div style="font-size:1.3rem">⬆️</div>
-        <div>
-          <div style="font-weight:700;font-size:.82rem">Upgrade Artefact</div>
-          <div style="font-size:.62rem;color:var(--muted)" id="upgSub">Spend 200⚡ to unlock a higher-tier relic</div>
-        </div>
+        <div><div style="font-weight:700;font-size:.82rem">Upgrade Artefact</div><div style="font-size:.62rem;color:var(--muted)" id="upgSub">Spend 200⚡ to unlock a higher-tier relic</div></div>
       </div>
-      <div style="text-align:right">
-        <div style="font-family:var(--font-mono);font-size:.9rem;color:var(--gold)">200⚡</div>
-        <i class="fas fa-chevron-right" style="color:var(--muted);font-size:.65rem"></i>
-      </div>
+      <div style="text-align:right"><div style="font-family:var(--font-mono);font-size:.9rem;color:var(--gold)">200⚡</div><i data-lucide="chevron-right" style="width:14px;height:14px;color:var(--muted)"></i></div>
     </div>
   </div>
-
-  <!-- Daily Challenges -->
   <div style="margin-bottom:1rem;">
     <div class="sec-label">Daily Challenges</div>
     <div style="display:flex;flex-direction:column;gap:.4rem;">
       <div style="display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;background:var(--glass);border:1px solid var(--border);border-radius:14px;">
-        <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,179,0,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🚌</div>
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,179,0,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;"><i data-lucide="bus" style="width:18px;height:18px;"></i></div>
         <div style="flex:1;"><div style="font-size:.75rem;font-weight:600;">Ride 3 different routes</div><div style="font-size:.58rem;color:var(--muted);">0/3 completed · +20⚡</div></div>
         <div style="width:60px;height:6px;background:var(--ink4);border-radius:99px;overflow:hidden;"><div style="width:0%;height:100%;background:var(--gold);border-radius:99px;"></div></div>
       </div>
       <div style="display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;background:var(--glass);border:1px solid var(--border);border-radius:14px;">
-        <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,40,0,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">⚔️</div>
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,40,0,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;"><i data-lucide="swords" style="width:18px;height:18px;"></i></div>
         <div style="flex:1;"><div style="font-size:.75rem;font-weight:600;">Win 2 arena battles</div><div style="font-size:.58rem;color:var(--muted);">1/2 completed · +15⚡</div></div>
         <div style="width:60px;height:6px;background:var(--ink4);border-radius:99px;overflow:hidden;"><div style="width:50%;height:100%;background:var(--fire);border-radius:99px;"></div></div>
       </div>
       <div style="display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;background:var(--glass);border:1px solid var(--border);border-radius:14px;">
-        <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,200,150,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">⭐</div>
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,200,150,.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;"><i data-lucide="star" style="width:18px;height:18px;"></i></div>
         <div style="flex:1;"><div style="font-size:.75rem;font-weight:600;">Rate any nganya</div><div style="font-size:.58rem;color:var(--muted);">0/1 completed · +10⚡</div></div>
         <div style="width:60px;height:6px;background:var(--ink4);border-radius:99px;overflow:hidden;"><div style="width:0%;height:100%;background:var(--sage);border-radius:99px;"></div></div>
       </div>
     </div>
   </div>
-
   <div class="sec-label">Explore Universes</div>
   <div class="pill-row" id="univPills">
     <div class="pill on" onclick="loadUniv('Marvel',this)">Marvel</div>
@@ -874,7 +647,7 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
   </div>
   <div class="univ-panel">
     <div class="ucol">
-      <div class="ucol-head" style="color:#ef9a9a"><i class="fas fa-skull-crossbones"></i> Villains</div>
+      <div class="ucol-head" style="color:#ef9a9a"><i data-lucide="skull" style="width:14px;height:14px;"></i> Villains</div>
       <div class="ucol-body" id="hvil"></div>
     </div>
     <div class="bio-panel" id="hbio">
@@ -886,16 +659,15 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
       </div>
     </div>
     <div class="ucol">
-      <div class="ucol-head" style="color:#90caf9"><i class="fas fa-shield-alt"></i> Heroes</div>
+      <div class="ucol-head" style="color:#90caf9"><i data-lucide="shield" style="width:14px;height:14px;"></i> Heroes</div>
       <div class="ucol-body" id="hhero"></div>
     </div>
   </div>
 </div>
 </div>
 
-<!-- ═══ MA3 PAGE ═══ -->
+<!-- MA3 PAGE -->
 <div id="pg-ma3" class="page">
-  <!-- Sticky Map Header -->
   <div style="position:sticky;top:var(--top-h);z-index:10;background:var(--ink);padding:.5rem 0 .3rem;">
     <div class="ma3-header" style="padding:.5rem 1rem .3rem;">
       <h2 style="font-size:1.3rem;"><span style="color:var(--fire)">🚌</span> Ma3 Public</h2>
@@ -904,9 +676,9 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     <div class="ma3-map-full" style="height:42vh;min-height:200px;margin:0 .8rem .4rem;border-radius:16px;">
       <div id="ma3MapFull" style="width:100%;height:100%;"></div>
       <div class="map-overlay-controls">
-        <div class="map-ctrl-btn on" id="mctrlRoutes" onclick="toggleMapLayer('routes')"><i class="fas fa-route"></i> Routes</div>
-        <div class="map-ctrl-btn on" id="mctrlVehicles" onclick="toggleMapLayer('vehicles')"><i class="fas fa-bus"></i> Vehicles</div>
-        <div class="map-ctrl-btn on" id="mctrlStops" onclick="toggleMapLayer('stops')"><i class="fas fa-circle-dot"></i> Stops</div>
+        <div class="map-ctrl-btn on" id="mctrlRoutes" onclick="toggleMapLayer('routes')"><i data-lucide="route" style="width:12px;height:12px;"></i> Routes</div>
+        <div class="map-ctrl-btn on" id="mctrlVehicles" onclick="toggleMapLayer('vehicles')"><i data-lucide="bus" style="width:12px;height:12px;"></i> Vehicles</div>
+        <div class="map-ctrl-btn on" id="mctrlStops" onclick="toggleMapLayer('stops')"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Stops</div>
       </div>
       <div class="map-legend">
         <div class="ml-item"><div class="ml-dot" style="background:#ff3d2e"></div>CBD</div>
@@ -915,35 +687,29 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
         <div class="ml-item"><div class="ml-dot" style="background:#ffb300"></div>Wangige</div>
       </div>
     </div>
-    <!-- Quick Actions Row -->
     <div style="display:flex;gap:6px;padding:0 .8rem .4rem;overflow-x:auto;scrollbar-width:none;">
-      <div style="scrollbar-width:none;"></div>
-      <button class="btn btn-fire" style="padding:7px 14px;font-size:.7rem;white-space:nowrap;flex-shrink:0;" onclick="togglePlanner()"><i class="fas fa-route"></i> Plan Trip</button>
-      <button class="btn btn-sage" style="padding:7px 14px;font-size:.7rem;white-space:nowrap;flex-shrink:0;" onclick="showMa3Section('departures')"><i class="fas fa-clock"></i> Departures</button>
-      <button class="btn btn-primary" style="padding:7px 14px;font-size:.7rem;white-space:nowrap;flex-shrink:0;" onclick="showMa3Section('hire')"><i class="fas fa-handshake"></i> Hire</button>
-      <button class="btn btn-ghost" style="padding:7px 14px;font-size:.7rem;white-space:nowrap;flex-shrink:0;" onclick="showMa3Section('rate')"><i class="fas fa-star"></i> Rate</button>
+      <button class="btn btn-fire" style="padding:7px 14px;font-size:.7rem;white-space:nowrap;flex-shrink:0;" onclick="togglePlanner()"><i data-lucide="route" style="width:12px;height:12px;"></i> Plan Trip</button>
+      <button class="btn btn-sage" style="padding:7px 14px;font-size:.7rem;white-space:nowrap;flex-shrink:0;" onclick="showMa3Section('departures')"><i data-lucide="clock" style="width:12px;height:12px;"></i> Departures</button>
+      <button class="btn btn-primary" style="padding:7px 14px;font-size:.7rem;white-space:nowrap;flex-shrink:0;" onclick="showMa3Section('hire')"><i data-lucide="handshake" style="width:12px;height:12px;"></i> Hire</button>
+      <button class="btn btn-ghost" style="padding:7px 14px;font-size:.7rem;white-space:nowrap;flex-shrink:0;" onclick="openStagePanel()"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Lock In</button>
     </div>
   </div>
-
-  <!-- Planner Panel (collapsible) -->
   <div class="planner-box" id="plannerBox">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
       <div style="font-family:var(--font-display);font-size:.85rem;font-weight:700;">Journey Planner</div>
-      <div class="mclose" onclick="togglePlanner()" style="width:26px;height:26px;"><i class="fas fa-times"></i></div>
+      <div class="mclose" onclick="togglePlanner()" style="width:26px;height:26px;"><i data-lucide="x" style="width:14px;height:14px;"></i></div>
     </div>
     <div class="planner-row"><div class="planner-dot g"></div><input class="planner-in" id="plannerFrom" placeholder="From: e.g. CBD, Westlands…" value="CBD"></div>
     <div class="planner-div"></div>
     <div class="planner-row"><div class="planner-dot r"></div><input class="planner-in" id="plannerTo" placeholder="To: e.g. Wangige, Rongai…" value="Wangige"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:.3rem;"><div class="planner-swap" onclick="swapPlanner()"><i class="fas fa-arrow-right-arrow-left"></i></div></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:.3rem;"><div class="planner-swap" onclick="swapPlanner()"><i data-lucide="arrow-right-left" style="width:14px;height:14px;"></i></div></div>
     <div class="planner-meta">
       <div class="planner-chip on" id="pcToday">Today</div>
       <div class="planner-chip" id="pcNow">Now</div>
-      <button class="btn btn-fire" style="padding:6px 14px;font-size:.72rem;margin-left:auto;" onclick="searchJourney()"><i class="fas fa-search"></i> Find Route</button>
+      <button class="btn btn-fire" style="padding:6px 14px;font-size:.72rem;margin-left:auto;" onclick="searchJourney()"><i data-lucide="search" style="width:12px;height:12px;"></i> Find Route</button>
     </div>
   </div>
   <div id="journeyResults"></div>
-
-  <!-- Main Content: Stops List -->
   <div id="ma3MainContent">
     <div style="padding:0 .8rem .3rem;display:flex;align-items:center;justify-content:space-between;">
       <div class="sec-label" style="margin-bottom:0">Nearby Stops & Routes</div>
@@ -954,20 +720,16 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     </div>
     <div id="stopsList"></div>
   </div>
-
-  <!-- Departures Section (hidden by default) -->
   <div id="ma3DeparturesSection" style="display:none;">
     <div style="padding:0 .8rem .4rem;display:flex;align-items:center;gap:.5rem;">
-      <div class="mclose" onclick="showMa3Section('main')" style="width:26px;height:26px;"><i class="fas fa-arrow-left"></i></div>
+      <div class="mclose" onclick="showMa3Section('main')" style="width:26px;height:26px;"><i data-lucide="arrow-left" style="width:14px;height:14px;"></i></div>
       <div class="sec-label" style="margin-bottom:0">Live Departures</div>
     </div>
     <div class="dep-list" id="depList"></div>
   </div>
-
-  <!-- Hire Section (hidden by default) -->
   <div id="ma3HireSection" style="display:none;padding-bottom:2rem;">
     <div style="padding:0 .8rem .4rem;display:flex;align-items:center;gap:.5rem;">
-      <div class="mclose" onclick="showMa3Section('main')" style="width:26px;height:26px;"><i class="fas fa-arrow-left"></i></div>
+      <div class="mclose" onclick="showMa3Section('main')" style="width:26px;height:26px;"><i data-lucide="arrow-left" style="width:14px;height:14px;"></i></div>
       <div class="sec-label" style="margin-bottom:0">Hire Nganya</div>
     </div>
     <div class="hire-hero">
@@ -975,20 +737,18 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
       <div class="hire-hero-sub">Nairobi's moving clubs — weddings, raves, road trips & more</div>
     </div>
     <div style="padding:0 .8rem .5rem;">
-      <div class="sec-label-lrg"><i class="fas fa-calendar-star" style="color:var(--gold)"></i> Pick Occasion</div>
+      <div class="sec-label-lrg"><i data-lucide="calendar" style="width:14px;height:14px;color:var(--gold)"></i> Pick Occasion</div>
       <div class="hire-occasions" id="hireOccasions"></div>
     </div>
     <div class="nganya-garage">
-      <div class="sec-label-lrg"><i class="fas fa-bus" style="color:var(--fire)"></i> Select Ride</div>
+      <div class="sec-label-lrg"><i data-lucide="bus" style="width:14px;height:14px;color:var(--fire)"></i> Select Ride</div>
       <div class="nganya-select-row" id="nganyaSelectRow"></div>
     </div>
     <div class="ng-detail-panel" id="ngDetailPanel"></div>
   </div>
-
-  <!-- Rate Section (hidden by default) -->
   <div id="ma3RateSection" style="display:none;padding-bottom:2rem;">
     <div style="padding:0 .8rem .4rem;display:flex;align-items:center;gap:.5rem;">
-      <div class="mclose" onclick="showMa3Section('main')" style="width:26px;height:26px;"><i class="fas fa-arrow-left"></i></div>
+      <div class="mclose" onclick="showMa3Section('main')" style="width:26px;height:26px;"><i data-lucide="arrow-left" style="width:14px;height:14px;"></i></div>
       <div class="sec-label" style="margin-bottom:0">Rate Your Ride</div>
     </div>
     <div style="padding:0 .8rem .5rem;">
@@ -999,15 +759,15 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
   </div>
 </div>
 
-<!-- ═══ RIDE ═══ -->
+<!-- RIDE -->
 <div id="pg-ride" class="page">
   <div class="ride-map-wrap"><div id="rideMap"></div></div>
   <div class="ride-sheet">
     <div class="bsheet-handle"></div>
     <div class="ride-search">
-      <i class="fas fa-magnifying-glass"></i>
+      <i data-lucide="search" style="width:16px;height:16px;color:var(--muted)"></i>
       <input type="text" placeholder="Where to?" id="rideWhereTo">
-      <div class="later-btn"><i class="fas fa-clock"></i> Later</div>
+      <div class="later-btn"><i data-lucide="clock" style="width:12px;height:12px;"></i> Later</div>
     </div>
     <div class="ride-services" id="rideServices">
       <div class="svc-card on" onclick="selRideSvc(this,'Standard')"><div class="svc-ic">🚗</div><div class="svc-nm">Rides</div><div class="svc-sub">Let's go</div></div>
@@ -1016,17 +776,17 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
       <div class="svc-card" onclick="selRideSvc(this,'Food')"><div class="svc-ic">🍔</div><div class="svc-nm">Food</div><div class="svc-sub">Quick delivery</div></div>
     </div>
     <div class="ride-recent">
-      <div class="recent-row" onclick="setRideDest('Rungiri, Kenya')"><div class="recent-icon"><i class="fas fa-clock"></i></div><div class="recent-info"><div class="recent-name">Rungiri</div><div class="recent-loc">Kenya</div></div></div>
-      <div class="recent-row" onclick="setRideDest('King\'eero Catholic Church Road')"><div class="recent-icon"><i class="fas fa-clock"></i></div><div class="recent-info"><div class="recent-name">King'eero Catholic Church Road</div><div class="recent-loc">Kiambu</div></div></div>
+      <div class="recent-row" onclick="setRideDest('Rungiri, Kenya')"><div class="recent-icon"><i data-lucide="clock" style="width:14px;height:14px;"></i></div><div class="recent-info"><div class="recent-name">Rungiri</div><div class="recent-loc">Kenya</div></div></div>
+      <div class="recent-row" onclick="setRideDest('King\'eero Catholic Church Road')"><div class="recent-icon"><i data-lucide="clock" style="width:14px;height:14px;"></i></div><div class="recent-info"><div class="recent-name">King'eero Catholic Church Road</div><div class="recent-loc">Kiambu</div></div></div>
     </div>
     <div class="ride-actions">
-      <button class="btn btn-sage" style="width:100%;" onclick="requestRide()"><i class="fas fa-taxi"></i> Request Ride</button>
-      <button class="btn btn-ghost" style="width:100%;" onclick="openRateRideSheet()"><i class="fas fa-star"></i> Rate Driver</button>
+      <button class="btn btn-sage" style="width:100%;" onclick="requestRide()"><i data-lucide="car" style="width:14px;height:14px;"></i> Request Ride</button>
+      <button class="btn btn-ghost" style="width:100%;" onclick="openRideRate()"><i data-lucide="star" style="width:14px;height:14px;"></i> Rate Driver</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ FLY ═══ -->
+<!-- FLY -->
 <div id="pg-fly" class="page">
 <div class="inner">
   <div class="ph"><h2>Fly & Fight</h2><p>Cheapest airline routes · Fight guardians · Earn tokens</p></div>
@@ -1035,14 +795,14 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     <div class="globe-fade"></div>
     <div class="globe-ui">
       <input type="text" id="locInput" placeholder="City: Tokyo, Gotham, Lagos…">
-      <button class="gbtn" onclick="doFlySearch()"><i class="fas fa-search"></i></button>
+      <button class="gbtn" onclick="doFlySearch()"><i data-lucide="search" style="width:14px;height:14px;"></i></button>
     </div>
     <div class="globe-tag" id="gPlanet">🌍 Earth</div>
   </div>
   <div class="fs-panel" id="fsp">
     <div class="fs-route">
       <span class="fs-city" id="fsFrom">—</span>
-      <span class="fs-plane"><i class="fas fa-plane"></i></span>
+      <span class="fs-plane"><i data-lucide="plane" style="width:16px;height:16px;"></i></span>
       <span class="fs-city" id="fsTo">—</span>
       <span class="fs-chip" id="fsDist">—</span>
       <span class="fs-chip" id="fsDur">—</span>
@@ -1051,7 +811,7 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     <div class="al-grid" id="alGrid"></div>
   </div>
   <div class="fp-section" id="fpSec">
-    <div class="fp-title"><i class="fas fa-fist-raised"></i> Fight Guardians to Earn</div>
+    <div class="fp-title"><i data-lucide="swords" style="width:14px;height:14px;"></i> Fight Guardians to Earn</div>
     <div class="fp-grid">
       <div class="fp-card"><img id="fpDepImg" class="fp-av" src="" alt=""><div class="fp-name" id="fpDepName">—</div><div class="fp-city" id="fpDepCity">Departure</div><button class="fp-btn" onclick="flyFight('dep')">Fight (+20⚡)</button></div>
       <div class="fp-vs">VS</div>
@@ -1061,33 +821,33 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 </div>
 </div>
 
-<!-- ═══ MARKET ═══ -->
+<!-- MARKET -->
 <div id="pg-market" class="page">
 <div class="inner" style="max-width:1000px">
   <div class="market-head">
     <div><div style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;letter-spacing:-.03em">Market</div><p style="font-size:.78rem;color:var(--muted2);margin-top:.2rem">Buy & sell comics, art, edits, 3D, cosplay</p></div>
-    <button class="btn btn-fire" onclick="document.getElementById('uploadOverlay').classList.add('open')"><i class="fas fa-plus"></i> Sell (+20⚡)</button>
+    <button class="btn btn-fire" onclick="document.getElementById('uploadOverlay').classList.add('open')"><i data-lucide="plus" style="width:14px;height:14px;"></i> Sell (+20⚡)</button>
   </div>
   <div class="cat-tabs">
-    <div class="cttab on" onclick="filterCat(this,'all')"><i class="fas fa-border-all"></i> All</div>
-    <div class="cttab" onclick="filterCat(this,'comic')"><i class="fas fa-book-open"></i> Comics</div>
-    <div class="cttab" onclick="filterCat(this,'art')"><i class="fas fa-paintbrush"></i> Art</div>
-    <div class="cttab" onclick="filterCat(this,'video')"><i class="fas fa-video"></i> Video</div>
-    <div class="cttab" onclick="filterCat(this,'3d')"><i class="fas fa-cube"></i> 3D</div>
-    <div class="cttab" onclick="filterCat(this,'cosplay')"><i class="fas fa-mask"></i> Cosplay</div>
+    <div class="cttab on" onclick="filterCat(this,'all')"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i> All</div>
+    <div class="cttab" onclick="filterCat(this,'comic')"><i data-lucide="book-open" style="width:14px;height:14px;"></i> Comics</div>
+    <div class="cttab" onclick="filterCat(this,'art')"><i data-lucide="paintbrush" style="width:14px;height:14px;"></i> Art</div>
+    <div class="cttab" onclick="filterCat(this,'video')"><i data-lucide="video" style="width:14px;height:14px;"></i> Video</div>
+    <div class="cttab" onclick="filterCat(this,'3d')"><i data-lucide="box" style="width:14px;height:14px;"></i> 3D</div>
+    <div class="cttab" onclick="filterCat(this,'cosplay')"><i data-lucide="drama" style="width:14px;height:14px;"></i> Cosplay</div>
   </div>
   <div class="listings" id="listingsGrid">
-    <div class="lcard" data-cat="comic"><div class="lcard-thumb" style="background:linear-gradient(135deg,#0d0a00,rgba(255,40,0,.15))"><i class="fas fa-book-open" style="color:rgba(255,40,0,.3)"></i><span class="ltype" style="color:var(--fire)">comic</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=cx" alt=""><span class="seller-nm">CreatorX</span></div><div class="lcard-title">Dark Tomorrow Vol.1</div><div class="lcard-desc">48-page indie comic — fallen hero's redemption arc.</div><div class="lcard-tags"><span class="ltag">Original</span><span class="ltag">48 pages</span></div><div class="lcard-foot"><span class="lcard-price">$4.99</span><button class="buy-btn" onclick="alert('Demo: $4.99')">Buy</button></div></div></div>
-    <div class="lcard" data-cat="art"><div class="lcard-thumb" style="background:linear-gradient(135deg,#070014,rgba(124,77,255,.15))"><i class="fas fa-paintbrush" style="color:rgba(124,77,255,.3)"></i><span class="ltype" style="color:var(--lilac)">art</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=ink" alt=""><span class="seller-nm">InkDreamer</span></div><div class="lcard-title">Omega Character Sheet</div><div class="lcard-desc">A2 print-ready 300dpi character concept.</div><div class="lcard-tags"><span class="ltag">A2 Print</span></div><div class="lcard-foot"><span class="lcard-price">$8.00</span><button class="buy-btn" onclick="alert('Demo: $8.00')">Buy</button></div></div></div>
-    <div class="lcard" data-cat="video"><div class="lcard-thumb" style="background:linear-gradient(135deg,#00071a,rgba(68,138,255,.15))"><i class="fas fa-video" style="color:rgba(68,138,255,.3)"></i><span class="ltype" style="color:var(--sky)">video</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=ff" alt=""><span class="seller-nm">FilmForge</span></div><div class="lcard-title">Rivals Tribute Cut</div><div class="lcard-desc">Fan-made 4K cinematic edit.</div><div class="lcard-tags"><span class="ltag">4K</span></div><div class="lcard-foot"><span class="lcard-price">$1.99</span><button class="buy-btn" onclick="alert('Demo: $1.99')">Buy</button></div></div></div>
-    <div class="lcard" data-cat="cosplay"><div class="lcard-thumb" style="background:linear-gradient(135deg,#001a00,rgba(0,200,83,.1))"><i class="fas fa-mask" style="color:rgba(0,200,83,.25)"></i><span class="ltype" style="color:var(--sage)">cosplay</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=as" alt=""><span class="seller-nm">ArmorSmith</span></div><div class="lcard-title">Dark Knight Full Suit</div><div class="lcard-desc">Full EVA foam armor, LED eye lenses.</div><div class="lcard-tags"><span class="ltag">LED</span></div><div class="lcard-foot"><span class="lcard-price">$299</span><button class="buy-btn" onclick="alert('Demo: $299')">Buy</button></div></div></div>
-    <div class="lcard" data-cat="3d"><div class="lcard-thumb" style="background:linear-gradient(135deg,#001a0a,rgba(0,230,118,.1))"><i class="fas fa-cube" style="color:rgba(0,230,118,.25)"></i><span class="ltype" style="color:var(--sage)">3d</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=pb" alt=""><span class="seller-nm">PolyBuild</span></div><div class="lcard-title">Iron Relic MK50 Model</div><div class="lcard-desc">Fully rigged & textured. FBX + OBJ.</div><div class="lcard-tags"><span class="ltag">Game-ready</span></div><div class="lcard-foot"><span class="lcard-price">$24.99</span><button class="buy-btn" onclick="alert('Demo: $24.99')">Buy</button></div></div></div>
-    <div class="lcard" data-cat="comic"><div class="lcard-thumb" style="background:linear-gradient(135deg,#0a0a00,rgba(255,179,0,.1))"><i class="fas fa-book-open" style="color:rgba(255,179,0,.25)"></i><span class="ltype" style="color:var(--gold)">comic</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=mf" alt=""><span class="seller-nm">MangaFan99</span></div><div class="lcard-title">Saiyan Chronicles</div><div class="lcard-desc">64-page fan-doujin. Original art.</div><div class="lcard-tags"><span class="ltag">64 pages</span></div><div class="lcard-foot"><span class="lcard-price">$3.50</span><button class="buy-btn" onclick="alert('Demo: $3.50')">Buy</button></div></div></div>
+    <div class="lcard" data-cat="comic"><div class="lcard-thumb" style="background:linear-gradient(135deg,#0d0a00,rgba(255,40,0,.15))"><i data-lucide="book-open" style="width:40px;height:40px;color:rgba(255,40,0,.3)"></i><span class="ltype" style="color:var(--fire)">comic</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=cx" alt=""><span class="seller-nm">CreatorX</span></div><div class="lcard-title">Dark Tomorrow Vol.1</div><div class="lcard-desc">48-page indie comic — fallen hero's redemption arc.</div><div class="lcard-tags"><span class="ltag">Original</span><span class="ltag">48 pages</span></div><div class="lcard-foot"><span class="lcard-price">$4.99</span><button class="buy-btn" onclick="alert('Demo: $4.99')">Buy</button></div></div></div>
+    <div class="lcard" data-cat="art"><div class="lcard-thumb" style="background:linear-gradient(135deg,#070014,rgba(124,77,255,.15))"><i data-lucide="paintbrush" style="width:40px;height:40px;color:rgba(124,77,255,.3)"></i><span class="ltype" style="color:var(--lilac)">art</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=ink" alt=""><span class="seller-nm">InkDreamer</span></div><div class="lcard-title">Omega Character Sheet</div><div class="lcard-desc">A2 print-ready 300dpi character concept.</div><div class="lcard-tags"><span class="ltag">A2 Print</span></div><div class="lcard-foot"><span class="lcard-price">$8.00</span><button class="buy-btn" onclick="alert('Demo: $8.00')">Buy</button></div></div></div>
+    <div class="lcard" data-cat="video"><div class="lcard-thumb" style="background:linear-gradient(135deg,#00071a,rgba(68,138,255,.15))"><i data-lucide="video" style="width:40px;height:40px;color:rgba(68,138,255,.3)"></i><span class="ltype" style="color:var(--sky)">video</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=ff" alt=""><span class="seller-nm">FilmForge</span></div><div class="lcard-title">Rivals Tribute Cut</div><div class="lcard-desc">Fan-made 4K cinematic edit.</div><div class="lcard-tags"><span class="ltag">4K</span></div><div class="lcard-foot"><span class="lcard-price">$1.99</span><button class="buy-btn" onclick="alert('Demo: $1.99')">Buy</button></div></div></div>
+    <div class="lcard" data-cat="cosplay"><div class="lcard-thumb" style="background:linear-gradient(135deg,#001a00,rgba(0,200,83,.1))"><i data-lucide="drama" style="width:40px;height:40px;color:rgba(0,200,83,.25)"></i><span class="ltype" style="color:var(--sage)">cosplay</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=as" alt=""><span class="seller-nm">ArmorSmith</span></div><div class="lcard-title">Dark Knight Full Suit</div><div class="lcard-desc">Full EVA foam armor, LED eye lenses.</div><div class="lcard-tags"><span class="ltag">LED</span></div><div class="lcard-foot"><span class="lcard-price">$299</span><button class="buy-btn" onclick="alert('Demo: $299')">Buy</button></div></div></div>
+    <div class="lcard" data-cat="3d"><div class="lcard-thumb" style="background:linear-gradient(135deg,#001a0a,rgba(0,230,118,.1))"><i data-lucide="box" style="width:40px;height:40px;color:rgba(0,230,118,.25)"></i><span class="ltype" style="color:var(--sage)">3d</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=pb" alt=""><span class="seller-nm">PolyBuild</span></div><div class="lcard-title">Iron Relic MK50 Model</div><div class="lcard-desc">Fully rigged & textured. FBX + OBJ.</div><div class="lcard-tags"><span class="ltag">Game-ready</span></div><div class="lcard-foot"><span class="lcard-price">$24.99</span><button class="buy-btn" onclick="alert('Demo: $24.99')">Buy</button></div></div></div>
+    <div class="lcard" data-cat="comic"><div class="lcard-thumb" style="background:linear-gradient(135deg,#0a0a00,rgba(255,179,0,.1))"><i data-lucide="book-open" style="width:40px;height:40px;color:rgba(255,179,0,.25)"></i><span class="ltype" style="color:var(--gold)">comic</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=mf" alt=""><span class="seller-nm">MangaFan99</span></div><div class="lcard-title">Saiyan Chronicles</div><div class="lcard-desc">64-page fan-doujin. Original art.</div><div class="lcard-tags"><span class="ltag">64 pages</span></div><div class="lcard-foot"><span class="lcard-price">$3.50</span><button class="buy-btn" onclick="alert('Demo: $3.50')">Buy</button></div></div></div>
   </div>
 </div>
 </div>
 
-<!-- ═══ EXPLORE ═══ -->
+<!-- EXPLORE -->
 <div id="pg-explore" class="page">
 <div class="inner" style="max-width:820px">
   <div class="exp-hero">
@@ -1095,31 +855,16 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:900;letter-spacing:-.03em;margin-bottom:.2rem">Explore Zone</h2>
     <p style="font-size:.74rem;color:var(--muted2)">Navigate to pinned locations · Battle guardians · Earn tokens</p>
     <div style="display:flex;gap:.4rem;justify-content:center;margin-top:.6rem;flex-wrap:wrap;">
-      <button class="btn btn-sky" style="font-size:.7rem;padding:7px 14px;" onclick="document.getElementById('orgOverlay').classList.add('open')"><i class="fas fa-map-pin"></i> Pin Org</button>
-      <button class="btn btn-ghost" style="font-size:.7rem;padding:7px 14px;" onclick="showToast('Leaderboard coming soon!')"><i class="fas fa-trophy"></i> Top Explorers</button>
+      <button class="btn btn-sky" style="font-size:.7rem;padding:7px 14px;" onclick="document.getElementById('orgOverlay').classList.add('open')"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> Pin Org</button>
+      <button class="btn btn-ghost" style="font-size:.7rem;padding:7px 14px;" onclick="showToast('Leaderboard coming soon!')"><i data-lucide="trophy" style="width:14px;height:14px;"></i> Top Explorers</button>
     </div>
   </div>
-
-  <!-- Stats Row -->
   <div style="display:flex;gap:.4rem;padding:0 .8rem .6rem;flex-wrap:wrap;">
-    <div style="flex:1;min-width:70px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;">
-      <div style="font-family:var(--font-mono);font-size:.9rem;color:var(--gold);">12</div>
-      <div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Visited</div>
-    </div>
-    <div style="flex:1;min-width:70px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;">
-      <div style="font-family:var(--font-mono);font-size:.9rem;color:var(--sage);">340⚡</div>
-      <div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Earned</div>
-    </div>
-    <div style="flex:1;min-width:70px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;">
-      <div style="font-family:var(--font-mono);font-size:.9rem;color:var(--fire);">8</div>
-      <div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Battles</div>
-    </div>
-    <div style="flex:1;min-width:70px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;">
-      <div style="font-family:var(--font-mono);font-size:.9rem;color:var(--sky);">#42</div>
-      <div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Rank</div>
-    </div>
+    <div style="flex:1;min-width:70px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;"><div style="font-family:var(--font-mono);font-size:.9rem;color:var(--gold);">12</div><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Visited</div></div>
+    <div style="flex:1;min-width:70px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;"><div style="font-family:var(--font-mono);font-size:.9rem;color:var(--sage);">340⚡</div><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Earned</div></div>
+    <div style="flex:1;min-width:70px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;"><div style="font-family:var(--font-mono);font-size:.9rem;color:var(--fire);">8</div><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Battles</div></div>
+    <div style="flex:1;min-width:70px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;"><div style="font-family:var(--font-mono);font-size:.9rem;color:var(--sky);">#42</div><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Rank</div></div>
   </div>
-
   <div class="pill-row" id="efPills">
     <div class="pill on" onclick="filterOffers(this,'all')">All</div>
     <div class="pill" onclick="filterOffers(this,'food')">🍕 Food</div>
@@ -1130,17 +875,15 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     <div class="pill" onclick="filterOffers(this,'retail')">🛍️ Retail</div>
   </div>
   <div class="offer-grid" id="offerGrid">
-    <div class="offer-card" data-cat="food"><div class="offer-thumb" style="background:linear-gradient(135deg,#1a0a00,rgba(255,40,0,.1))">🍕<span class="offer-badge hot">HOT</span></div><div class="offer-body"><div class="offer-org">Pizza Tower</div><div class="offer-title">20% Off All Orders</div><div class="offer-deal">Code: MA3RUMBLE</div><div class="offer-loc"><i class="fas fa-location-dot" style="color:var(--fire)"></i> Downtown · 0.4km</div></div><div class="offer-foot"><div class="offer-rew"><i class="fas fa-coins"></i>+15⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Pizza Tower',15)">Navigate</button></div></div>
-    <div class="offer-card" data-cat="fitness"><div class="offer-thumb" style="background:linear-gradient(135deg,#00001a,rgba(68,138,255,.1))">🏋️<span class="offer-badge">EXCL</span></div><div class="offer-body"><div class="offer-org">Titan Gym</div><div class="offer-title">First Week Free</div><div class="offer-deal">Train like a champion. No contracts.</div><div class="offer-loc"><i class="fas fa-location-dot" style="color:var(--fire)"></i> Uptown · 2.3km</div></div><div class="offer-foot"><div class="offer-rew"><i class="fas fa-coins"></i>+25⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Titan Gym',25)">Navigate</button></div></div>
-    <div class="offer-card" data-cat="entertainment"><div class="offer-thumb" style="background:linear-gradient(135deg,#0a001a,rgba(179,136,255,.1))">🎮<span class="offer-badge hot">LIVE</span></div><div class="offer-body"><div class="offer-org">Arcade Universe</div><div class="offer-title">Buy 1 Get 1 Token</div><div class="offer-deal">Mortal Kombat, Street Fighter & more</div><div class="offer-loc"><i class="fas fa-location-dot" style="color:var(--fire)"></i> Entertainment Dist · 0.8km</div></div><div class="offer-foot"><div class="offer-rew"><i class="fas fa-coins"></i>+20⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Arcade Universe',20)">Navigate</button></div></div>
-    <div class="offer-card" data-cat="tech"><div class="offer-thumb" style="background:linear-gradient(135deg,#001a0a,rgba(0,200,150,.08))">⚡</div><div class="offer-body"><div class="offer-org">TechNest Hub</div><div class="offer-title">Free EV Charging 30min</div><div class="offer-deal">For app users — zero cost</div><div class="offer-loc"><i class="fas fa-location-dot" style="color:var(--fire)"></i> Central · 1.5km</div></div><div class="offer-foot"><div class="offer-rew"><i class="fas fa-coins"></i>+12⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'TechNest',12)">Navigate</button></div></div>
-    <div class="offer-card" data-cat="food"><div class="offer-thumb" style="background:linear-gradient(135deg,#1a1a00,rgba(255,179,0,.1))">🍔<span class="offer-badge">NEW</span></div><div class="offer-body"><div class="offer-org">Burger Republic</div><div class="offer-title">Free Fries with Burger</div><div class="offer-deal">Every Tuesday for Ma3 users</div><div class="offer-loc"><i class="fas fa-location-dot" style="color:var(--fire)"></i> Westlands · 1.2km</div></div><div class="offer-foot"><div class="offer-rew"><i class="fas fa-coins"></i>+10⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Burger Republic',10)">Navigate</button></div></div>
-    <div class="offer-card" data-cat="retail"><div class="offer-thumb" style="background:linear-gradient(135deg,#0a0a1a,rgba(68,138,255,.1))">👟<span class="offer-badge">SALE</span></div><div class="offer-body"><div class="offer-org">Sneaker Vault</div><div class="offer-title">30% Off Jordans</div><div class="offer-deal">Limited stock — this weekend only</div><div class="offer-loc"><i class="fas fa-location-dot" style="color:var(--fire)"></i> CBD · 0.6km</div></div><div class="offer-foot"><div class="offer-rew"><i class="fas fa-coins"></i>+18⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Sneaker Vault',18)">Navigate</button></div></div>
-    <div class="offer-card" data-cat="transport"><div class="offer-thumb" style="background:linear-gradient(135deg,#001a1a,rgba(0,200,150,.1))">🛵<span class="offer-badge">RIDE</span></div><div class="offer-body"><div class="offer-org">Bolt Boda</div><div class="offer-title">50% Off First 3 Rides</div><div class="offer-deal">New users only · Code MA3RIDE</div><div class="offer-loc"><i class="fas fa-location-dot" style="color:var(--fire)"></i> Citywide · 0.1km</div></div><div class="offer-foot"><div class="offer-rew"><i class="fas fa-coins"></i>+8⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Bolt Boda',8)">Navigate</button></div></div>
-    <div class="offer-card" data-cat="entertainment"><div class="offer-thumb" style="background:linear-gradient(135deg,#1a0010,rgba(255,40,0,.1))">🎬<span class="offer-badge hot">TIX</span></div><div class="offer-body"><div class="offer-org">Century Cinemax</div><div class="offer-title">2-for-1 Movie Tickets</div><div class="offer-deal">Mon-Thu · All blockbusters</div><div class="offer-loc"><i class="fas fa-location-dot" style="color:var(--fire)"></i> Junction · 2.1km</div></div><div class="offer-foot"><div class="offer-rew"><i class="fas fa-coins"></i>+14⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Century Cinemax',14)">Navigate</button></div></div>
+    <div class="offer-card" data-cat="food"><div class="offer-thumb" style="background:linear-gradient(135deg,#1a0a00,rgba(255,40,0,.1))">🍕<span class="offer-badge hot">HOT</span></div><div class="offer-body"><div class="offer-org">Pizza Tower</div><div class="offer-title">20% Off All Orders</div><div class="offer-deal">Code: MA3RUMBLE</div><div class="offer-loc"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--fire)"></i> Downtown · 0.4km</div></div><div class="offer-foot"><div class="offer-rew"><i data-lucide="coins" style="width:12px;height:12px;"></i>+15⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Pizza Tower',15)">Navigate</button></div></div>
+    <div class="offer-card" data-cat="fitness"><div class="offer-thumb" style="background:linear-gradient(135deg,#00001a,rgba(68,138,255,.1))">🏋️<span class="offer-badge">EXCL</span></div><div class="offer-body"><div class="offer-org">Titan Gym</div><div class="offer-title">First Week Free</div><div class="offer-deal">Train like a champion. No contracts.</div><div class="offer-loc"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--fire)"></i> Uptown · 2.3km</div></div><div class="offer-foot"><div class="offer-rew"><i data-lucide="coins" style="width:12px;height:12px;"></i>+25⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Titan Gym',25)">Navigate</button></div></div>
+    <div class="offer-card" data-cat="entertainment"><div class="offer-thumb" style="background:linear-gradient(135deg,#0a001a,rgba(179,136,255,.1))">🎮<span class="offer-badge hot">LIVE</span></div><div class="offer-body"><div class="offer-org">Arcade Universe</div><div class="offer-title">Buy 1 Get 1 Token</div><div class="offer-deal">Mortal Kombat, Street Fighter & more</div><div class="offer-loc"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--fire)"></i> Entertainment Dist · 0.8km</div></div><div class="offer-foot"><div class="offer-rew"><i data-lucide="coins" style="width:12px;height:12px;"></i>+20⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Arcade Universe',20)">Navigate</button></div></div>
+    <div class="offer-card" data-cat="tech"><div class="offer-thumb" style="background:linear-gradient(135deg,#001a0a,rgba(0,200,150,.08))">⚡</div><div class="offer-body"><div class="offer-org">TechNest Hub</div><div class="offer-title">Free EV Charging 30min</div><div class="offer-deal">For app users — zero cost</div><div class="offer-loc"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--fire)"></i> Central · 1.5km</div></div><div class="offer-foot"><div class="offer-rew"><i data-lucide="coins" style="width:12px;height:12px;"></i>+12⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'TechNest',12)">Navigate</button></div></div>
+    <div class="offer-card" data-cat="food"><div class="offer-thumb" style="background:linear-gradient(135deg,#1a1a00,rgba(255,179,0,.1))">🍔<span class="offer-badge">NEW</span></div><div class="offer-body"><div class="offer-org">Burger Republic</div><div class="offer-title">Free Fries with Burger</div><div class="offer-deal">Every Tuesday for Ma3 users</div><div class="offer-loc"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--fire)"></i> Westlands · 1.2km</div></div><div class="offer-foot"><div class="offer-rew"><i data-lucide="coins" style="width:12px;height:12px;"></i>+10⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Burger Republic',10)">Navigate</button></div></div>
+    <div class="offer-card" data-cat="retail"><div class="offer-thumb" style="background:linear-gradient(135deg,#0a0a1a,rgba(68,138,255,.1))">👟<span class="offer-badge">SALE</span></div><div class="offer-body"><div class="offer-org">Sneaker Vault</div><div class="offer-title">30% Off Jordans</div><div class="offer-deal">Limited stock — this weekend only</div><div class="offer-loc"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--fire)"></i> CBD · 0.6km</div></div><div class="offer-foot"><div class="offer-rew"><i data-lucide="coins" style="width:12px;height:12px;"></i>+18⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Sneaker Vault',18)">Navigate</button></div></div>
+    <div class="offer-card" data-cat="transport"><div class="offer-thumb" style="background:linear-gradient(135deg,#001a1a,rgba(0,200,150,.1))">🛵<span class="offer-badge">RIDE</span></div><div class="offer-body"><div class="offer-org">Bolt Boda</div><div class="offer-title">50% Off First 3 Rides</div><div class="offer-deal">New users only · Code MA3RIDE</div><div class="offer-loc"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--fire)"></i> Citywide · 0.1km</div></div><div class="offer-foot"><div class="offer-rew"><i data-lucide="coins" style="width:12px;height:12px;"></i>+8⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Bolt Boda',8)">Navigate</button></div></div>
+    <div class="offer-card" data-cat="entertainment"><div class="offer-thumb" style="background:linear-gradient(135deg,#1a0010,rgba(255,40,0,.1))">🎬<span class="offer-badge hot">TIX</span></div><div class="offer-body"><div class="offer-org">Century Cinemax</div><div class="offer-title">2-for-1 Movie Tickets</div><div class="offer-deal">Mon-Thu · All blockbusters</div><div class="offer-loc"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--fire)"></i> Junction · 2.1km</div></div><div class="offer-foot"><div class="offer-rew"><i data-lucide="coins" style="width:12px;height:12px;"></i>+14⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'Century Cinemax',14)">Navigate</button></div></div>
   </div>
-
-  <!-- Activity Feed -->
   <div style="margin:.6rem .8rem 0;background:var(--glass);border:1px solid var(--border2);border-radius:14px;padding:.8rem;">
     <div style="font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">Recent Explorer Activity</div>
     <div style="display:flex;flex-direction:column;gap:.35rem;" id="expActivity">
@@ -1161,33 +904,27 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
       </div>
     </div>
   </div>
-
   <div class="stream" id="expLog" style="margin:.6rem .8rem 0;"><div class="sl info">🗺️ Navigate to locations to earn tokens and fight local guardians!</div></div>
 </div>
 </div>
 
-<!-- ═══ MIRTH ═══ -->
+<!-- MIRTH -->
 <div id="pg-mirth" class="page">
 <div style="max-width:900px;margin:0 auto;">
   <div class="ph" style="text-align:center;padding:.6rem 1rem .4rem;">
     <h2 style="font-size:1.5rem;">Mirth Arena</h2>
     <p style="font-size:.72rem;">Bet on sports · Battle artefacts · Vote nganyas</p>
   </div>
-
-  <!-- Promo Banner -->
   <div style="background:linear-gradient(135deg,rgba(255,40,0,.1),rgba(255,179,0,.06));border:1px solid rgba(255,40,0,.15);border-radius:16px;padding:.8rem 1rem;margin:0 .8rem .8rem;text-align:center;">
     <div style="font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;">This Week's Feature</div>
     <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;">🔥 El Clásico + UFC 315 + NBA Playoffs</div>
     <div style="font-size:.62rem;color:var(--muted2);margin-top:.2rem;">All major events · Live odds · Instant payouts</div>
   </div>
-
   <div class="mirth-tabs">
-    <div class="mtab on" onclick="showMirth('battle',this)"><i class="fas fa-fire"></i> Battle</div>
-    <div class="mtab" onclick="showMirth('betting',this)"><i class="fas fa-trophy"></i> Sports</div>
-    <div class="mtab" onclick="showMirth('nganyavs',this)"><i class="fas fa-bus"></i> Nganya VS</div>
+    <div class="mtab on" onclick="showMirth('battle',this)"><i data-lucide="swords" style="width:14px;height:14px;"></i> Battle</div>
+    <div class="mtab" onclick="showMirth('betting',this)"><i data-lucide="trophy" style="width:14px;height:14px;"></i> Sports</div>
+    <div class="mtab" onclick="showMirth('nganyavs',this)"><i data-lucide="bus" style="width:14px;height:14px;"></i> Nganya VS</div>
   </div>
-
-  <!-- BATTLE -->
   <div class="mirth-panel on" id="mp-battle">
     <div class="battle-grid">
       <div class="fb" id="fb1">
@@ -1197,11 +934,11 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
           <div class="fb-univ" id="f1univ">New York Nexus</div>
         </div>
         <div class="fb-nav">
-          <div class="farr" onclick="prevF(1)"><i class="fas fa-chevron-left"></i></div>
+          <div class="farr" onclick="prevF(1)"><i data-lucide="chevron-left" style="width:14px;height:14px;"></i></div>
           <span class="fidx" id="f1idx">1/1</span>
-          <div class="farr" onclick="nextF(1)"><i class="fas fa-chevron-right"></i></div>
+          <div class="farr" onclick="nextF(1)"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i></div>
         </div>
-        <button class="lock-btn" id="lb1" onclick="toggleLock(1)"><i class="fas fa-lock-open"></i> Lock</button>
+        <button class="lock-btn" id="lb1" onclick="toggleLock(1)"><i data-lucide="unlock" style="width:12px;height:12px;"></i> Lock</button>
       </div>
       <div class="vs-mid">
         <div class="vs-lbl">VS</div>
@@ -1215,11 +952,11 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
           <div class="fb-univ" id="f2univ">Metropolis Nexus</div>
         </div>
         <div class="fb-nav">
-          <div class="farr" onclick="prevF(2)"><i class="fas fa-chevron-left"></i></div>
+          <div class="farr" onclick="prevF(2)"><i data-lucide="chevron-left" style="width:14px;height:14px;"></i></div>
           <span class="fidx" id="f2idx">1/1</span>
-          <div class="farr" onclick="nextF(2)"><i class="fas fa-chevron-right"></i></div>
+          <div class="farr" onclick="nextF(2)"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i></div>
         </div>
-        <button class="lock-btn" id="lb2" onclick="toggleLock(2)"><i class="fas fa-lock-open"></i> Lock</button>
+        <button class="lock-btn" id="lb2" onclick="toggleLock(2)"><i data-lucide="unlock" style="width:12px;height:12px;"></i> Lock</button>
       </div>
     </div>
     <div class="fight-log" id="fightLog">
@@ -1232,31 +969,16 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
       <div style="font-size:.76rem;color:var(--sage);margin-top:4px;font-weight:600" id="winnerRew">—</div>
       <div class="w-stats" id="winnerStats"></div>
     </div>
-    <!-- Battle Stats Summary -->
     <div style="margin:.6rem .8rem 0;background:var(--glass);border:1px solid var(--border2);border-radius:14px;padding:.8rem;">
       <div style="font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">Your Battle Record</div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <div style="flex:1;min-width:80px;text-align:center;padding:.4rem;background:rgba(0,200,150,.08);border-radius:10px;">
-          <div style="font-family:var(--font-mono);font-size:1rem;color:var(--sage);font-weight:500;">12</div>
-          <div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Wins</div>
-        </div>
-        <div style="flex:1;min-width:80px;text-align:center;padding:.4rem;background:rgba(255,40,0,.08);border-radius:10px;">
-          <div style="font-family:var(--font-mono);font-size:1rem;color:var(--fire);font-weight:500;">4</div>
-          <div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Losses</div>
-        </div>
-        <div style="flex:1;min-width:80px;text-align:center;padding:.4rem;background:rgba(255,179,0,.08);border-radius:10px;">
-          <div style="font-family:var(--font-mono);font-size:1rem;color:var(--gold);font-weight:500;">75%</div>
-          <div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Win Rate</div>
-        </div>
-        <div style="flex:1;min-width:80px;text-align:center;padding:.4rem;background:rgba(68,138,255,.08);border-radius:10px;">
-          <div style="font-family:var(--font-mono);font-size:1rem;color:var(--sky);font-weight:500;">28⚡</div>
-          <div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Earned</div>
-        </div>
+        <div style="flex:1;min-width:80px;text-align:center;padding:.4rem;background:rgba(0,200,150,.08);border-radius:10px;"><div style="font-family:var(--font-mono);font-size:1rem;color:var(--sage);font-weight:500;">12</div><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Wins</div></div>
+        <div style="flex:1;min-width:80px;text-align:center;padding:.4rem;background:rgba(255,40,0,.08);border-radius:10px;"><div style="font-family:var(--font-mono);font-size:1rem;color:var(--fire);font-weight:500;">4</div><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Losses</div></div>
+        <div style="flex:1;min-width:80px;text-align:center;padding:.4rem;background:rgba(255,179,0,.08);border-radius:10px;"><div style="font-family:var(--font-mono);font-size:1rem;color:var(--gold);font-weight:500;">75%</div><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Win Rate</div></div>
+        <div style="flex:1;min-width:80px;text-align:center;padding:.4rem;background:rgba(68,138,255,.08);border-radius:10px;"><div style="font-family:var(--font-mono);font-size:1rem;color:var(--sky);font-weight:500;">28⚡</div><div style="font-size:.55rem;color:var(--muted);text-transform:uppercase;">Earned</div></div>
       </div>
     </div>
   </div>
-
-  <!-- SPORTS BETTING -->
   <div class="mirth-panel" id="mp-betting">
     <div class="sports-header">
       <h3>Today's Big Matches</h3>
@@ -1264,15 +986,11 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     </div>
     <div class="sport-pills" id="sportPills"></div>
     <div id="matchCardsArea"></div>
-
-    <!-- Energy drink ad -->
     <div class="drink-ad" style="--ad-c1:#0d0014;--ad-c2:#1a002e;border:1px solid rgba(179,0,255,.3);" onclick="showToast('⚡ Reign Energy — Fuel the Battle')">
       <div class="drink-ad-icon">⚡</div>
       <div><div class="drink-ad-name" style="color:#c084fc">REIGN ENERGY</div><div class="drink-ad-tag">Performance Energy · Storm the Arena</div></div>
       <div class="drink-ad-cta">Get Yours</div>
     </div>
-
-    <!-- Bet slip -->
     <div class="bet-slip">
       <div class="bet-slip-head">
         <div class="bet-slip-title">🎯 Bet Slip</div>
@@ -1296,15 +1014,11 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
       <button class="place-bet-btn" onclick="placeSportBet()" id="placeBetBtn" disabled>Place Bet</button>
       <div class="bet-result-toast" id="sportBetResult"></div>
     </div>
-
-    <!-- Another drink ad -->
     <div class="drink-ad" style="--ad-c1:#001a0a;--ad-c2:#002a10;border:1px solid rgba(0,200,100,.3);" onclick="showToast('🐂 Red Bull — Gives You Wings')">
       <div class="drink-ad-icon">🐂</div>
       <div><div class="drink-ad-name" style="color:#4ade80">RED BULL</div><div class="drink-ad-tag">Wings for every match-day · New Edition</div></div>
       <div class="drink-ad-cta">Win Cans</div>
     </div>
-
-    <!-- More Sports Content -->
     <div style="margin:.6rem .8rem 0;background:var(--glass);border:1px solid var(--border2);border-radius:14px;padding:.8rem;">
       <div style="font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">Upcoming This Week</div>
       <div style="display:flex;flex-direction:column;gap:.35rem;">
@@ -1331,8 +1045,6 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
       </div>
     </div>
   </div>
-
-  <!-- NGANYA VS -->
   <div class="mirth-panel" id="mp-nganyavs">
     <div style="padding:0 .8rem .5rem;">
       <div style="font-size:.72rem;color:var(--muted2);margin-bottom:.6rem;">Vote for the best nganya. The one with the most ⭐ wins this week's featured spot on the home page!</div>
@@ -1345,45 +1057,28 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
       <div class="sec-label">This Week's Leaderboard</div>
       <div id="nganyaLeaderboard"></div>
     </div>
-    <!-- Nganya Stats Comparison -->
     <div style="margin:.4rem .8rem 0;background:var(--glass);border:1px solid var(--border2);border-radius:14px;padding:.8rem;">
       <div style="font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;">What Makes a Champion Nganya?</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;">
-        <div style="padding:.4rem;background:rgba(255,40,0,.06);border-radius:8px;text-align:center;">
-          <div style="font-size:.9rem;">🎨</div>
-          <div style="font-size:.62rem;font-weight:700;">Graffiti / Art</div>
-          <div style="font-size:.55rem;color:var(--muted);">Visual armour</div>
-        </div>
-        <div style="padding:.4rem;background:rgba(255,179,0,.06);border-radius:8px;text-align:center;">
-          <div style="font-size:.9rem;">🔊</div>
-          <div style="font-size:.62rem;font-weight:700;">Sound System</div>
-          <div style="font-size:.55rem;color:var(--muted);">Combat power</div>
-        </div>
-        <div style="padding:.4rem;background:rgba(0,200,150,.06);border-radius:8px;text-align:center;">
-          <div style="font-size:.9rem;">⚡</div>
-          <div style="font-size:.62rem;font-weight:700;">Speed / Time</div>
-          <div style="font-size:.55rem;color:var(--muted);">Agility stat</div>
-        </div>
-        <div style="padding:.4rem;background:rgba(68,138,255,.06);border-radius:8px;text-align:center;">
-          <div style="font-size:.9rem;">❤️</div>
-          <div style="font-size:.62rem;font-weight:700;">Service</div>
-          <div style="font-size:.55rem;color:var(--muted);">Comfort value</div>
-        </div>
+        <div style="padding:.4rem;background:rgba(255,40,0,.06);border-radius:8px;text-align:center;"><div style="font-size:.9rem;">🎨</div><div style="font-size:.62rem;font-weight:700;">Graffiti / Art</div><div style="font-size:.55rem;color:var(--muted);">Visual armour</div></div>
+        <div style="padding:.4rem;background:rgba(255,179,0,.06);border-radius:8px;text-align:center;"><div style="font-size:.9rem;">🔊</div><div style="font-size:.62rem;font-weight:700;">Sound System</div><div style="font-size:.55rem;color:var(--muted);">Combat power</div></div>
+        <div style="padding:.4rem;background:rgba(0,200,150,.06);border-radius:8px;text-align:center;"><div style="font-size:.9rem;">⚡</div><div style="font-size:.62rem;font-weight:700;">Speed / Time</div><div style="font-size:.55rem;color:var(--muted);">Agility stat</div></div>
+        <div style="padding:.4rem;background:rgba(68,138,255,.06);border-radius:8px;text-align:center;"><div style="font-size:.9rem;">❤️</div><div style="font-size:.62rem;font-weight:700;">Service</div><div style="font-size:.55rem;color:var(--muted);">Comfort value</div></div>
       </div>
     </div>
   </div>
 </div>
 </div>
 
-<!-- ═══ BOTTOM NAV ═══ -->
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <div class="bn" id="bn-ma3" onclick="showPage('ma3')"><div class="bn-ic"><span style="font-size:.9rem">🚌</span></div><div class="bn-lbl">Ma3</div></div>
-  <div class="bn" id="bn-ride" onclick="showPage('ride')"><div class="bn-ic"><i class="fas fa-taxi" style="font-size:.85rem"></i></div><div class="bn-lbl">Ride</div></div>
-  <div class="bn" id="bn-fly" onclick="showPage('fly')"><div class="bn-ic"><i class="fas fa-plane" style="font-size:.85rem"></i></div><div class="bn-lbl">Fly</div></div>
-  <div class="bn on" id="bn-home" onclick="showPage('home')"><div class="bn-ic"><i class="fas fa-house" style="font-size:.85rem"></i></div><div class="bn-lbl">Home</div></div>
-  <div class="bn" id="bn-market" onclick="showPage('market')"><div class="bn-ic"><i class="fas fa-store" style="font-size:.85rem"></i></div><div class="bn-lbl">Market</div></div>
-  <div class="bn" id="bn-explore" onclick="showPage('explore')"><div class="bn-ic"><i class="fas fa-map-marked-alt" style="font-size:.85rem"></i></div><div class="bn-lbl">Explore</div></div>
-  <div class="bn" id="bn-mirth" onclick="showPage('mirth')"><div class="bn-ic"><i class="fas fa-fire" style="font-size:.85rem"></i></div><div class="bn-lbl">Mirth</div></div>
+  <div class="bn" id="bn-ma3" onclick="showPage('ma3')"><div class="bn-ic"><i data-lucide="bus" style="width:18px;height:18px;"></i></div><div class="bn-lbl">Ma3</div></div>
+  <div class="bn" id="bn-ride" onclick="showPage('ride')"><div class="bn-ic"><i data-lucide="car" style="width:18px;height:18px;"></i></div><div class="bn-lbl">Ride</div></div>
+  <div class="bn" id="bn-fly" onclick="showPage('fly')"><div class="bn-ic"><i data-lucide="plane" style="width:18px;height:18px;"></i></div><div class="bn-lbl">Fly</div></div>
+  <div class="bn on" id="bn-home" onclick="showPage('home')"><div class="bn-ic"><i data-lucide="home" style="width:18px;height:18px;"></i></div><div class="bn-lbl">Home</div></div>
+  <div class="bn" id="bn-market" onclick="showPage('market')"><div class="bn-ic"><i data-lucide="store" style="width:18px;height:18px;"></i></div><div class="bn-lbl">Market</div></div>
+  <div class="bn" id="bn-explore" onclick="showPage('explore')"><div class="bn-ic"><i data-lucide="map-pin" style="width:18px;height:18px;"></i></div><div class="bn-lbl">Explore</div></div>
+  <div class="bn" id="bn-mirth" onclick="showPage('mirth')"><div class="bn-ic"><i data-lucide="flame" style="width:18px;height:18px;"></i></div><div class="bn-lbl">Mirth</div></div>
 </nav>
 
 <div class="confirm-toast" id="toast"></div>
@@ -1394,9 +1089,9 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     <div class="bsheet-handle"></div>
     <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:.6rem;text-align:center;">Choose Transport</div>
     <div class="move-sub-grid">
-      <div class="msub-card" onclick="closeMoveSheet();showPage('ma3')"><div class="msub-ic" style="background:rgba(255,40,0,.12)">🚌</div><div class="msub-title">Ma3</div><div class="msub-desc">Public Means</div></div>
-      <div class="msub-card" onclick="closeMoveSheet();showPage('ride')"><div class="msub-ic" style="background:rgba(0,200,150,.12)">🚕</div><div class="msub-title">Ride</div><div class="msub-desc">Taxi & Boda</div></div>
-      <div class="msub-card" onclick="closeMoveSheet();showPage('fly')"><div class="msub-ic" style="background:rgba(68,138,255,.12)">✈️</div><div class="msub-title">Fly</div><div class="msub-desc">Airlines</div></div>
+      <div class="msub-card" onclick="closeMoveSheet();showPage('ma3')"><div class="msub-ic" style="background:rgba(255,40,0,.12)"><i data-lucide="bus" style="width:24px;height:24px;"></i></div><div class="msub-title">Ma3</div><div class="msub-desc">Public Means</div></div>
+      <div class="msub-card" onclick="closeMoveSheet();showPage('ride')"><div class="msub-ic" style="background:rgba(0,200,150,.12)"><i data-lucide="car" style="width:24px;height:24px;"></i></div><div class="msub-title">Ride</div><div class="msub-desc">Taxi & Boda</div></div>
+      <div class="msub-card" onclick="closeMoveSheet();showPage('fly')"><div class="msub-ic" style="background:rgba(68,138,255,.12)"><i data-lucide="plane" style="width:24px;height:24px;"></i></div><div class="msub-title">Fly</div><div class="msub-desc">Airlines</div></div>
     </div>
   </div>
 </div>
@@ -1404,7 +1099,7 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
 <!-- UPLOAD MODAL -->
 <div class="overlay" id="uploadOverlay">
   <div class="mbox">
-    <div class="mhead"><h3>List Your Work</h3><div class="mclose" onclick="this.closest('.overlay').classList.remove('open')"><i class="fas fa-times"></i></div></div>
+    <div class="mhead"><h3>List Your Work</h3><div class="mclose" onclick="this.closest('.overlay').classList.remove('open')"><i data-lucide="x" style="width:14px;height:14px;"></i></div></div>
     <div class="fg"><label>Title *</label><input class="finput" id="uTitle" placeholder="Name your creation"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
       <div class="fg"><label>Category</label><select class="finput" id="uCat" style="padding:8px 10px"><option value="comic">Comic</option><option value="art">Art</option><option value="video">Video</option><option value="3d">3D</option><option value="cosplay">Cosplay</option></select></div>
@@ -1412,14 +1107,14 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
     </div>
     <div class="fg"><label>Description</label><textarea class="finput" id="uDesc" rows="2" style="resize:vertical" placeholder="Describe your work…"></textarea></div>
     <div class="fg"><label>Universe / Series</label><input class="finput" id="uUniv" placeholder="e.g. Dragon Ball, Original…"></div>
-    <button class="btn btn-fire" style="width:100%;padding:11px;justify-content:center;margin-top:.3rem" onclick="publishListing()">Publish (+20⚡)</button>
+    <button class="btn btn-fire" style="width:100%;padding:11px;justify-content:center;margin-top:.3rem" onclick="publishListing()"><i data-lucide="plus" style="width:14px;height:14px;"></i> Publish (+20⚡)</button>
   </div>
 </div>
 
 <!-- ORG PIN MODAL -->
 <div class="overlay" id="orgOverlay">
   <div class="mbox">
-    <div class="mhead"><h3>Pin Your Org</h3><div class="mclose" onclick="this.closest('.overlay').classList.remove('open')"><i class="fas fa-times"></i></div></div>
+    <div class="mhead"><h3>Pin Your Org</h3><div class="mclose" onclick="this.closest('.overlay').classList.remove('open')"><i data-lucide="x" style="width:14px;height:14px;"></i></div></div>
     <div class="fg"><label>Organization Name *</label><input class="finput" id="orgName" placeholder="e.g. Hero Coffee, Titan Gym…"></div>
     <div class="fg"><label>Offer / Deal</label><input class="finput" id="orgOffer" placeholder="e.g. 20% off for token holders"></div>
     <div class="fg"><label>Location / Address</label><input class="finput" id="orgLoc" placeholder="e.g. 42 Main St, Midtown"></div>
@@ -1427,20 +1122,116 @@ label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:upper
       <div class="fg"><label>Category</label><select class="finput" id="orgCat" style="padding:8px 10px"><option value="food">Food</option><option value="fitness">Fitness</option><option value="tech">Tech</option><option value="entertainment">Entertainment</option><option value="transport">Transport</option></select></div>
       <div class="fg"><label>Token Reward</label><input class="finput" id="orgReward" type="number" placeholder="10"></div>
     </div>
-    <button class="btn btn-sky" style="width:100%;padding:11px;justify-content:center;margin-top:.3rem" onclick="pinOrg()">Pin Location (Free)</button>
+    <button class="btn btn-sky" style="width:100%;padding:11px;justify-content:center;margin-top:.3rem" onclick="pinOrg()"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> Pin Location (Free)</button>
   </div>
+</div>
+
+<!-- RIDE RATE OVERLAY (Taxi/Boda) -->
+<div class="ride-rate-overlay" id="rideRateOverlay">
+  <div class="ride-rate-box">
+    <div class="rr-head"><h3>Rate Your Driver</h3><div class="mclose" onclick="document.getElementById('rideRateOverlay').classList.remove('open')"><i data-lucide="x" style="width:14px;height:14px;"></i></div></div>
+    <div class="rr-driver">
+      <div class="rr-av"><i data-lucide="user" style="width:28px;height:28px;color:var(--muted)"></i></div>
+      <div><div class="rr-name" id="rrDriverName">John M. · Toyota Fielder</div><div class="rr-car" id="rrCarInfo">KBZ 123A · Standard Ride</div></div>
+    </div>
+    <div id="rideRateBody">
+      <div style="margin-bottom:.8rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;"><div style="font-size:.72rem;font-weight:700;">🛡️ Safety</div><div style="font-size:.58rem;color:var(--muted);">Driving & road sense</div></div>
+        <div style="display:flex;gap:5px;" id="rrstar-safety">
+          <span class="star" onclick="setRideRateStar('safety',1)" id="rrs-safety-1">⭐</span>
+          <span class="star" onclick="setRideRateStar('safety',2)" id="rrs-safety-2">⭐</span>
+          <span class="star" onclick="setRideRateStar('safety',3)" id="rrs-safety-3">⭐</span>
+          <span class="star" onclick="setRideRateStar('safety',4)" id="rrs-safety-4">⭐</span>
+          <span class="star" onclick="setRideRateStar('safety',5)" id="rrs-safety-5">⭐</span>
+        </div>
+      </div>
+      <div style="margin-bottom:.8rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;"><div style="font-size:.72rem;font-weight:700;">🎵 Ride Vibe</div><div style="font-size:.58rem;color:var(--muted);">Music, AC, cleanliness</div></div>
+        <div style="display:flex;gap:5px;" id="rrstar-vibe">
+          <span class="star" onclick="setRideRateStar('vibe',1)" id="rrs-vibe-1">⭐</span>
+          <span class="star" onclick="setRideRateStar('vibe',2)" id="rrs-vibe-2">⭐</span>
+          <span class="star" onclick="setRideRateStar('vibe',3)" id="rrs-vibe-3">⭐</span>
+          <span class="star" onclick="setRideRateStar('vibe',4)" id="rrs-vibe-4">⭐</span>
+          <span class="star" onclick="setRideRateStar('vibe',5)" id="rrs-vibe-5">⭐</span>
+        </div>
+      </div>
+      <div style="margin-bottom:.8rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;"><div style="font-size:.72rem;font-weight:700;">⚡ Speed</div><div style="font-size:.58rem;color:var(--muted);">Timeliness & route</div></div>
+        <div style="display:flex;gap:5px;" id="rrstar-speed">
+          <span class="star" onclick="setRideRateStar('speed',1)" id="rrs-speed-1">⭐</span>
+          <span class="star" onclick="setRideRateStar('speed',2)" id="rrs-speed-2">⭐</span>
+          <span class="star" onclick="setRideRateStar('speed',3)" id="rrs-speed-3">⭐</span>
+          <span class="star" onclick="setRideRateStar('speed',4)" id="rrs-speed-4">⭐</span>
+          <span class="star" onclick="setRideRateStar('speed',5)" id="rrs-speed-5">⭐</span>
+        </div>
+      </div>
+      <div style="margin-bottom:.8rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;"><div style="font-size:.72rem;font-weight:700;">❤️ Service</div><div style="font-size:.58rem;color:var(--muted);">Attitude & help</div></div>
+        <div style="display:flex;gap:5px;" id="rrstar-service">
+          <span class="star" onclick="setRideRateStar('service',1)" id="rrs-service-1">⭐</span>
+          <span class="star" onclick="setRideRateStar('service',2)" id="rrs-service-2">⭐</span>
+          <span class="star" onclick="setRideRateStar('service',3)" id="rrs-service-3">⭐</span>
+          <span class="star" onclick="setRideRateStar('service',4)" id="rrs-service-4">⭐</span>
+          <span class="star" onclick="setRideRateStar('service',5)" id="rrs-service-5">⭐</span>
+        </div>
+      </div>
+    </div>
+    <button class="place-bet-btn" onclick="submitRideRate()" style="font-size:.78rem;padding:9px;margin-top:.3rem">Submit Rating (+5⚡)</button>
+  </div>
+</div>
+
+<!-- VEHICLE FLOAT CARD -->
+<div class="vehicle-float" id="vehicleFloat">
+  <div class="vf-head">
+    <img class="vf-img" id="vfImg" src="" alt="">
+    <div class="vf-meta">
+      <div class="vf-name" id="vfName">—</div>
+      <div class="vf-plate" id="vfPlate">—</div>
+      <div class="vf-route" id="vfRoute">—</div>
+    </div>
+    <div class="vf-close" onclick="closeVehicleFloat()"><i data-lucide="x" style="width:14px;height:14px;"></i></div>
+  </div>
+  <div class="vf-race-title">🏁 Race Stats</div>
+  <div class="race-bar">
+    <div class="race-label-row"><div class="race-label" style="color:#e879f9;">🛡 Armour <span style="font-size:.55rem;color:var(--muted);font-weight:400;">· Exterior & Graffiti</span></div><div class="race-val" id="vfArmourVal">0</div></div>
+    <div class="race-track"><div class="race-fill" id="vfArmourFill" style="width:0%;background:linear-gradient(90deg,#e879f9,#9333ea);"></div></div>
+  </div>
+  <div class="race-bar">
+    <div class="race-label-row"><div class="race-label" style="color:#fb923c;">🔊 Combat <span style="font-size:.55rem;color:var(--muted);font-weight:400;">· Sound System</span></div><div class="race-val" id="vfCombatVal">0</div></div>
+    <div class="race-track"><div class="race-fill" id="vfCombatFill" style="width:0%;background:linear-gradient(90deg,#fb923c,#c2410c);"></div></div>
+  </div>
+  <div class="race-bar">
+    <div class="race-label-row"><div class="race-label" style="color:#22d3ee;">⚡ Speed <span style="font-size:.55rem;color:var(--muted);font-weight:400;">· Driving Skill</span></div><div class="race-val" id="vfSpeedVal">0</div></div>
+    <div class="race-track"><div class="race-fill" id="vfSpeedFill" style="width:0%;background:linear-gradient(90deg,#22d3ee,#0891b2);"></div></div>
+  </div>
+  <div class="race-bar">
+    <div class="race-label-row"><div class="race-label" style="color:#4ade80;">💎 Value <span style="font-size:.55rem;color:var(--muted);font-weight:400;">· Service & Care</span></div><div class="race-val" id="vfValueVal">0</div></div>
+    <div class="race-track"><div class="race-fill" id="vfValueFill" style="width:0%;background:linear-gradient(90deg,#4ade80,#16a34a);"></div></div>
+  </div>
+  <div class="vf-actions">
+    <button class="btn btn-primary" style="flex:1;font-size:.75rem;padding:8px;" id="vfRateBtn" onclick="openRateFromVehicle()">⭐ Rate This Ride</button>
+    <button class="btn btn-ghost" style="padding:8px 14px;font-size:.75rem;" onclick="closeVehicleFloat()">Close</button>
+  </div>
+</div>
+
+<!-- STAGE / LOCK-IN PANEL -->
+<div class="stage-panel" id="stagePanel">
+  <div style="width:36px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto .8rem;"></div>
+  <div class="sp-title"><i data-lucide="map-pin" style="width:16px;height:16px;"></i> Nearby Stages</div>
+  <div id="stageList"></div>
+  <div class="sp-status" id="spStatus">📍 Enable location to see stages near you</div>
 </div>
 
 <!-- RATING OVERLAY -->
 <div class="rating-overlay" id="ratingOverlay">
   <div class="rating-box">
-    <div class="mhead"><h3 style="font-size:1rem">Rate This Nganya</h3><div class="mclose" onclick="document.getElementById('ratingOverlay').classList.remove('open')"><i class="fas fa-times"></i></div></div>
+    <div class="mhead"><h3 style="font-size:1rem">Rate This Nganya</h3><div class="mclose" onclick="document.getElementById('ratingOverlay').classList.remove('open')"><i data-lucide="x" style="width:14px;height:14px;"></i></div></div>
     <div id="ratingOverlayContent"></div>
     <button class="place-bet-btn" onclick="submitRating()" style="font-size:.78rem;padding:9px;margin-top:.5rem">Submit Rating (+5⚡)</button>
   </div>
 </div>
 
-<!-- ═══ GLOBE (Three.js) ═══ -->
+<!-- GLOBE (Three.js) -->
 <script type="module">
 import * as THREE from 'three';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
@@ -1499,17 +1290,20 @@ let autoRot=true;canvas.addEventListener('click',()=>autoRot=!autoRot);
 window.addEventListener('resize',()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();rend.setSize(W(),H());lR.setSize(W(),H());});
 </script>
 
-<!-- ═══ MAIN SCRIPT ═══ -->
+<!-- MAIN SCRIPT -->
 <script>
-/* ── LOADER ── */
+/* LOADER */
 setTimeout(()=>document.getElementById('loader').classList.add('phase1'),100);
 setTimeout(()=>document.getElementById('loader').classList.add('phase2'),1400);
 setTimeout(()=>document.getElementById('loader').classList.add('done'),3000);
 
-/* ── TOKENS ── */
+/* LUCIDE */
+function refreshIcons(){if(window.lucide)lucide.createIcons();}
+
+/* TOKENS */
 let tokens=100;
 
-/* ── ARTEFACTS ── */
+/* ARTEFACTS */
 const ARTEFACTS=[
   {alias:"The Web-Slinger",seed:"webslinger",nexus:"New York Nexus",tier:7,origin:"A teenage prodigy bonded to an ancient spider relic.",powers:"Silk constructs, premonition sense",weak:"Guilt paralysis",actions:["fires a precision silk-snare from the rooftop","dodges with uncanny premonition and counter-strikes","releases a venom-charged silk burst at point-blank"]},
   {alias:"Iron Relic",seed:"ironrelic",nexus:"Malibu Nexus",tier:8,origin:"A billionaire inventor who forged a suit of living metal.",powers:"Repulsor energy, nano-forging",weak:"Power core",actions:["fires a sustained repulsor beam","deploys full nano-relic armor mode","locks on weak point with tactical overlay"]},
@@ -1529,9 +1323,10 @@ function updateTokenUI(){
   document.getElementById('gtok').textContent=t;
   document.getElementById('heroTok').textContent=t;
   const r=t>=500?"Galactic ⭐":t>=300?"Gold 🥇":t>=150?"Silver 🥈":"Bronze 🥉";
-  document.getElementById('heroRankChip').innerHTML=`<i class="fas fa-shield"></i> ${r} · Tier ${u.tier}`;
+  document.getElementById('heroRankChip').innerHTML=`<i data-lucide="shield" style="width:12px;height:12px;"></i> ${r} · Tier ${u.tier}`;
   document.getElementById('heroAlias').textContent=u.alias;
   document.getElementById('heroOrigin').textContent=`Artefact from the ${u.nexus} · Power Tier ${u.tier}`;
+  refreshIcons();
 }
 function earn(n,msg){tokens+=n;updateTokenUI();showToast(`+${n}⚡ ${msg}`);}
 function spend(n){if(tokens>=n){tokens-=n;updateTokenUI();return true;}showToast(`Need ${n}⚡ tokens!`);return false;}
@@ -1540,7 +1335,7 @@ function showToast(msg,dur=3000){
   setTimeout(()=>t.classList.remove('show'),dur);
 }
 
-/* ── PAGE SWITCHING ── */
+/* PAGE SWITCHING */
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.getElementById('pg-'+id).classList.add('on');
@@ -1552,6 +1347,7 @@ function showPage(id){
   setTimeout(()=>logo3.classList.remove('spin'),800);
   if(id==='ma3'){setTimeout(initMa3,300);}
   if(id==='ride'){setTimeout(initRideMap,300);}
+  refreshIcons();
 }
 window.showPage=showPage;
 function openMoveSheet(){document.getElementById('moveSheet').classList.add('open');}
@@ -1575,7 +1371,7 @@ function upgradeArtefact(){
 }
 window.upgradeArtefact=upgradeArtefact;
 
-/* ── UNIVERSES ── */
+/* UNIVERSES */
 const UNIVS={
   Marvel:{story:"A vast reality where artefact-bearers form alliances to battle cosmic-level threats.",heroes:[{n:"Web-Slinger",s:"webslinger",p:"Silk constructs",w:"Guilt",b:"Teenage hero protecting New York."},{n:"Iron Relic",s:"ironrelic",p:"Repulsors",w:"Power core",b:"Billionaire inventor."},{n:"Thunderer",s:"thunderer",p:"Lightning",w:"Arrogance",b:"Norse storm god."},{n:"First Defender",s:"firstdefender",p:"Vibranium shield",w:"Mortal",b:"Super-soldier."},{n:"Wolverine Relic",s:"wolverine",p:"Adamantium claws",w:"Emotion",b:"Best at what he does."}],villains:[{n:"Mad Titan",s:"madtitan",p:"Infinity stones",w:"Love",b:"Universal destroyer."},{n:"Trickster God",s:"trickstergod",p:"Sorcery",w:"Jealousy",b:"Prince of mischief."},{n:"AI Overlord",s:"aioverlord",p:"Neural network",w:"Pride",b:"Robot apocalypse engine."},{n:"Red Skull",s:"redskull",p:"Super-serum",w:"Obsession",b:"HYDRA commander."},{n:"Iron Doom",s:"irondoom",p:"Magic + tech",w:"Arrogance",b:"Ruler of Latveria."}]},
   DC:{story:"Earth's greatest champions stand between humanity and gods, demons, and alternate dimensions.",heroes:[{n:"Man of Steel",s:"manofsteel",p:"Solar vision",w:"Green ore",b:"Last survivor of Krypton."},{n:"Dark Knight",s:"darkknight",p:"Gadgets",w:"Mortality",b:"The detective."},{n:"Amazonian",s:"amazonian",p:"Godly strength",w:"Bound lasso",b:"Warrior princess."},{n:"Speed Relic",s:"speedrelic",p:"Speed Force",w:"Cold",b:"Fastest alive."},{n:"Green Light",s:"greenlight",p:"Willpower ring",w:"Yellow",b:"Space enforcer."}],villains:[{n:"Laughing Plague",s:"laughingplague",p:"Chaos toxins",w:"Batman's code",b:"Agent of chaos."},{n:"Bald Genius",s:"baldgenius",p:"Genius intellect",w:"Arrogance",b:"Billionaire nemesis."},{n:"Dark God",s:"darkgod",p:"Omega Beams",w:"True love",b:"Lord of Apokolips."},{n:"Bane",s:"bane",p:"Venom strength",w:"Tube",b:"Bat-breaker."},{n:"Reverse Relic",s:"reverserelic",p:"Negative Speed Force",w:"The Flash",b:"Time traveler."}]},
@@ -1597,29 +1393,67 @@ function loadUniv(name,pill){
   hd.innerHTML='';vd.innerHTML='';
   u.heroes.forEach(c=>{const d=document.createElement('div');d.className='ci';d.innerHTML=`<img src="https://api.dicebear.com/9.x/bottts/svg?seed=${encodeURIComponent(c.s)}" alt=""><div><div class="ci-name">${c.n}</div><div class="ci-role">Hero</div></div>`;d.onclick=()=>showBio(c);hd.appendChild(d);});
   u.villains.forEach(c=>{const d=document.createElement('div');d.className='ci';d.innerHTML=`<img src="https://api.dicebear.com/9.x/bottts/svg?seed=${encodeURIComponent(c.s)}" alt=""><div><div class="ci-name">${c.n}</div><div class="ci-role">Villain</div></div>`;d.onclick=()=>showBio(c);vd.appendChild(d);});
+  refreshIcons();
 }
 function showBio(c){
   document.getElementById('hchar').innerHTML=`<img class="bio-img" src="https://api.dicebear.com/9.x/bottts/svg?seed=${encodeURIComponent(c.s)}" alt=""><div class="bio-name">${c.n}</div><div class="bio-stat"><div class="bs-l">Powers</div><div class="bs-v">${c.p}</div></div><div class="bio-stat"><div class="bs-l">Weakness</div><div class="bs-v">${c.w}</div></div><div class="bio-stat"><div class="bs-l">Bio</div><div class="bs-v">${c.b}</div></div>`;
 }
 loadUniv('Marvel');
 
-/* ════════════════════════════
-   KENYA ROUTES DATA
-════════════════════════════ */
+/* KENYA ROUTES DATA (with stop coords) */
 const KENYA_ROUTES={
-  1:{name:"GPO – Ngong Rd – Dagoretti",origin:"GPO",terminus:"Dagoretti Corner",lat0:[-1.2833,36.8236],lat1:[-1.3110,36.7790],color:"#ff3d2e",stops:["GPO Stage","Kencom","Archives","Anniversary Towers","Teleposta","Valley Arcade","Prestige Plaza","Adams Arcade","Dagoretti Corner"],fare:"Ksh 30–40",time:"~35 min",sacco:"City Shuttle",vehicles:["KBZ 234A 🚐","KDA 881K 🚐","KBX 021G 🚌"]},
-  4:{name:"Kencom – Ngong Rd – Dagoretti",origin:"Kencom",terminus:"Dagoretti Corner",lat0:[-1.2833,36.8236],lat1:[-1.3110,36.7790],color:"#f97316",stops:["Kencom","GPO","Upper Hill","NHIF","Kilimani","Prestige Plaza","Junction Mall","Dagoretti Corner"],fare:"Ksh 30–40",time:"~40 min",sacco:"City Shuttle",vehicles:["KBZ 112C 🚐","KCB 334P 🚐"]},
-  7:{name:"Kencom – Upper Hill – Community",origin:"Kencom",terminus:"Doctors Plaza",lat0:[-1.2841,36.8220],lat1:[-1.2970,36.8210],color:"#b388ff",stops:["Kencom","Moi Ave","Nyerere Rd","Hospital Rd","Kenyatta Hospital","Upper Hill","NHIF","Community Area","Doctors Plaza"],fare:"Ksh 30–50",time:"~25 min",sacco:"KBS",vehicles:["KDG 088N 🚌","KBF 902A 🚌"]},
-  11:{name:"Railways – South B – Bellevue",origin:"Railways",terminus:"Bellevue",lat0:[-1.2935,36.8305],lat1:[-1.3140,36.8380],color:"#06b6d4",stops:["Railways Station","Industrial Area","South B Estate","South B Market","Bellevue"],fare:"Ksh 30–40",time:"~30 min",sacco:"KBS",vehicles:["KBS 444J 🚌","KBZ 021C 🚌"]},
-  15:{name:"Railways – Langata – Wilson",origin:"Railways",terminus:"Langata",lat0:[-1.2930,36.8310],lat1:[-1.3460,36.7600],color:"#22c55e",stops:["Railways","Nyayo Stadium","Carnivore Rd","Wilson Airport","Langata Shopping Centre","Otiende","Langata"],fare:"Ksh 40–60",time:"~45 min",sacco:"KBS",vehicles:["KDA 771K 🚌","KCF 012B 🚌"]},
-  23:{name:"Railways – Westlands",origin:"Railways",terminus:"Westlands",lat0:[-1.2930,36.8310],lat1:[-1.2640,36.8050],color:"#448aff",stops:["Railways","Museum Hill","Westlands Mall","Westlands Stage"],fare:"Ksh 40–50",time:"~30 min",sacco:"Super Metro",vehicles:["KDE 388M 🚐","KCZ 901J 🚐","KBB 233N 🚐"]},
-  33:{name:"Buru Buru – Kayole",origin:"Buru Buru Stage",terminus:"Kayole Junction",lat0:[-1.2830,36.8780],lat1:[-1.2660,36.9100],color:"#ef4444",stops:["Buru Buru","Donholm","Pipeline","Fedha","Tasia","Kayole Junction"],fare:"Ksh 40–50",time:"~35 min",sacco:"Embassava",vehicles:["KBC 555T 🚐","KBG 099R 🚐"]},
-  44:{name:"CBD – Embakasi",origin:"Ambassadeurs",terminus:"Embakasi Village",lat0:[-1.2850,36.8270],lat1:[-1.3200,36.9000],color:"#f59e0b",stops:["Ambassadeurs","Landhies Rd","Jogoo Rd","Donholm","Pipeline","Embakasi"],fare:"Ksh 45–60",time:"~40 min",sacco:"Embassava",vehicles:["KDA 123M 🚐","KBY 887K 🚐"]},
-  58:{name:"OTC – Ngong Road – Rongai",origin:"OTC",terminus:"Ongata Rongai",lat0:[-1.2880,36.8350],lat1:[-1.3965,36.7620],color:"#00c896",stops:["OTC","Haile Selassie","Nyayo Stadium","Langata","Bomas","Karen Roundabout","Karen Hospital","Ongata Rongai Town"],fare:"Ksh 60–100",time:"~70 min",sacco:"Super Metro",vehicles:["KDB 777L 🚌","KCE 119P 🚌","KBZ 311Q 🚌"]},
-  103:{name:"Railways – Kikuyu – Wangige",origin:"Railways",terminus:"Wangige Stage",lat0:[-1.2930,36.8310],lat1:[-1.2100,36.7000],color:"#ffb300",stops:["Railways","OTC","Westlands","Kangemi","Kikuyu Rd Junction","Lower Kabete","Daycare Stage","Wangige Stage"],fare:"Ksh 50–80",time:"~55 min",sacco:"Walokana",vehicles:["KCG 442A 🚐","KBD 199Z 🚐"]},
-  118:{name:"Koja – Westlands – Wangige",origin:"Koja Stage CBD",terminus:"Wangige Stage",lat0:[-1.2850,36.8355],lat1:[-1.2100,36.7000],color:"#e879f9",stops:["Koja Stage CBD","Ngara","Parklands","Westlands","ABC Place","Lower Kabete","Daycare","Wangige Stage"],fare:"Ksh 50–80",time:"~55 min",sacco:"Walokana",vehicles:["KCH 663B 🚐","KBJ 881D 🚐"]},
-  125:{name:"Bus Station – Karen – Rongai",origin:"Nairobi Bus Station",terminus:"Ongata Rongai",lat0:[-1.2883,36.8330],lat1:[-1.3965,36.7620],color:"#fb923c",stops:["Bus Station","Haile Selassie Ave","Nyayo Stadium","Langata","Bomas","Hardy","Karen","Ongata Rongai"],fare:"Ksh 80–120",time:"~90 min",sacco:"Forward Travellers",vehicles:["KDA 009R 🚌","KCB 441S 🚌"]},
-  237:{name:"Town – Thika",origin:"CBD Archives",terminus:"Thika",lat0:[-1.2833,36.8220],lat1:[-1.0332,37.0693],color:"#4ade80",stops:["Archives Stage","Pangani","Thika Rd Mall","Kasarani","Githurai 44","Ruiru","Thika Stage"],fare:"Ksh 60–90",time:"~70 min",sacco:"Double M",vehicles:["KDB 332H 🚌","KCC 777G 🚌"]},
+  1:{name:"GPO – Ngong Rd – Dagoretti",origin:"GPO",terminus:"Dagoretti Corner",lat0:[-1.2833,36.8236],lat1:[-1.3110,36.7790],color:"#ff3d2e",
+    stops:["GPO Stage","Kencom","Archives","Anniversary Towers","Teleposta","Valley Arcade","Prestige Plaza","Adams Arcade","Dagoretti Corner"],
+    stopCoords:[[-1.2833,36.8236],[-1.2840,36.8225],[-1.2837,36.8214],[-1.2850,36.8200],[-1.2860,36.8185],[-1.2920,36.7950],[-1.2950,36.7850],[-1.3000,36.7800],[-1.3110,36.7790]],
+    fare:"Ksh 30–40",time:"~35 min",sacco:"City Shuttle",vehicles:["KBZ 234A 🚐","KDA 881K 🚐","KBX 021G 🚌"]},
+  4:{name:"Kencom – Ngong Rd – Dagoretti",origin:"Kencom",terminus:"Dagoretti Corner",lat0:[-1.2833,36.8236],lat1:[-1.3110,36.7790],color:"#f97316",
+    stops:["Kencom","GPO","Upper Hill","NHIF","Kilimani","Prestige Plaza","Junction Mall","Dagoretti Corner"],
+    stopCoords:[[-1.2833,36.8236],[-1.2835,36.8220],[-1.2900,36.8200],[-1.2920,36.8150],[-1.2940,36.8000],[-1.2950,36.7850],[-1.2980,36.7820],[-1.3110,36.7790]],
+    fare:"Ksh 30–40",time:"~40 min",sacco:"City Shuttle",vehicles:["KBZ 112C 🚐","KCB 334P 🚐"]},
+  7:{name:"Kencom – Upper Hill – Community",origin:"Kencom",terminus:"Doctors Plaza",lat0:[-1.2841,36.8220],lat1:[-1.2970,36.8210],color:"#b388ff",
+    stops:["Kencom","Moi Ave","Nyerere Rd","Hospital Rd","Kenyatta Hospital","Upper Hill","NHIF","Community Area","Doctors Plaza"],
+    stopCoords:[[-1.2841,36.8220],[-1.2845,36.8210],[-1.2850,36.8200],[-1.2860,36.8190],[-1.2880,36.8180],[-1.2900,36.8195],[-1.2920,36.8205],[-1.2950,36.8210],[-1.2970,36.8210]],
+    fare:"Ksh 30–50",time:"~25 min",sacco:"KBS",vehicles:["KDG 088N 🚌","KBF 902A 🚌"]},
+  11:{name:"Railways – South B – Bellevue",origin:"Railways",terminus:"Bellevue",lat0:[-1.2935,36.8305],lat1:[-1.3140,36.8380],color:"#06b6d4",
+    stops:["Railways Station","Industrial Area","South B Estate","South B Market","Bellevue"],
+    stopCoords:[[-1.2935,36.8305],[-1.3000,36.8320],[-1.3080,36.8350],[-1.3120,36.8370],[-1.3140,36.8380]],
+    fare:"Ksh 30–40",time:"~30 min",sacco:"KBS",vehicles:["KBS 444J 🚌","KBZ 021C 🚌"]},
+  15:{name:"Railways – Langata – Wilson",origin:"Railways",terminus:"Langata",lat0:[-1.2930,36.8310],lat1:[-1.3460,36.7600],color:"#22c55e",
+    stops:["Railways","Nyayo Stadium","Carnivore Rd","Wilson Airport","Langata Shopping Centre","Otiende","Langata"],
+    stopCoords:[[-1.2930,36.8310],[-1.3020,36.8250],[-1.3150,36.8100],[-1.3200,36.7950],[-1.3320,36.7750],[-1.3400,36.7650],[-1.3460,36.7600]],
+    fare:"Ksh 40–60",time:"~45 min",sacco:"KBS",vehicles:["KDA 771K 🚌","KCF 012B 🚌"]},
+  23:{name:"Railways – Westlands",origin:"Railways",terminus:"Westlands",lat0:[-1.2930,36.8310],lat1:[-1.2640,36.8050],color:"#448aff",
+    stops:["Railways","Museum Hill","Westlands Mall","Westlands Stage"],
+    stopCoords:[[-1.2930,36.8310],[-1.2800,36.8200],[-1.2700,36.8100],[-1.2640,36.8050]],
+    fare:"Ksh 40–50",time:"~30 min",sacco:"Super Metro",vehicles:["KDE 388M 🚐","KCZ 901J 🚐","KBB 233N 🚐"]},
+  33:{name:"Buru Buru – Kayole",origin:"Buru Buru Stage",terminus:"Kayole Junction",lat0:[-1.2830,36.8780],lat1:[-1.2660,36.9100],color:"#ef4444",
+    stops:["Buru Buru","Donholm","Pipeline","Fedha","Tasia","Kayole Junction"],
+    stopCoords:[[-1.2830,36.8780],[-1.2800,36.8850],[-1.2750,36.8920],[-1.2720,36.8980],[-1.2680,36.9050],[-1.2660,36.9100]],
+    fare:"Ksh 40–50",time:"~35 min",sacco:"Embassava",vehicles:["KBC 555T 🚐","KBG 099R 🚐"]},
+  44:{name:"CBD – Embakasi",origin:"Ambassadeurs",terminus:"Embakasi Village",lat0:[-1.2850,36.8270],lat1:[-1.3200,36.9000],color:"#f59e0b",
+    stops:["Ambassadeurs","Landhies Rd","Jogoo Rd","Donholm","Pipeline","Embakasi"],
+    stopCoords:[[-1.2850,36.8270],[-1.2870,36.8350],[-1.2800,36.8500],[-1.2750,36.8700],[-1.2700,36.8850],[-1.3200,36.9000]],
+    fare:"Ksh 45–60",time:"~40 min",sacco:"Embassava",vehicles:["KDA 123M 🚐","KBY 887K 🚐"]},
+  58:{name:"OTC – Ngong Road – Rongai",origin:"OTC",terminus:"Ongata Rongai",lat0:[-1.2880,36.8350],lat1:[-1.3965,36.7620],color:"#00c896",
+    stops:["OTC","Haile Selassie","Nyayo Stadium","Langata","Bomas","Karen Roundabout","Karen Hospital","Ongata Rongai Town"],
+    stopCoords:[[-1.2880,36.8350],[-1.2900,36.8300],[-1.3020,36.8250],[-1.3150,36.8100],[-1.3300,36.7950],[-1.3500,36.7800],[-1.3700,36.7700],[-1.3965,36.7620]],
+    fare:"Ksh 60–100",time:"~70 min",sacco:"Super Metro",vehicles:["KDB 777L 🚌","KCE 119P 🚌","KBZ 311Q 🚌"]},
+  103:{name:"Railways – Kikuyu – Wangige",origin:"Railways",terminus:"Wangige Stage",lat0:[-1.2930,36.8310],lat1:[-1.2100,36.7000],color:"#ffb300",
+    stops:["Railways","OTC","Westlands","Kangemi","Kikuyu Rd Junction","Lower Kabete","Daycare Stage","Wangige Stage"],
+    stopCoords:[[-1.2930,36.8310],[-1.2880,36.8350],[-1.2640,36.8050],[-1.2500,36.7800],[-1.2350,36.7500],[-1.2250,36.7200],[-1.2180,36.7100],[-1.2100,36.7000]],
+    fare:"Ksh 50–80",time:"~55 min",sacco:"Walokana",vehicles:["KCG 442A 🚐","KBD 199Z 🚐"]},
+  118:{name:"Koja – Westlands – Wangige",origin:"Koja Stage CBD",terminus:"Wangige Stage",lat0:[-1.2850,36.8355],lat1:[-1.2100,36.7000],color:"#e879f9",
+    stops:["Koja Stage CBD","Ngara","Parklands","Westlands","ABC Place","Lower Kabete","Daycare","Wangige Stage"],
+    stopCoords:[[-1.2850,36.8355],[-1.2800,36.8300],[-1.2700,36.8200],[-1.2640,36.8050],[-1.2500,36.7800],[-1.2350,36.7500],[-1.2250,36.7200],[-1.2100,36.7000]],
+    fare:"Ksh 50–80",time:"~55 min",sacco:"Walokana",vehicles:["KCH 663B 🚐","KBJ 881D 🚐"]},
+  125:{name:"Bus Station – Karen – Rongai",origin:"Nairobi Bus Station",terminus:"Ongata Rongai",lat0:[-1.2883,36.8330],lat1:[-1.3965,36.7620],color:"#fb923c",
+    stops:["Bus Station","Haile Selassie Ave","Nyayo Stadium","Langata","Bomas","Hardy","Karen","Ongata Rongai"],
+    stopCoords:[[-1.2883,36.8330],[-1.2900,36.8300],[-1.3020,36.8250],[-1.3150,36.8100],[-1.3300,36.7950],[-1.3500,36.7800],[-1.3700,36.7700],[-1.3965,36.7620]],
+    fare:"Ksh 80–120",time:"~90 min",sacco:"Forward Travellers",vehicles:["KDA 009R 🚌","KCB 441S 🚌"]},
+  237:{name:"Town – Thika",origin:"CBD Archives",terminus:"Thika",lat0:[-1.2833,36.8220],lat1:[-1.0332,37.0693],color:"#4ade80",
+    stops:["Archives Stage","Pangani","Thika Rd Mall","Kasarani","Githurai 44","Ruiru","Thika Stage"],
+    stopCoords:[[-1.2833,36.8220],[-1.2700,36.8300],[-1.2500,36.8400],[-1.2200,36.8600],[-1.1800,36.9000],[-1.1200,36.9500],[-1.0332,37.0693]],
+    fare:"Ksh 60–90",time:"~70 min",sacco:"Double M",vehicles:["KDB 332H 🚌","KCC 777G 🚌"]},
 };
 
 const NEARBY_STOPS=[
@@ -1633,16 +1467,14 @@ const NEARBY_STOPS=[
   {name:"Buru Buru Stage",dist:"5.8 km",lat:-1.2829,lng:36.8782,routes:[{no:33,color:"fire"}]},
 ];
 
-/* ════════════════════════════
-   NGANYA DATA
-════════════════════════════ */
+/* NGANYA DATA */
 const NGANYAS=[
-  {id:"opposite",name:"Opposite",sacco:"Embassava",route:"Route 33 · Umoja",emoji:"🚌",grad:"linear-gradient(135deg,#8b0000,#1a0000)",graffiti:"NUN-NEGOTIABLE",price:"Ksh 5,000/hr",minPrice:5000,features:["Gengetone Sound","LED Neon","Graffiti Art","Hype Makanga"],stats:{graffiti:98,music:92,speed:88,service:90},votes:1240,occasions:["rave","trip","wedding","custom"]},
-  {id:"mood",name:"Mood",sacco:"Route 44 · Embakasi",route:"Route 44 · Embakasi",emoji:"🎪",grad:"linear-gradient(135deg,#2d0050,#0a001a)",graffiti:"FAR FROM REALITY",price:"Ksh 15,000/hr",minPrice:15000,features:["65″ TV Screens","Solar Power","DJ Deck","AC","Bucket Seats"],stats:{graffiti:95,music:99,speed:85,service:96},votes:980,occasions:["wedding","corporate","rave","custom"]},
-  {id:"phenomenal",name:"Phenomenal",sacco:"City Shuttle",route:"Route 111 · Ngong Rd",emoji:"🟢",grad:"linear-gradient(135deg,#003300,#001100)",graffiti:"THE SOUND BEAST",price:"Ksh 6,000/hr",minPrice:6000,features:["808 Sub Bass","Neon Undercarriage","Custom Wrap","Hype DJ"],stats:{graffiti:88,music:100,speed:90,service:82},votes:876,occasions:["rave","trip","school","custom"]},
-  {id:"manifest",name:"Manifest",sacco:"City Shuttle",route:"Route 1 · Ngong CBD",emoji:"🟠",grad:"linear-gradient(135deg,#3a1a00,#0d0500)",graffiti:"MONEY TALKS",price:"Ksh 8,500/hr",minPrice:8500,features:["Premium Sound","LED Lighting","Luxury Seats","Air Con"],stats:{graffiti:92,music:93,speed:92,service:94},votes:754,occasions:["wedding","corporate","trip","custom"]},
-  {id:"kinara",name:"Kinara / Moxie",sacco:"Walokana",route:"Route 118 · Wangige",emoji:"💗",grad:"linear-gradient(135deg,#3a0030,#0f000a)",graffiti:"PINK GANGSTER",price:"Ksh 7,500/hr",minPrice:7500,features:["Pink Neon","Afrobeats System","Social Media Setup","Photographer"],stats:{graffiti:96,music:88,speed:86,service:95},votes:632,occasions:["wedding","rave","custom","trip"]},
-  {id:"wawenka",name:"Wawenka",sacco:"Forward Travellers",route:"Route 125 · Rongai",emoji:"🦁",grad:"linear-gradient(135deg,#2a1a00,#0d0800)",graffiti:"RONGAI OR NOTHING",price:"Ksh 9,000/hr",minPrice:9000,features:["Custom Body Art","Concert Sound","Live DJ","Merch Kit"],stats:{graffiti:94,music:96,speed:93,service:88},votes:588,occasions:["wedding","rave","trip","corporate"]},
+  {id:"opposite",name:"Opposite",sacco:"Embassava",route:"Route 33 · Umoja",emoji:"🚌",grad:"linear-gradient(135deg,#8b0000,#1a0000)",graffiti:"NUN-NEGOTIABLE",price:"Ksh 5,000/hr",minPrice:5000,features:["Gengetone Sound","LED Neon","Graffiti Art","Hype Makanga"],stats:{armour:82,combat:91,speed:77,value:85},votes:1240,occasions:["rave","trip","wedding","custom"]},
+  {id:"mood",name:"Mood",sacco:"Route 44 · Embakasi",route:"Route 44 · Embakasi",emoji:"🎪",grad:"linear-gradient(135deg,#2d0050,#0a001a)",graffiti:"FAR FROM REALITY",price:"Ksh 15,000/hr",minPrice:15000,features:["65″ TV Screens","Solar Power","DJ Deck","AC","Bucket Seats"],stats:{armour:78,combat:99,speed:74,value:92},votes:980,occasions:["wedding","corporate","rave","custom"]},
+  {id:"phenomenal",name:"Phenomenal",sacco:"City Shuttle",route:"Route 111 · Ngong Rd",emoji:"🟢",grad:"linear-gradient(135deg,#003300,#001100)",graffiti:"THE SOUND BEAST",price:"Ksh 6,000/hr",minPrice:6000,features:["808 Sub Bass","Neon Undercarriage","Custom Wrap","Hype DJ"],stats:{armour:88,combat:95,speed:80,value:78},votes:876,occasions:["rave","trip","school","custom"]},
+  {id:"manifest",name:"Manifest",sacco:"City Shuttle",route:"Route 1 · Ngong CBD",emoji:"🟠",grad:"linear-gradient(135deg,#3a1a00,#0d0500)",graffiti:"MONEY TALKS",price:"Ksh 8,500/hr",minPrice:8500,features:["Premium Sound","LED Lighting","Luxury Seats","Air Con"],stats:{armour:85,combat:88,speed:85,value:90},votes:754,occasions:["wedding","corporate","trip","custom"]},
+  {id:"kinara",name:"Kinara / Moxie",sacco:"Walokana",route:"Route 118 · Wangige",emoji:"💗",grad:"linear-gradient(135deg,#3a0030,#0f000a)",graffiti:"PINK GANGSTER",price:"Ksh 7,500/hr",minPrice:7500,features:["Pink Neon","Afrobeats System","Social Media Setup","Photographer"],stats:{armour:90,combat:85,speed:72,value:88},votes:632,occasions:["wedding","rave","custom","trip"]},
+  {id:"wawenka",name:"Wawenka",sacco:"Forward Travellers",route:"Route 125 · Rongai",emoji:"🦁",grad:"linear-gradient(135deg,#2a1a00,#0d0800)",graffiti:"RONGAI OR NOTHING",price:"Ksh 9,000/hr",minPrice:9000,features:["Custom Body Art","Concert Sound","Live DJ","Merch Kit"],stats:{armour:87,combat:93,speed:86,value:82},votes:588,occasions:["wedding","rave","trip","corporate"]},
 ];
 
 const HIRE_OCCASIONS=[
@@ -1660,9 +1492,7 @@ const HIRE_OCCASIONS=[
 let selectedOccasion=null;
 let selectedNganya=null;
 
-/* ════════════════════════════
-   SPORTS BETTING DATA
-════════════════════════════ */
+/* SPORTS BETTING DATA */
 const SPORTS_MATCHES=[
   {id:"clafootball",sport:"football",sportIcon:"⚽",event:"UEFA Champions League",label:"El Clásico",team1:{name:"Real Madrid",flag:"🇪🇸",odds:1.85},team2:{name:"Barcelona",flag:"🏴",odds:2.10},drawOdds:3.40,live:true,score:"1 – 1",time:"67'"},
   {id:"plFootball",sport:"football",sportIcon:"⚽",event:"Premier League",label:"North London Derby",team1:{name:"Arsenal",flag:"🔴",odds:2.20},team2:{name:"Tottenham",flag:"⚪",odds:3.10},drawOdds:3.25,live:false,score:null,time:"Today 20:00"},
@@ -1678,12 +1508,15 @@ const SPORT_FILTERS=[{id:"all",label:"All",icon:"🏆"},{id:"football",label:"Fo
 let betSlip=[];
 let currentSportFilter="all";
 
-/* ════════════════════════════
-   MA3 MAP INIT
-════════════════════════════ */
+/* COMPLETION-GATED RATING STATE */
+const completedTrips=new Set();
+const activeLocks=new Map();
+
+/* MA3 MAP INIT */
 let ma3MapObj=null;
 let mapLayers={routes:true,vehicles:true,stops:true};
 let routePolylines=[],vehicleMarkers=[],stopMarkers=[];
+let userGPS=null;
 
 function showMa3Section(section){
   document.getElementById('ma3MainContent').style.display=section==='main'?'block':'none';
@@ -1701,9 +1534,10 @@ function initMa3(){
   if(!ma3MapObj){
     ma3MapObj=L.map('ma3MapFull',{zoomControl:false,attributionControl:true}).setView([-1.2864,36.8172],12);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(ma3MapObj);
-    drawRoutes();
+    drawRoutesOSRM();
     drawVehicles();
     drawStops();
+    startGeolocation();
   } else {
     ma3MapObj.invalidateSize();
   }
@@ -1714,23 +1548,35 @@ function initMa3(){
   buildNganyaRateRow();
   buildSportsBetting();
   buildNganyaVsPanel();
+  refreshIcons();
 }
 
 const routeColors=['#ff3d2e','#448aff','#00c896','#ffb300','#b388ff','#f97316','#06b6d4','#ef4444','#22c55e','#e879f9','#fb923c','#4ade80','#f59e0b'];
 
-function drawRoutes(){
+async function drawRoutesOSRM(){
   routePolylines=[];
-  Object.entries(KENYA_ROUTES).forEach(([rn,r],i)=>{
+  const entries=Object.entries(KENYA_ROUTES);
+  for(let i=0;i<entries.length;i++){
+    const [rn,r]=entries[i];
     const color=r.color||routeColors[i%routeColors.length];
-    const midLat=(r.lat0[0]+r.lat1[0])/2+(Math.random()-.5)*.015;
-    const midLng=(r.lat0[1]+r.lat1[1])/2+(Math.random()-.5)*.015;
-    const path=[r.lat0,[midLat,midLng],r.lat1];
-    const line=L.polyline(path,{color,weight:4,opacity:.85}).addTo(ma3MapObj);
-    line.bindPopup(`<b>Route ${rn}</b><br>${r.name}<br><b>${r.fare}</b> · ${r.time}<br>Sacco: ${r.sacco}`);
-    line.on('click',()=>showRouteInfo(rn));
+    const straight=L.polyline([r.lat0,r.lat1],{color,dashArray:'4 8',weight:3,opacity:.6}).addTo(ma3MapObj);
+    routePolylines.push(straight);
+    try{
+      const url=`https://router.project-osrm.org/route/v1/driving/${r.lat0[1]},${r.lat0[0]};${r.lat1[1]},${r.lat1[0]}?overview=full&geometries=geojson`;
+      const res=await fetch(url);
+      const data=await res.json();
+      if(data.routes&&data.routes[0]){
+        const coords=data.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
+        ma3MapObj.removeLayer(straight);
+        const line=L.polyline(coords,{color,weight:4,opacity:.9}).addTo(ma3MapObj);
+        line.bindPopup(`<b>Route ${rn}</b><br>${r.name}<br><b>${r.fare}</b> · ${r.time}<br>Sacco: ${r.sacco}`);
+        line.on('click',()=>showRouteInfo(rn));
+        routePolylines.push(line);
+      }
+    }catch(e){}
     const badge=L.marker(r.lat0,{icon:L.divIcon({className:'',html:`<div style="background:${color};color:#fff;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;white-space:nowrap;border:1px solid rgba(255,255,255,.3);">${rn}</div>`,iconSize:[34,20],iconAnchor:[17,10]})}).addTo(ma3MapObj);
-    routePolylines.push(line,badge);
-  });
+    routePolylines.push(badge);
+  }
 }
 
 function drawVehicles(){
@@ -1740,21 +1586,43 @@ function drawVehicles(){
     const routes=Object.values(KENYA_ROUTES);
     const r=routes[i%routes.length];
     const t=Math.random();
-    const lat=r.lat0[0]*(1-t)+r.lat1[0]*t+(Math.random()-.5)*.002;
-    const lng=r.lat0[1]*(1-t)+r.lat1[1]*t+(Math.random()-.5)*.002;
+    let lat,lng;
+    if(r.stopCoords&&r.stopCoords.length>1){
+      const idx=Math.floor(t*(r.stopCoords.length-1));
+      const c1=r.stopCoords[idx],c2=r.stopCoords[Math.min(idx+1,r.stopCoords.length-1)];
+      const tt=Math.random();
+      lat=c1[0]*(1-tt)+c2[0]*tt+(Math.random()-.5)*.002;
+      lng=c1[1]*(1-tt)+c2[1]*tt+(Math.random()-.5)*.002;
+    }else{
+      lat=r.lat0[0]*(1-t)+r.lat1[0]*t+(Math.random()-.5)*.002;
+      lng=r.lat0[1]*(1-t)+r.lat1[1]*t+(Math.random()-.5)*.002;
+    }
     const ic=icons[i%icons.length];
-    const m=L.marker([lat,lng],{icon:L.divIcon({className:'',html:`<div style="font-size:18px;filter:drop-shadow(0 0 4px ${r.color||'#fff'});">${ic}</div>`,iconSize:[24,24],iconAnchor:[12,12]})}).addTo(ma3MapObj);
-    m.bindPopup(`<b>${r.vehicles?r.vehicles[0]:'Vehicle'}</b><br>Route ${Object.keys(KENYA_ROUTES)[i%Object.keys(KENYA_ROUTES).length]}<br>→ ${r.terminus}`);
+    const vehicleData={
+      id:`V${i}`,plate:r.vehicles?r.vehicles[i%r.vehicles.length]:`KDX ${Math.floor(Math.random()*900+100)}M`,
+      routeNo:Object.keys(KENYA_ROUTES)[i%Object.keys(KENYA_ROUTES).length],
+      routeName:r.name,sacco:r.sacco,emoji:ic,color:r.color||'#fff',
+      stats:{armour:60+Math.floor(Math.random()*35),combat:60+Math.floor(Math.random()*35),speed:60+Math.floor(Math.random()*35),value:60+Math.floor(Math.random()*35)},
+      image:`https://api.dicebear.com/9.x/bottts/svg?seed=matatu${i}`
+    };
+    const m=L.marker([lat,lng],{icon:L.divIcon({className:'',html:`<div style="font-size:20px;filter:drop-shadow(0 0 4px ${r.color||'#fff'});cursor:pointer;">${ic}</div>`,iconSize:[24,24],iconAnchor:[12,12]})}).addTo(ma3MapObj);
+    m.on('click',()=>showVehicleCard(vehicleData));
     vehicleMarkers.push(m);
   }
 }
 
 function drawStops(){
   stopMarkers.forEach(m=>ma3MapObj.removeLayer(m));stopMarkers=[];
-  NEARBY_STOPS.forEach(s=>{
-    const m=L.marker([s.lat,s.lng],{icon:L.divIcon({className:'',html:`<div style="width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid ${KENYA_ROUTES[s.routes[0].no]?.color||'#ff3d2e'};box-shadow:0 0 6px rgba(255,255,255,.4);"></div>`,iconSize:[12,12],iconAnchor:[6,6]})}).addTo(ma3MapObj);
-    m.bindPopup(`<b>${s.name}</b><br>${s.dist}<br>Routes: ${s.routes.map(r=>r.no).join(', ')}`);
-    stopMarkers.push(m);
+  Object.entries(KENYA_ROUTES).forEach(([rn,r])=>{
+    if(!r.stopCoords)return;
+    r.stopCoords.forEach((sc,idx)=>{
+      const isTerminus=idx===0||idx===r.stopCoords.length-1;
+      const m=L.marker(sc,{icon:L.divIcon({className:'',html:`<div style="width:${isTerminus?14:10}px;height:${isTerminus?14:10}px;border-radius:50%;background:#fff;border:2px solid ${r.color||'#ff3d2e'};box-shadow:0 0 6px rgba(255,255,255,.4);cursor:pointer;"></div>`,iconSize:[isTerminus?14:10,isTerminus?14:10],iconAnchor:[isTerminus?7:5,isTerminus?7:5]})}).addTo(ma3MapObj);
+      const waiting=Math.floor(Math.random()*8);
+      const enroute=Math.floor(Math.random()*5);
+      m.bindPopup(`<b>${r.stops[idx]||'Stop'}</b><br>Route ${rn}<br>⏳ ${waiting} waiting · 🚶 ${enroute} en-route<br><button onclick="window.lockInStop('${r.stops[idx]}',${rn})" style="margin-top:4px;padding:3px 8px;background:#00c896;border:none;border-radius:99px;color:#000;font-size:10px;font-weight:700;cursor:pointer;">Lock In Here</button>`);
+      stopMarkers.push(m);
+    });
   });
 }
 
@@ -1768,9 +1636,102 @@ function toggleMapLayer(layer){
 }
 window.toggleMapLayer=toggleMapLayer;
 
-/* ════════════════════════════
-   STOPS LIST
-════════════════════════════ */
+/* VEHICLE FLOAT CARD */
+let currentVehicleData=null;
+function showVehicleCard(v){
+  currentVehicleData=v;
+  document.getElementById('vfImg').src=v.image;
+  document.getElementById('vfName').textContent=v.plate;
+  document.getElementById('vfPlate').textContent=v.sacco;
+  document.getElementById('vfRoute').textContent=`Route ${v.routeNo} · ${v.routeName}`;
+  ['armour','combat','speed','value'].forEach(k=>{
+    const el=document.getElementById('vf'+k.charAt(0).toUpperCase()+k.slice(1)+'Val');
+    const bar=document.getElementById('vf'+k.charAt(0).toUpperCase()+k.slice(1)+'Fill');
+    if(el&&bar){el.textContent=v.stats[k];bar.style.width='0%';setTimeout(()=>bar.style.width=v.stats[k]+'%',50);}
+  });
+  const canRate=completedTrips.has(`${v.id}|${v.routeNo}`);
+  const btn=document.getElementById('vfRateBtn');
+  if(!canRate){btn.disabled=true;btn.textContent='🔒 Ride to Unlock Rating';btn.style.opacity='.5';}
+  else{btn.disabled=false;btn.textContent='⭐ Rate This Ride';btn.style.opacity='1';}
+  document.getElementById('vehicleFloat').classList.add('open');
+}
+function closeVehicleFloat(){document.getElementById('vehicleFloat').classList.remove('open');}
+window.closeVehicleFloat=closeVehicleFloat;
+function openRateFromVehicle(){
+  if(!currentVehicleData)return;
+  if(!completedTrips.has(`${currentVehicleData.id}|${currentVehicleData.routeNo}`)){showToast('Ride this nganya first to unlock rating!');return;}
+  closeVehicleFloat();
+  showPage('ma3');
+  setTimeout(()=>{showMa3Section('rate');buildNganyaRateRow();},400);
+}
+window.openRateFromVehicle=openRateFromVehicle;
+
+/* GEOLOCATION & LOCK-IN */
+function startGeolocation(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.watchPosition(pos=>{
+    userGPS={lat:pos.coords.latitude,lng:pos.coords.longitude,acc:pos.coords.accuracy};
+    updateStagePanel();
+  },err=>{console.log('GPS err',err);},{enableHighAccuracy:true,maximumAge:30000});
+}
+
+function openStagePanel(){
+  document.getElementById('stagePanel').classList.add('open');
+  updateStagePanel();
+}
+window.openStagePanel=openStagePanel;
+
+function updateStagePanel(){
+  const list=document.getElementById('stageList');
+  const status=document.getElementById('spStatus');
+  if(!userGPS){status.textContent='📍 Enable location to see stages near you';list.innerHTML='';return;}
+  status.textContent=`📍 GPS accuracy: ${Math.round(userGPS.acc)}m · Update live`;
+  const allStages=[];
+  NEARBY_STOPS.forEach(s=>{
+    const d=haversine(userGPS.lat,userGPS.lng,s.lat,s.lng);
+    allStages.push({...s,distM:d});
+  });
+  allStages.sort((a,b)=>a.distM-b.distM);
+  list.innerHTML='';
+  allStages.slice(0,6).forEach(st=>{
+    const near=st.distM<80;
+    const row=document.createElement('div');row.className='stage-row';
+    row.innerHTML=`<div class="stage-dist">${st.distM<1000?Math.round(st.distM)+'m':(st.distM/1000).toFixed(1)+'km'}</div>
+      <div class="stage-info"><div class="stage-nm">${st.name}</div><div class="stage-sub">${st.routes.length} routes passing</div></div>
+      <div class="stage-action">
+        <button class="stage-btn ${near?'lock':'walk'}" onclick="${near?`lockInStage('${st.name}',${st.routes[0].no})`:`flyToStage(${st.lat},${st.lng})`}">${near?'<i data-lucide="lock" style="width:12px;height:12px;"></i> Lock In':'<i data-lucide="map-pin" style="width:12px;height:12px;"></i> Walk'}</button>
+      </div>`;
+    list.appendChild(row);
+  });
+  refreshIcons();
+}
+
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371e3;const toRad=Math.PI/180;
+  const dLat=(lat2-lat1)*toRad;const dLng=(lng2-lng1)*toRad;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*toRad)*Math.cos(lat2*toRad)*Math.sin(dLng/2)**2;
+  return Math.round(2*R*Math.asin(Math.sqrt(a)));
+}
+
+function flyToStage(lat,lng){if(ma3MapObj)ma3MapObj.setView([lat,lng],16,{animate:true});}
+window.flyToStage=flyToStage;
+
+function lockInStage(stopName,routeNo){
+  if(activeLocks.has(stopName)){showToast('Already locked in here!');return;}
+  activeLocks.set(stopName,{routeNo,lockedAt:Date.now()});
+  showToast(`🔒 Locked in at ${stopName}. Driver notified.`);
+  setTimeout(()=>{
+    const key=`V${Math.floor(Math.random()*12)}|${routeNo}`;
+    completedTrips.add(key);
+    showToast(`✅ Trip complete! You can now rate this ride.`);
+  },8000);
+}
+window.lockInStage=lockInStage;
+
+function lockInStop(stopName,routeNo){lockInStage(stopName,routeNo);}
+window.lockInStop=lockInStop;
+
+/* STOPS LIST */
 function buildStopsList(stops){
   const list=document.getElementById('stopsList');list.innerHTML='';
   stops.forEach(s=>{
@@ -1781,15 +1742,15 @@ function buildStopsList(stops){
         <div class="stop-name">${s.name}</div>
         <div class="stop-meta">${s.dist} from you · ${s.routes.length} route${s.routes.length>1?'s':''} passing here</div>
       </div>
-      <i class="fas fa-chevron-down" style="color:var(--muted);font-size:.7rem;transition:.2s;" id="sarr-${s.name.replace(/\s/g,'_')}"></i>
+      <i data-lucide="chevron-down" style="color:var(--muted);width:14px;height:14px;transition:.2s;" id="sarr-${s.name.replace(/\s/g,'_')}"></i>
     </div>
     <div class="stop-routes">${s.routes.map(r=>`<span class="rpill ${r.color}" onclick="event.stopPropagation();showRouteMeans(${r.no},'${s.name}')">${r.no}</span>`).join('')}</div>
     <div class="stop-means-list" id="smeans-${s.name.replace(/\s/g,'_')}"></div>`;
     d.querySelector('.stop-card-head').onclick=()=>toggleStopExpand(s);
     list.appendChild(d);
-    // fly map to stop
     d.addEventListener('click',()=>{if(ma3MapObj)ma3MapObj.setView([s.lat,s.lng],15,{animate:true});});
   });
+  refreshIcons();
 }
 
 function toggleStopExpand(s){
@@ -1798,7 +1759,6 @@ function toggleStopExpand(s){
   const arr=document.getElementById('sarr-'+key);
   if(ml.classList.contains('open')){ml.classList.remove('open');if(arr)arr.style.transform='';return;}
   ml.classList.add('open');if(arr)arr.style.transform='rotate(180deg)';
-  // Show all means for all routes at this stop
   ml.innerHTML='';
   s.routes.forEach(rref=>{
     const r=KENYA_ROUTES[rref.no];if(!r)return;
@@ -1818,7 +1778,7 @@ function showRouteMeans(rno,stopName){
   const r=KENYA_ROUTES[rno];if(!r)return;
   showToast(`Route ${rno}: ${r.name}\n${r.vehicles?.join(', ')}`);
   if(ma3MapObj){
-    const path=[r.lat0,r.lat1];const mid=[(r.lat0[0]+r.lat1[0])/2,(r.lat0[1]+r.lat1[1])/2];
+    const mid=[(r.lat0[0]+r.lat1[0])/2,(r.lat0[1]+r.lat1[1])/2];
     ma3MapObj.setView(mid,12,{animate:true});
   }
 }
@@ -1841,14 +1801,11 @@ function filterStops(q){
 }
 window.filterStops=filterStops;
 
-/* ════════════════════════════
-   PLANNER
-════════════════════════════ */
+/* PLANNER */
 let plannerOpen=false;
 function togglePlanner(){
   plannerOpen=!plannerOpen;
   document.getElementById('plannerBox').classList.toggle('open',plannerOpen);
-  document.getElementById('plannerToggleLbl').textContent=plannerOpen?'Close Planner':'Plan Journey';
 }
 window.togglePlanner=togglePlanner;
 function swapPlanner(){const f=document.getElementById('plannerFrom'),t=document.getElementById('plannerTo');const tmp=f.value;f.value=t.value;t.value=tmp;}
@@ -1858,12 +1815,10 @@ function searchJourney(){
   const from=document.getElementById('plannerFrom').value.trim()||'CBD';
   const to=document.getElementById('plannerTo').value.trim()||'Wangige';
   const res=document.getElementById('journeyResults');res.innerHTML='';
-  // Find direct routes
   const direct=Object.entries(KENYA_ROUTES).filter(([_,r])=>
     r.stops.some(s=>s.toLowerCase().includes(from.toLowerCase()))&&
     r.stops.some(s=>s.toLowerCase().includes(to.toLowerCase()))
   );
-  // Find connecting routes (simplified)
   const fromRoutes=Object.entries(KENYA_ROUTES).filter(([_,r])=>r.stops.some(s=>s.toLowerCase().includes(from.toLowerCase())));
   const toRoutes=Object.entries(KENYA_ROUTES).filter(([_,r])=>r.stops.some(s=>s.toLowerCase().includes(to.toLowerCase())));
   const connectors=[];
@@ -1876,14 +1831,13 @@ function searchJourney(){
     d.innerHTML=`<div class="jr-top"><span class="jr-time">${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} – ${now.getHours()+1}:${String(now.getMinutes()).padStart(2,'0')}</span><span class="jr-dur">${r.time}</span></div>
     <div class="jr-routes">
       <span class="jr-rno">${rn}</span>
-      <span class="jr-arr"><i class="fas fa-arrow-right"></i> ${r.terminus}</span>
+      <span class="jr-arr"><i data-lucide="arrow-right" style="width:12px;height:12px;"></i> ${r.terminus}</span>
     </div>
     <div class="journey-leg"><div class="jl-dot" style="background:${r.color}"></div><div class="jl-text">Board at ${from.includes('CBD')?r.stops[0]:r.stops[Math.max(0,r.stops.findIndex(s=>s.toLowerCase().includes(from.toLowerCase())))]} → Alight at ${r.stops[Math.min(r.stops.length-1,r.stops.findIndex(s=>s.toLowerCase().includes(to.toLowerCase())))||r.stops.length-1]}</div><span class="jl-badge" style="background:${r.color}">${rn}</span></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.4rem;"><span class="jr-fare">${r.fare}</span><span style="font-size:.65rem;color:var(--muted);">via ${r.sacco}</span></div>
-    ${i===0?'<div style="font-size:.62rem;color:var(--sage);margin-top:.3rem;display:flex;align-items:center;gap:4px;"><i class="fas fa-leaf"></i> Recommended route</div>':''}`;
+    ${i===0?'<div style="font-size:.62rem;color:var(--sage);margin-top:.3rem;display:flex;align-items:center;gap:4px;"><i data-lucide="leaf" style="width:12px;height:12px;"></i> Recommended route</div>':''}`;
     res.appendChild(d);
   });
-  // Show connecting routes
   connectors.slice(0,2).forEach(conn=>{
     const [fn,fr]=conn.r1;const [tn,tr]=conn.r2;
     const d=document.createElement('div');d.className='journey-result';
@@ -1899,12 +1853,11 @@ function searchJourney(){
     d.innerHTML=`<div style="text-align:center;font-size:.78rem;color:var(--muted);padding:.5rem 0;">No direct route found. Try: CBD, Westlands, Wangige, Rongai, Thika, Embakasi…</div>`;
     res.appendChild(d);
   }
+  refreshIcons();
 }
 window.searchJourney=searchJourney;
 
-/* ════════════════════════════
-   DEPARTURES
-════════════════════════════ */
+/* DEPARTURES */
 function buildDepartures(){
   const list=document.getElementById('depList');if(!list)return;list.innerHTML='';
   Object.entries(KENYA_ROUTES).forEach(([rn,r])=>{
@@ -1918,9 +1871,7 @@ function buildDepartures(){
   });
 }
 
-/* ════════════════════════════
-   HIRE NGANYA
-════════════════════════════ */
+/* HIRE NGANYA */
 function buildHireOccasions(){
   const g=document.getElementById('hireOccasions');if(!g)return;g.innerHTML='';
   HIRE_OCCASIONS.forEach(o=>{
@@ -1944,8 +1895,8 @@ function buildNganyaSelectRow(filter=null){
     const d=document.createElement('div');d.className='ng-card'+(selectedNganya?.id===ng.id?' selected':'');
     const gArr=Object.entries(ng.stats);
     const statBars=gArr.map(([k,v])=>{
-      const colors={graffiti:'#e879f9',music:'#ffb300',speed:'#00c896',service:'#448aff'};
-      const labels={graffiti:'🎨 Graffiti',music:'🔊 Sound',speed:'⚡ Speed',service:'❤️ Service'};
+      const colors={armour:'#e879f9',combat:'#fb923c',speed:'#22d3ee',value:'#4ade80'};
+      const labels={armour:'🛡 Armour',combat:'🔊 Combat',speed:'⚡ Speed',value:'💎 Value'};
       return `<div class="ng-stat"><div class="ng-stat-row"><div class="ng-stat-label">${labels[k]||k}</div><div class="ng-stat-val">${v}</div></div><div class="ng-stat-bar"><div class="ng-stat-fill" style="width:${v}%;background:${colors[k]||'#fff'}"></div></div></div>`;
     }).join('');
     d.innerHTML=`<div class="ng-body-art" style="background:${ng.grad}"><div class="ng-graffiti-tag">${ng.graffiti}</div><div class="ng-emoji">${ng.emoji}</div></div>
@@ -1960,9 +1911,7 @@ function buildNganyaSelectRow(filter=null){
   });
 }
 
-function filterNganyaByOccasion(occId){
-  buildNganyaSelectRow(occId);
-}
+function filterNganyaByOccasion(occId){buildNganyaSelectRow(occId);}
 
 function showNganyaDetail(ng){
   const p=document.getElementById('ngDetailPanel');if(!p)return;
@@ -1978,9 +1927,10 @@ function showNganyaDetail(ng){
   </div>
   <div class="fg"><label>Event / Notes</label><input type="text" class="finput" id="hireNote" placeholder="e.g. Graduation party, 50 pax, Westlands…"></div>
   <div style="display:flex;gap:.5rem;">
-    <button class="btn btn-fire" style="flex:1;padding:9px;font-size:.78rem" onclick="submitHire('${ng.id}')"><i class="fas fa-check"></i> Request Hire</button>
+    <button class="btn btn-fire" style="flex:1;padding:9px;font-size:.78rem" onclick="submitHire('${ng.id}')"><i data-lucide="check" style="width:14px;height:14px;"></i> Request Hire</button>
     <button class="btn btn-ghost" style="padding:9px 14px;font-size:.78rem" onclick="document.getElementById('ngDetailPanel').classList.remove('open')">Cancel</button>
   </div>`;
+  refreshIcons();
 }
 
 function submitHire(id){
@@ -1993,18 +1943,13 @@ function submitHire(id){
 }
 window.submitHire=submitHire;
 
-/* ════════════════════════════
-   NGANYA RATING (Video Game Style)
-════════════════════════════ */
-// Each nganya has ratings object
+/* NGANYA RATING (Completion-gated) */
 NGANYAS.forEach(ng=>{
-  ng.ratings={graffiti:ng.stats.graffiti/20,music:ng.stats.music/20,speed:ng.stats.speed/20,service:ng.stats.service/20};
-  // out of 5
-  ng.ratings={graffiti:Math.round(ng.stats.graffiti/20*10)/10,music:Math.round(ng.stats.music/20*10)/10,speed:Math.round(ng.stats.speed/20*10)/10,service:Math.round(ng.stats.service/20*10)/10};
+  ng.ratings={armour:Math.round(ng.stats.armour/20*10)/10,combat:Math.round(ng.stats.combat/20*10)/10,speed:Math.round(ng.stats.speed/20*10)/10,value:Math.round(ng.stats.value/20*10)/10};
 });
 
 let ratingCurrentNg=null;
-let ratingVals={graffiti:0,music:0,speed:0,service:0};
+let ratingVals={armour:0,combat:0,speed:0,value:0};
 
 function buildNganyaRateRow(){
   const g=document.getElementById('nganyaRateRow');if(!g)return;g.innerHTML='';
@@ -2023,11 +1968,20 @@ function buildNganyaRateRow(){
 
 function buildRatingPanel(ng){
   const h=document.getElementById('ratingPanelHolder');if(!h)return;
+  const hasCompleted=completedTrips.size>0;
+  if(!hasCompleted){
+    h.innerHTML=`<div style="padding:0 1rem .5rem;"><div style="background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.2);border-radius:12px;padding:.8rem;text-align:center;">
+      <div style="font-size:1.5rem;margin-bottom:.3rem;">🔒</div>
+      <div style="font-weight:700;font-size:.85rem;margin-bottom:.2rem;">Rating Locked</div>
+      <div style="font-size:.65rem;color:var(--muted2);">Complete a ride first (Lock In at a stage and wait for the trip to finish) to unlock ratings.</div>
+    </div></div>`;
+    return;
+  }
   const statConfig=[
-    {key:'graffiti',label:'🎨 Graffiti / Body Art',desc:'Armour — style & visual art'},
-    {key:'music',label:'🔊 Music System / Screens',desc:'Combat — sound & entertainment gear'},
-    {key:'speed',label:'⚡ Timeliness / Driver',desc:'Speed — punctuality & driving skill'},
-    {key:'service',label:'❤️ Customer Care / Value',desc:'Comfort — makanga attitude & fare fairness'},
+    {key:'armour',label:'🛡 Armour (Exterior / Graffiti)',desc:'Armour — style & visual art'},
+    {key:'combat',label:'🔊 Combat (Sound System)',desc:'Combat — sound & entertainment gear'},
+    {key:'speed',label:'⚡ Speed (Driving Skill)',desc:'Speed — punctuality & driving skill'},
+    {key:'value',label:'💎 Value (Service / Clean)',desc:'Value — makanga attitude & cleanliness'},
   ];
   h.innerHTML=`<div style="padding:0 1rem .5rem;">
     <div style="font-family:var(--font-display);font-size:.92rem;font-weight:700;margin-bottom:.3rem;display:flex;align-items:center;gap:.6rem;">
@@ -2047,7 +2001,7 @@ function buildRatingPanel(ng){
     </div>`).join('')}
     <button class="place-bet-btn" onclick="submitRatingPanel('${ng.id}')" style="font-size:.78rem;padding:9px;margin-top:.3rem;">Submit Rating (+5⚡)</button>
   </div>`;
-  ratingVals={graffiti:0,music:0,speed:0,service:0};
+  ratingVals={armour:0,combat:0,speed:0,value:0};
 }
 
 function setRatingStar(key,val){
@@ -2056,13 +2010,12 @@ function setRatingStar(key,val){
     const el=document.getElementById(`rs-${key}-${i}`);
     if(el){el.classList.toggle('lit',i<=val);el.style.filter=i<=val?'none':'grayscale(1)';el.style.opacity=i<=val?'1':'.4';}
   }
-  updateNganyaStats(ratingCurrentNg,key,val);
+  if(ratingCurrentNg) updateNganyaStats(ratingCurrentNg,key,val);
 }
 window.setRatingStar=setRatingStar;
 
 function updateNganyaStats(ng,key,stars){
   if(!ng)return;
-  // Blend new rating into existing stats
   const newStat=Math.round(ng.stats[key]*0.85+stars*3.15);
   ng.stats[key]=Math.min(100,newStat);
 }
@@ -2070,32 +2023,46 @@ function updateNganyaStats(ng,key,stars){
 function submitRatingPanel(ngId){
   const ng=NGANYAS.find(n=>n.id===ngId);
   if(!ng)return;
+  if(completedTrips.size===0){showToast('Complete a ride first to unlock ratings!');return;}
   if(Object.values(ratingVals).every(v=>v===0)){showToast('Rate at least one category!');return;}
   earn(5,'Rating submitted!');
-  // Show updated stat bars
   buildNganyaSelectRow();
   showToast(`⭐ ${ng.name} rated! Stats updated.`);
   buildRatingPanel(ng);
 }
 window.submitRatingPanel=submitRatingPanel;
 
-/* ════════════════════════════
-   MA3 TAB SWITCHING
-════════════════════════════ */
-function showMa3Tab(id,el){showMa3Section(id==='map'?'main':id);
-  document.querySelectorAll('.tube-panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('ma3-'+id).classList.add('on');
-  document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  if(id==='map'){setTimeout(()=>{if(ma3MapObj)ma3MapObj.invalidateSize();},120);}
-  if(id==='hire'){buildHireOccasions();buildNganyaSelectRow();}
-  if(id==='rate'){buildNganyaRateRow();}
-}
-window.showMa3Tab=showMa3Tab;
+/* RIDE PAGE — TAXI/BODA RATING */
+let rideRateVals={safety:0,vibe:0,speed:0,service:0};
+let rideCompleted=false;
 
-/* ════════════════════════════
-   RIDE
-════════════════════════════ */
+function openRideRate(){
+  if(!rideCompleted){showToast('Complete a ride first to rate your driver!');return;}
+  document.getElementById('rideRateOverlay').classList.add('open');
+  refreshIcons();
+}
+window.openRideRate=openRideRate;
+
+function setRideRateStar(key,val){
+  rideRateVals[key]=val;
+  for(let i=1;i<=5;i++){
+    const el=document.getElementById(`rrs-${key}-${i}`);
+    if(el){el.classList.toggle('lit',i<=val);el.style.filter=i<=val?'none':'grayscale(1)';el.style.opacity=i<=val?'1':'.4';}
+  }
+}
+window.setRideRateStar=setRideRateStar;
+
+function submitRideRate(){
+  if(!rideCompleted){showToast('Finish a ride before rating!');return;}
+  if(Object.values(rideRateVals).every(v=>v===0)){showToast('Rate at least one category!');return;}
+  earn(5,'Driver rated!');
+  document.getElementById('rideRateOverlay').classList.remove('open');
+  showToast('Thanks for rating your driver!');
+  rideRateVals={safety:0,vibe:0,speed:0,service:0};
+}
+window.submitRideRate=submitRideRate;
+
+/* RIDE */
 let rideMap=null;
 function initRideMap(){
   if(rideMap)return;
@@ -2117,23 +2084,11 @@ function requestRide(){
   if(!dest){showToast('Enter destination');return;}
   showToast(`🚕 ${rideSvc} requested to ${dest}!`);
   earn(5,'Ride requested');
+  setTimeout(()=>{rideCompleted=true;showToast('🎉 Ride complete! You can now rate your driver.');},4000);
 }
 window.requestRide=requestRide;
-function openRateRideSheet(){
-  // Rate a ride (simplified)
-  ratingCurrentNg=NGANYAS[Math.floor(Math.random()*NGANYAS.length)];
-  showPage('ma3');
-  setTimeout(()=>{
-    showMa3Tab('rate',document.querySelectorAll('.ttab')[3]);
-    buildNganyaRateRow();
-    buildRatingPanel(ratingCurrentNg);
-  },400);
-}
-window.openRateRideSheet=openRateRideSheet;
 
-/* ════════════════════════════
-   FLY & FIGHT
-════════════════════════════ */
+/* FLY & FIGHT */
 const AIRLINES=[{name:"Kenya Airways",icon:"✈",base:1.0,cls:"Economy",stops:"Non-stop",rat:4.4},{name:"Emirates",icon:"✈",base:1.6,cls:"Business",stops:"Non-stop",rat:4.9},{name:"Delta",icon:"✈",base:1.0,cls:"Economy",stops:"Non-stop",rat:4.5},{name:"Qatar Airways",icon:"✈",base:1.5,cls:"Business",stops:"Non-stop",rat:4.8},{name:"Lufthansa",icon:"✈",base:1.4,cls:"Business",stops:"Non-stop",rat:4.7},{name:"Virgin Galactic",icon:"🚀",base:3.0,cls:"Galactic",stops:"Direct",rat:5.0}];
 let flyFrom=null,flyTo=null;
 window.showFS=function(from,to,dist){
@@ -2181,9 +2136,7 @@ function flyFight(which){
 }
 window.doFlySearch=doFlySearch;window.flyFight=flyFight;
 
-/* ════════════════════════════
-   BATTLE
-════════════════════════════ */
+/* BATTLE */
 let bi1=0,bi2=Math.min(5,ARTEFACTS.length-1),bl1=false,bl2=false;
 function updBattle(){
   const a=ARTEFACTS[bi1],b=ARTEFACTS[bi2];
@@ -2197,9 +2150,10 @@ function updBattle(){
   document.getElementById('fb2').classList.toggle('locked',bl2);
   ['lb1','lb2'].forEach((id,n)=>{
     const lk=n===0?bl1:bl2;const el=document.getElementById(id);
-    el.className='lock-btn'+(lk?' locked':'');el.innerHTML=lk?'<i class="fas fa-lock"></i> Locked':'<i class="fas fa-lock-open"></i> Lock';
+    el.className='lock-btn'+(lk?' locked':'');el.innerHTML=lk?'<i data-lucide="lock" style="width:12px;height:12px;"></i> Locked':'<i data-lucide="unlock" style="width:12px;height:12px;"></i> Lock';
   });
   document.getElementById('winnerCard').classList.remove('show');
+  refreshIcons();
 }
 function prevF(n){if(n===1&&!bl1){bi1=(bi1-1+ARTEFACTS.length)%ARTEFACTS.length;updBattle();}else if(n===2&&!bl2){bi2=(bi2-1+ARTEFACTS.length)%ARTEFACTS.length;updBattle();}}
 function nextF(n){if(n===1&&!bl1){bi1=(bi1+1)%ARTEFACTS.length;updBattle();}else if(n===2&&!bl2){bi2=(bi2+1)%ARTEFACTS.length;updBattle();}}
@@ -2236,9 +2190,7 @@ function startFight(){
 window.startFight=startFight;
 updBattle();
 
-/* ════════════════════════════
-   SPORTS BETTING
-════════════════════════════ */
+/* SPORTS BETTING */
 function buildSportsBetting(){
   buildSportPills();
   renderMatchCards('all');
@@ -2296,13 +2248,13 @@ function renderMatchCards(sport){
 }
 
 function addToBetSlip(matchId,pick,pickName,odds,matchLabel){
-  // Remove existing pick for this match
   betSlip=betSlip.filter(b=>b.matchId!==matchId);
   betSlip.push({matchId,pick,pickName,odds,matchLabel});
   renderBetSlip();
   renderMatchCards(currentSportFilter);
   updatePayout();
 }
+window.addToBetSlip=addToBetSlip;
 
 function renderBetSlip(){
   const el=document.getElementById('betSlipItems');if(!el)return;
@@ -2310,11 +2262,12 @@ function renderBetSlip(){
   el.innerHTML='';
   betSlip.forEach((b,i)=>{
     const d=document.createElement('div');d.className='bet-slip-item';
-    d.innerHTML=`<div><div class="bsi-match">${b.matchLabel}</div><div class="bsi-pick">✓ ${b.pickName}</div></div><div class="bsi-odds">${b.odds}×</div><div class="bsi-remove" onclick="removeBetSlipItem(${i})"><i class="fas fa-times"></i></div>`;
+    d.innerHTML=`<div><div class="bsi-match">${b.matchLabel}</div><div class="bsi-pick">✓ ${b.pickName}</div></div><div class="bsi-odds">${b.odds}×</div><div class="bsi-remove" onclick="removeBetSlipItem(${i})"><i data-lucide="x" style="width:10px;height:10px;"></i></div>`;
     el.appendChild(d);
   });
   document.getElementById('placeBetBtn').disabled=false;
   updatePayout();
+  refreshIcons();
 }
 
 function removeBetSlipItem(i){betSlip.splice(i,1);renderBetSlip();renderMatchCards(currentSportFilter);}
@@ -2336,20 +2289,12 @@ function updatePayout(){
 }
 window.updatePayout=updatePayout;
 
-function addToBetSlip(matchId,pick,pickName,odds,matchLabel){
-  betSlip=betSlip.filter(b=>b.matchId!==matchId);
-  betSlip.push({matchId,pick,pickName,odds,matchLabel});
-  renderBetSlip();renderMatchCards(currentSportFilter);updatePayout();
-}
-window.addToBetSlip=addToBetSlip;
-
 function placeSportBet(){
   const stake=parseFloat(document.getElementById('stakeInput').value)||10;
   if(!betSlip.length){showToast('Add picks to bet slip first!');return;}
   if(!spend(stake))return;
   const totalOdds=betSlip.reduce((p,b)=>p*b.odds,1);
   const payout=Math.round(stake*totalOdds*100)/100;
-  // Random outcome
   const won=Math.random()>0.45;
   const res=document.getElementById('sportBetResult');
   if(won){earn(payout,`Sports bet win!`);res.className='bet-result-toast won';res.textContent=`🎉 Winner! All picks correct. Won ${payout}⚡ (${totalOdds.toFixed(2)}× odds)`;}
@@ -2358,9 +2303,7 @@ function placeSportBet(){
 }
 window.placeSportBet=placeSportBet;
 
-/* ════════════════════════════
-   NGANYA VS
-════════════════════════════ */
+/* NGANYA VS */
 let ngVote={left:null,right:null,userVote:null};
 
 function buildNganyaVsPanel(){
@@ -2423,9 +2366,7 @@ function buildNganyaLeaderboard(){
     </div>`).join('');
 }
 
-/* ════════════════════════════
-   MARKET
-════════════════════════════ */
+/* MARKET */
 function filterCat(el,cat){
   document.querySelectorAll('.cttab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
   document.querySelectorAll('.lcard').forEach(c=>c.style.display=(cat==='all'||c.dataset.cat===cat)?'flex':'none');
@@ -2436,17 +2377,16 @@ function publishListing(){
   const desc=document.getElementById('uDesc').value.trim(),univ=document.getElementById('uUniv').value.trim()||'Original';
   const safe=s=>s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
   const card=document.createElement('div');card.className='lcard';card.dataset.cat=cat;
-  card.innerHTML=`<div class="lcard-thumb" style="background:var(--glass2)"><i class="fas fa-star" style="color:rgba(255,179,0,.3)"></i><span class="ltype" style="color:var(--gold)">${cat}</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=you" alt=""><span class="seller-nm">You</span></div><div class="lcard-title">${safe(title)}</div><div class="lcard-desc">${safe(desc||'No description.')}</div><div class="lcard-tags"><span class="ltag">${safe(univ)}</span></div><div class="lcard-foot"><span class="lcard-price ${price===0?'free':''}">${price===0?'FREE':'$'+price.toFixed(2)}</span><button class="buy-btn" onclick="alert('Your listing!')">Buy</button></div></div>`;
+  card.innerHTML=`<div class="lcard-thumb" style="background:var(--glass2)"><i data-lucide="star" style="width:40px;height:40px;color:rgba(255,179,0,.3)"></i><span class="ltype" style="color:var(--gold)">${cat}</span></div><div class="lcard-body"><div class="seller-row"><img src="https://api.dicebear.com/9.x/bottts/svg?seed=you" alt=""><span class="seller-nm">You</span></div><div class="lcard-title">${safe(title)}</div><div class="lcard-desc">${safe(desc||'No description.')}</div><div class="lcard-tags"><span class="ltag">${safe(univ)}</span></div><div class="lcard-foot"><span class="lcard-price ${price===0?'free':''}">${price===0?'FREE':'$'+price.toFixed(2)}</span><button class="buy-btn" onclick="alert('Your listing!')">Buy</button></div></div>`;
   document.getElementById('listingsGrid').prepend(card);
   document.getElementById('uploadOverlay').classList.remove('open');
   ['uTitle','uPrice','uDesc','uUniv'].forEach(id=>document.getElementById(id).value='');
   earn(20,'Published a creation!');
+  refreshIcons();
 }
 window.filterCat=filterCat;window.publishListing=publishListing;
 
-/* ════════════════════════════
-   EXPLORE
-════════════════════════════ */
+/* EXPLORE */
 function filterOffers(el,cat){
   document.querySelectorAll('#efPills .pill').forEach(t=>t.classList.remove('on'));el.classList.add('on');
   document.querySelectorAll('.offer-card').forEach(c=>c.style.display=(cat==='all'||c.dataset.cat===cat)?'block':'none');
@@ -2466,9 +2406,10 @@ function pinOrg(){
   if(!name||!loc){alert('Fill in name and location.');return;}
   const safe=s=>s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
   const card=document.createElement('div');card.className='offer-card';card.dataset.cat=cat;
-  card.innerHTML=`<div class="offer-thumb" style="background:var(--glass2)">📍</div><div class="offer-body"><div class="offer-org">${safe(name)}</div><div class="offer-title">${safe(offer||'Special Offer')}</div><div class="offer-loc"><i class="fas fa-location-dot" style="color:var(--fire)"></i> ${safe(loc)}</div></div><div class="offer-foot"><div class="offer-rew"><i class="fas fa-coins"></i>+${reward}⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'${safe(name)}',${reward})">Navigate</button></div>`;
+  card.innerHTML=`<div class="offer-thumb" style="background:var(--glass2)">📍</div><div class="offer-body"><div class="offer-org">${safe(name)}</div><div class="offer-title">${safe(offer||'Special Offer')}</div><div class="offer-loc"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--fire)"></i> ${safe(loc)}</div></div><div class="offer-foot"><div class="offer-rew"><i data-lucide="coins" style="width:12px;height:12px;"></i>+${reward}⚡</div><button class="btn btn-sky" style="padding:5px 13px;font-size:.66rem" onclick="navOffer(this,'${safe(name)}',${reward})">Navigate</button></div>`;
   document.getElementById('offerGrid').prepend(card);
   document.getElementById('orgOverlay').classList.remove('open');
+  refreshIcons();
 }
 window.filterOffers=filterOffers;window.navOffer=navOffer;window.pinOrg=pinOrg;
 
@@ -2477,9 +2418,9 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
 
 /* INIT */
 updateTokenUI();
-// Pre-build sports so it's ready
 buildSportsBetting();
 buildNganyaVsPanel();
+refreshIcons();
 </script>
 </body>
 </html>
